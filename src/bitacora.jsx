@@ -175,7 +175,7 @@ function BitacoraView() {
             acceptedCourses.map(c => React.createElement('option', { key: c.id, value: c.id }, c.title)),
           ),
         ),
-        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 12, marginBottom: 14 } },
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 14 } },
           React.createElement('div', null,
             React.createElement('label', { style: lbl }, 'Fecha'),
             React.createElement('input', { type: 'date', value: form.sessionDate, onChange: e => setForm({ ...form, sessionDate: e.target.value }), style: field }),

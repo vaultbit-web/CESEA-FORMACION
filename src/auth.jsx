@@ -14,6 +14,9 @@
 function AuthScreens() {
   const { login, loginAs, register, COMPANY } = React.useContext(AppContext);
   const { motion: aMotion } = window.Motion || {};
+  const viewport = window.useViewport ? window.useViewport() : { isMobile: false, isTablet: false, isSmall: false };
+  const isSmall = viewport.isSmall;    // móvil + tablet
+  const isMobile = viewport.isMobile;
 
   const [mode,      setMode]      = React.useState('login');  // 'login' | 'register' | 'recover'
   const [email,     setEmail]     = React.useState('');
@@ -88,11 +91,21 @@ function AuthScreens() {
   const cardProps = aMotion ? { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] } } : {};
 
   return React.createElement('div', {
-    style: { minHeight: '100vh', display: 'grid', gridTemplateColumns: '1.1fr 1fr', background: '#f6f7fb', fontFamily: 'Lato' },
+    style: {
+      minHeight: '100vh', display: 'grid',
+      gridTemplateColumns: isSmall ? '1fr' : '1.1fr 1fr',
+      background: '#f6f7fb', fontFamily: 'Lato',
+    },
   },
-    // ── Panel izquierdo (marca) ─────────────────────────────────────────────
+    // ── Panel izquierdo (marca) — compacto en móvil ──────────────────────────
     React.createElement('div', {
-      style: { background: '#0f1020', position: 'relative', overflow: 'hidden', padding: '56px 64px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff' },
+      style: {
+        background: '#0f1020', position: 'relative', overflow: 'hidden',
+        padding: isMobile ? '28px 20px' : isSmall ? '36px 32px' : '56px 64px',
+        display: 'flex', flexDirection: 'column',
+        justifyContent: isSmall ? 'flex-start' : 'space-between',
+        color: '#fff',
+      },
     },
       React.createElement('div', { style: { position: 'absolute', top: -140, left: -120, width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(252,173,0,0.22) 0%, transparent 65%)', filter: 'blur(32px)', pointerEvents: 'none' } }),
       React.createElement('div', { style: { position: 'absolute', bottom: -120, right: -80, width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(53,169,205,0.22) 0%, transparent 65%)', filter: 'blur(32px)', pointerEvents: 'none' } }),
@@ -100,26 +113,26 @@ function AuthScreens() {
       React.createElement('div', { style: { position: 'relative', zIndex: 1 } },
         React.createElement('img', {
           src: 'assets/logotipo-blanco.png', alt: 'CESEA Formación',
-          style: { height: 56, width: 'auto', marginBottom: 28 },
+          style: { height: isMobile ? 42 : 56, width: 'auto', marginBottom: isMobile ? 14 : 28 },
           onError: e => { e.target.style.display = 'none'; },
         }),
         React.createElement('div', {
-          style: { fontFamily: 'Bricolage Grotesque', fontSize: 13, color: 'rgba(255,255,255,0.72)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 24 },
+          style: { fontFamily: 'Bricolage Grotesque', fontSize: isMobile ? 11 : 13, color: 'rgba(255,255,255,0.72)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: isMobile ? 12 : 24 },
         }, 'Plataforma única'),
         React.createElement('h1', {
-          style: { fontFamily: 'Bricolage Grotesque', fontSize: 44, fontWeight: 800, lineHeight: 1.05, letterSpacing: -1, marginBottom: 18 },
+          style: { fontFamily: 'Bricolage Grotesque', fontSize: isMobile ? 28 : isSmall ? 34 : 44, fontWeight: 800, lineHeight: 1.05, letterSpacing: -1, marginBottom: isMobile ? 10 : 18 },
         },
           'Forma, ',
           React.createElement('span', { style: { background: COLORS.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }, 'cuida'),
-          ',', React.createElement('br'),
+          ',', isMobile ? ' ' : React.createElement('br'),
           'transforma vidas.',
         ),
-        React.createElement('p', {
+        !isMobile && React.createElement('p', {
           style: { fontFamily: 'Lato', fontSize: 15, lineHeight: 1.6, maxWidth: 460, color: 'rgba(255,255,255,0.78)' },
         }, 'Un único acceso para alumnos, formadores y administración. Gestiona tus cursos, diplomas, tareas, asistencia y empleo desde la misma plataforma.'),
       ),
 
-      React.createElement('div', { style: { position: 'relative', zIndex: 1, display: 'flex', gap: 28, flexWrap: 'wrap', color: 'rgba(255,255,255,0.72)', fontSize: 12, fontFamily: 'Lato' } },
+      !isMobile && React.createElement('div', { style: { position: 'relative', zIndex: 1, display: 'flex', gap: 28, flexWrap: 'wrap', color: 'rgba(255,255,255,0.72)', fontSize: 12, fontFamily: 'Lato', marginTop: isSmall ? 20 : 0 } },
         React.createElement('div', null,
           React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 22, fontWeight: 800, color: '#fff' } }, '8.400+'),
           'alumnos formados',
@@ -137,10 +150,10 @@ function AuthScreens() {
 
     // ── Panel derecho (formulario + tarjetas) ───────────────────────────────
     React.createElement('div', {
-      style: { display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 24px', background: '#f6f7fb', overflowY: 'auto' },
+      style: { display: 'flex', alignItems: isSmall ? 'flex-start' : 'center', justifyContent: 'center', padding: isMobile ? '20px 14px' : '28px 24px', background: '#f6f7fb', overflowY: 'auto' },
     },
       React.createElement(Card, Object.assign({
-        style: { width: '100%', maxWidth: 500, padding: '32px 30px 26px', background: '#fff', borderRadius: 18, boxShadow: '0 16px 48px rgba(15,16,32,0.07)', animation: shake ? 'shake 0.4s' : undefined },
+        style: { width: '100%', maxWidth: 500, padding: isMobile ? '22px 20px' : '32px 30px 26px', background: '#fff', borderRadius: 18, boxShadow: '0 16px 48px rgba(15,16,32,0.07)', animation: shake ? 'shake 0.4s' : undefined },
       }, cardProps),
         React.createElement('h2', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 24, fontWeight: 800, color: COLORS.dark, marginBottom: 4 } }, title),
         React.createElement('p', { style: { fontFamily: 'Lato', fontSize: 13, color: COLORS.textLight, marginBottom: 20 } }, subtitle),

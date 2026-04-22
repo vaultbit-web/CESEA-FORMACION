@@ -72,7 +72,7 @@ function AlumnoProfileView() {
       React.createElement('h1', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 28, fontWeight: 800, color: theme.text, letterSpacing: -0.5 } }, 'Mi perfil'),
     ),
 
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 18 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 } },
       // ── Columna izquierda: datos ──
       React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
         // Datos personales

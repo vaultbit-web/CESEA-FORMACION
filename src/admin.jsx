@@ -35,31 +35,51 @@ function AdminTopNav() {
   } = React.useContext(AppContext);
   const [showProfile, setShowProfile] = React.useState(false);
   const [showNotif,   setShowNotif]   = React.useState(false);
+  const [showMenu,    setShowMenu]    = React.useState(false);
   const unread = (adminNotifications || []).filter(n => !n.read).length;
   const pending = pendingRequests?.length || 0;
+  const vp = window.useViewport ? window.useViewport() : { isSmall: false };
+  const isSmall = vp.isSmall;
 
-  const closeAll = () => { setShowProfile(false); setShowNotif(false); };
+  const closeAll = () => { setShowProfile(false); setShowNotif(false); setShowMenu(false); };
 
   return React.createElement('nav', {
     style: {
       position: 'sticky', top: 0, zIndex: 100,
       background: '#0f1020',
       borderBottom: '1px solid #1d1f38',
-      padding: '0 40px', height: 64,
+      padding: isSmall ? '0 14px' : '0 40px', height: 64,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     }
   },
-    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 36 } },
+    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: isSmall ? 10 : 36 } },
+      // Hamburger (móvil/tablet)
+      isSmall && React.createElement('button', {
+        onClick: () => { setShowMenu(!showMenu); setShowProfile(false); setShowNotif(false); },
+        'aria-label': 'Abrir menú',
+        style: {
+          width: 38, height: 38, borderRadius: 10, background: showMenu ? 'rgba(244,120,9,0.2)' : 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 4, padding: 0, position: 'relative',
+        },
+      },
+        React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+        React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+        React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+        pending > 0 && React.createElement('span', {
+          style: { position: 'absolute', top: 4, right: 4, width: 8, height: 8, borderRadius: '50%', background: COLORS.red, border: '2px solid #0f1020' },
+        }),
+      ),
       React.createElement('div', {
         style: { display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' },
         onClick: () => { closeAll(); setCurrentView('inicio'); },
       },
         React.createElement('img', {
           src: 'assets/logotipo-blanco.png', alt: 'CESEA',
-          style: { height: 30, width: 'auto' },
+          style: { height: isSmall ? 26 : 30, width: 'auto' },
           onError: e => { e.target.style.display = 'none'; },
         }),
-        React.createElement('span', {
+        !isSmall && React.createElement('span', {
           style: {
             padding: '3px 9px', borderRadius: 5, background: COLORS.gradient,
             color: '#fff', fontSize: 9.5, fontWeight: 800, letterSpacing: 1,
@@ -67,7 +87,7 @@ function AdminTopNav() {
           }
         }, 'Superadmin'),
       ),
-      React.createElement('div', { style: { display: 'flex', gap: 2 } },
+      !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
         ...ADMIN_NAV_ITEMS.map(item => {
           const active = currentView === item.id;
           const showBadge = item.id === 'solicitudes' && pending > 0;
@@ -96,6 +116,41 @@ function AdminTopNav() {
             }, pending),
           );
         }),
+      ),
+
+      // Drawer móvil
+      isSmall && showMenu && React.createElement('div', {
+        style: { position: 'fixed', top: 64, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.55)', zIndex: 95 },
+        onClick: () => setShowMenu(false),
+      },
+        React.createElement('div', {
+          onClick: e => e.stopPropagation(),
+          style: { background: '#0f1020', padding: '14px 12px 20px', borderBottom: '1px solid #1d1f38', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(0,0,0,0.4)' },
+        },
+          ...ADMIN_NAV_ITEMS.map(item => {
+            const active = currentView === item.id;
+            const showBadge = item.id === 'solicitudes' && pending > 0;
+            return React.createElement('button', {
+              key: item.id,
+              onClick: () => { setCurrentView(item.id); setShowMenu(false); },
+              style: {
+                width: '100%', padding: '13px 14px', borderRadius: 10, border: 'none',
+                background: active ? 'rgba(244,120,9,0.18)' : 'transparent',
+                color: active ? COLORS.yellow : 'rgba(255,255,255,0.9)',
+                fontFamily: 'Lato', fontSize: 14, fontWeight: active ? 700 : 600,
+                cursor: 'pointer', textAlign: 'left',
+                display: 'flex', alignItems: 'center', gap: 12,
+                marginBottom: 4,
+              },
+            },
+              React.createElement('span', { style: { fontSize: 15, width: 22, textAlign: 'center', opacity: active ? 1 : 0.7 } }, item.icon),
+              React.createElement('span', { style: { flex: 1 } }, item.label),
+              showBadge && React.createElement('span', {
+                style: { padding: '2px 8px', borderRadius: 999, background: COLORS.red, color: '#fff', fontSize: 10, fontWeight: 800, fontFamily: 'Bricolage Grotesque' },
+              }, pending),
+            );
+          }),
+        ),
       ),
     ),
 
@@ -235,8 +290,8 @@ function AdminDashboardView() {
         'Gestiona el catálogo, aprueba solicitudes, valida horas impartidas y administra formadores.'
       ),
     ),
-    // KPI cards
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 22 } },
+    // KPI cards (responsive: 4 cols > 2 cols > 1 col)
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 22 } },
       ...KPIS.map(k => React.createElement('div', {
         key: k.label,
         onClick: () => setCurrentView(k.go),
@@ -256,7 +311,7 @@ function AdminDashboardView() {
       )),
     ),
     // Two columns: pending requests + recent courses
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 20 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 } },
       React.createElement('div', { style: { background: '#fff', borderRadius: 14, padding: 20, border: '1px solid #eceef4' } },
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 } },
           React.createElement('h3', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 14, fontWeight: 800, color: COLORS.dark, margin: 0, textTransform: 'uppercase', letterSpacing: 0.8 } }, 'Solicitudes recientes'),
@@ -353,8 +408,8 @@ function AdminCoursesView() {
       ),
     ),
     // Table
-    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflow: 'hidden' } },
-      React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', borderSpacing: 0 } },
+    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflowX: 'auto', WebkitOverflowScrolling: 'touch' } },
+      React.createElement('table', { style: { width: '100%', minWidth: 560, borderCollapse: 'collapse', borderSpacing: 0 } },
         React.createElement('thead', null,
           React.createElement('tr', { style: { background: '#fafbfc' } },
             ...['Curso', 'Grupo de acciones', 'Modalidad', 'Horas', 'Estado', ''].map(h =>
@@ -614,8 +669,8 @@ function AdminHoursView() {
         }
       }, t.label)),
     ),
-    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflow: 'hidden' } },
-      React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', borderSpacing: 0 } },
+    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflowX: 'auto', WebkitOverflowScrolling: 'touch' } },
+      React.createElement('table', { style: { width: '100%', minWidth: 560, borderCollapse: 'collapse', borderSpacing: 0 } },
         React.createElement('thead', null,
           React.createElement('tr', { style: { background: '#fafbfc' } },
             ...['Curso', 'Fecha', 'Horas', 'Modalidad', 'Estado', ''].map(h =>
@@ -683,8 +738,8 @@ function AdminTrainersView() {
     React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 13, color: COLORS.textLight, marginBottom: 20 } },
       trainers.length + ' formadores registrados en la plataforma.'
     ),
-    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflow: 'hidden' } },
-      React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', borderSpacing: 0 } },
+    React.createElement('div', { style: { background: '#fff', borderRadius: 14, border: '1px solid #eceef4', overflowX: 'auto', WebkitOverflowScrolling: 'touch' } },
+      React.createElement('table', { style: { width: '100%', minWidth: 560, borderCollapse: 'collapse', borderSpacing: 0 } },
         React.createElement('thead', null,
           React.createElement('tr', { style: { background: '#fafbfc' } },
             ...['Formador/a', 'Especialidad', 'Horas YTD', 'Alta', 'Estado', ''].map(h =>

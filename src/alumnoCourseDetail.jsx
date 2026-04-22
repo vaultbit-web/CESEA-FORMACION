@@ -111,7 +111,7 @@ function AlumnoCourseDetailView() {
     ),
 
     // Two-col grid: left (tabs) + right (sidebar)
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 20 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 } },
       // ── Left: tabs (overview, temario, reseñas) ──
       React.createElement('div', null,
         React.createElement('div', {

@@ -361,6 +361,35 @@ function LegalModal({ doc, onClose, theme }) {
   );
 }
 
+// ─── useViewport hook (responsive foundation) ────────────────────────────────
+// Breakpoints: mobile <640 · tablet 640-1023 · desktop ≥1024
+// Todos los componentes deben usar este hook para decidir layouts en lugar de
+// media queries (que no pueden sobrescribir estilos inline).
+function useViewport() {
+  const getW = () => typeof window !== 'undefined' ? window.innerWidth  : 1200;
+  const getH = () => typeof window !== 'undefined' ? window.innerHeight : 800;
+  const [dim, setDim] = React.useState({ w: getW(), h: getH() });
+  React.useEffect(() => {
+    const onResize = () => setDim({ w: getW(), h: getH() });
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
+  return {
+    width:      dim.w,
+    height:     dim.h,
+    isMobile:   dim.w < 640,
+    isTablet:   dim.w >= 640 && dim.w < 1024,
+    isDesktop:  dim.w >= 1024,
+    // Helpers frecuentes
+    isSmall:    dim.w < 1024,    // móvil + tablet
+    isPortrait: dim.h > dim.w,
+  };
+}
+
 window.Pill        = Pill;
 window.Progress    = Progress;
 window.StarRating  = StarRating;
@@ -371,3 +400,4 @@ window.Avatar      = Avatar;
 window.Card        = Card;
 window.EmptyState  = EmptyState;
 window.LegalModal  = LegalModal;
+window.useViewport = useViewport;

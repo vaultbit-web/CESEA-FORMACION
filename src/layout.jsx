@@ -20,21 +20,38 @@ function TopNav() {
   const { currentView, setCurrentView, user, logout, notifications, markAllRead } = React.useContext(AppContext);
   const [showProfile, setShowProfile] = React.useState(false);
   const [showNotif,   setShowNotif]   = React.useState(false);
+  const [showMenu,    setShowMenu]    = React.useState(false);
   const unread = (notifications || []).filter(n => !n.read).length;
+  const vp = window.useViewport ? window.useViewport() : { isSmall: false, isMobile: false };
+  const isSmall = vp.isSmall;
 
-  const closeAll = () => { setShowProfile(false); setShowNotif(false); };
+  const closeAll = () => { setShowProfile(false); setShowNotif(false); setShowMenu(false); };
 
   return React.createElement('nav', {
     style: {
       position: 'sticky', top: 0, zIndex: 100,
       background: '#ffffff',
       borderBottom: '1px solid #eceef4',
-      padding: '0 40px', height: 64,
+      padding: isSmall ? '0 16px' : '0 40px', height: 64,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     }
   },
-    // ── Left: logo + nav
-    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 36 } },
+    // ── Left: logo + (nav / hamburger) ─────────────────────────────────────
+    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: isSmall ? 10 : 36 } },
+      // Hamburger (solo móvil/tablet)
+      isSmall && React.createElement('button', {
+        onClick: () => { setShowMenu(!showMenu); setShowProfile(false); setShowNotif(false); },
+        'aria-label': 'Abrir menú',
+        style: {
+          width: 38, height: 38, borderRadius: 9, background: showMenu ? `${COLORS.orange}12` : '#f4f5f9',
+          border: '1px solid #eceef4', cursor: 'pointer', display: 'flex', flexDirection: 'column',
+          justifyContent: 'center', alignItems: 'center', gap: 4, padding: 0,
+        },
+      },
+        React.createElement('span', { style: { width: 16, height: 2, background: COLORS.dark, borderRadius: 2 } }),
+        React.createElement('span', { style: { width: 16, height: 2, background: COLORS.dark, borderRadius: 2 } }),
+        React.createElement('span', { style: { width: 16, height: 2, background: COLORS.dark, borderRadius: 2 } }),
+      ),
       React.createElement('div', {
         style: { display: 'flex', alignItems: 'center', cursor: 'pointer' },
         onClick: () => { closeAll(); setCurrentView('inicio'); },
@@ -43,12 +60,13 @@ function TopNav() {
         React.createElement('img', {
           src: 'assets/logotipo-color.png',
           alt: 'CESEA Formación',
-          style: { height: 34, width: 'auto', display: 'block' },
+          style: { height: isSmall ? 26 : 34, width: 'auto', display: 'block' },
           onError: e => { e.target.style.display = 'none'; },
         }),
       ),
 
-      React.createElement('div', { style: { display: 'flex', gap: 2 } },
+      // Items inline (solo desktop)
+      !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
         ...NAV_ITEMS.map(item => {
           const active = currentView === item.id;
           return React.createElement('button', {
@@ -73,6 +91,37 @@ function TopNav() {
             }),
           );
         }),
+      ),
+
+      // Drawer móvil (overlay full-width debajo del nav)
+      isSmall && showMenu && React.createElement('div', {
+        style: { position: 'fixed', top: 64, left: 0, right: 0, bottom: 0, background: 'rgba(15,16,32,0.4)', zIndex: 95 },
+        onClick: () => setShowMenu(false),
+      },
+        React.createElement('div', {
+          onClick: e => e.stopPropagation(),
+          style: { background: '#fff', borderBottom: '1px solid #eceef4', padding: '14px 12px 20px', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(15,16,32,0.1)' },
+        },
+          ...NAV_ITEMS.map(item => {
+            const active = currentView === item.id;
+            return React.createElement('button', {
+              key: item.id,
+              onClick: () => { setCurrentView(item.id); setShowMenu(false); },
+              style: {
+                width: '100%', padding: '13px 14px', borderRadius: 10, border: 'none',
+                background: active ? `${COLORS.orange}14` : 'transparent',
+                color: active ? COLORS.orange : COLORS.dark,
+                fontFamily: 'Lato', fontSize: 14, fontWeight: active ? 700 : 600,
+                cursor: 'pointer', textAlign: 'left',
+                display: 'flex', alignItems: 'center', gap: 12,
+                marginBottom: 4,
+              },
+            },
+              React.createElement('span', { style: { fontSize: 16, width: 22, textAlign: 'center', color: active ? COLORS.orange : COLORS.textLight } }, item.icon),
+              item.label,
+            );
+          }),
+        ),
       ),
     ),
 
@@ -114,7 +163,7 @@ function TopNav() {
         React.createElement('button', {
           onClick: () => { setShowProfile(!showProfile); setShowNotif(false); },
           style: {
-            display: 'flex', alignItems: 'center', gap: 10, padding: '4px 8px 4px 4px',
+            display: 'flex', alignItems: 'center', gap: 10, padding: isSmall ? 4 : '4px 8px 4px 4px',
             borderRadius: 9, background: '#f4f5f9', border: '1px solid #eceef4', cursor: 'pointer',
           }
         },
@@ -125,11 +174,11 @@ function TopNav() {
               color: '#fff', fontWeight: 800, fontSize: 12, fontFamily: 'Bricolage Grotesque',
             }
           }, user?.initials || 'AG'),
-          React.createElement('div', { style: { textAlign: 'left', lineHeight: 1.15 } },
+          !isSmall && React.createElement('div', { style: { textAlign: 'left', lineHeight: 1.15 } },
             React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, fontWeight: 700, color: COLORS.dark, maxWidth: 130, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, (user?.name || '').split(' ').slice(0, 2).join(' ')),
             React.createElement('div', { style: { fontSize: 10, color: COLORS.textLight, fontFamily: 'Lato' } }, user?.role),
           ),
-          React.createElement('span', { style: { color: COLORS.textLight, fontSize: 10, marginLeft: 2 } }, '▾'),
+          !isSmall && React.createElement('span', { style: { color: COLORS.textLight, fontSize: 10, marginLeft: 2 } }, '▾'),
         ),
 
         showProfile && React.createElement('div', {
@@ -237,7 +286,7 @@ function DashboardView() {
     ),
 
     // ── KPI cards sobrias
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 22 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 22 } },
       ...KPIS.map((k, i) => React.createElement(Mc, {
         key: k.label,
         ...(motion ? { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: i * 0.04 } } : {}),
@@ -256,7 +305,7 @@ function DashboardView() {
     ),
 
     // ── Main grid
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20, alignItems: 'start' } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, alignItems: 'start' } },
       React.createElement('div', null, React.createElement(SwipeStack)),
       React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
         React.createElement(MiniCalendarWidget),
@@ -426,7 +475,7 @@ function ProfileView() {
     // Stats row
     React.createElement(Mc, {
       ...(motion ? { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.1 } } : {}),
-      style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }
+      style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }
     },
       ...[
         { label: 'Horas impartidas',   value: totalHours + 'h', color: COLORS.cyan    },

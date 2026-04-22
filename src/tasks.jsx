@@ -356,7 +356,7 @@ function TaskContract({ task, signTask, uploadSignedPdf, setTaskStatus }) {
     ),
 
     // Acciones de contrato
-    !signing && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 } },
+    !signing && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 } },
       React.createElement('button', {
         onClick: downloadContract,
         style: { padding: '12px 14px', borderRadius: 9, background: '#fff', color: COLORS.text, border: '1px solid #e4e7ef', fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 12, cursor: 'pointer' },

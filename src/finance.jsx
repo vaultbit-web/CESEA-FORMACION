@@ -76,7 +76,7 @@ function HoursView() {
     React.createElement('div', { style: { height: 24 } }),
 
     // ─── Stat cards
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 } },
       ...STATS.map((s, i) => React.createElement(Mc, {
         key: s.label,
         ...(window.Motion ? { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { delay: i * 0.06 } } : {}),
@@ -91,7 +91,7 @@ function HoursView() {
     ),
 
     // ─── Chart + area breakdown
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '360px 1fr', gap: 20, marginBottom: 24 } },
+    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 24 } },
 
       // Evolución mensual de horas
       React.createElement('div', {
@@ -178,8 +178,8 @@ function HoursView() {
             React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 15, color: COLORS.dark } }, 'Sin registros'),
             React.createElement('div', { style: { fontSize: 13, marginTop: 4, fontFamily: 'Lato' } }, 'Ajusta los filtros para ver más horas.'),
           )
-        : React.createElement('div', { style: { overflowX: 'auto' } },
-            React.createElement('table', { style: { width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' } },
+        : React.createElement('div', { style: { overflowX: 'auto', WebkitOverflowScrolling: 'touch' } },
+            React.createElement('table', { style: { width: '100%', minWidth: 640, borderCollapse: 'separate', borderSpacing: '0 8px' } },
               React.createElement('thead', null,
                 React.createElement('tr', null,
                   ...['Ref.', 'Formación', 'Área', 'Fecha', 'Horas', 'Modalidad', 'Estado'].map(h =>

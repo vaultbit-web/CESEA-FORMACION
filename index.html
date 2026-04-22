@@ -35,6 +35,41 @@
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in-up { animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+    /* ─── Responsive global overrides ────────────────────────────────────────
+       Los estilos inline ganan especificidad; usamos !important en media queries
+       para forzar los ajustes mínimos estructurales (padding, tipografía,
+       scroll horizontal en tablas). Los componentes deciden layouts mayores
+       vía el hook useViewport. */
+
+    /* Scroll horizontal para tablas en móvil */
+    .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-wrap table { min-width: 560px; }
+
+    /* Target el main del AppLayout / AlumnoLayout / AdminLayout */
+    @media (max-width: 1023px) {
+      main { padding: 20px 16px 40px !important; }
+    }
+    @media (max-width: 639px) {
+      main { padding: 14px 10px 32px !important; }
+      /* Titulares: reducir tamaño */
+      h1 { font-size: 22px !important; letter-spacing: -0.3px !important; }
+      h2 { font-size: 20px !important; }
+      /* Botones más compactos */
+      button { font-size: 12px; }
+      /* Cards con padding más ajustado */
+      [style*="padding: 22px"], [style*="padding: 24px"], [style*="padding: 28px"] {
+        padding: 16px !important;
+      }
+    }
+
+    /* Imágenes responsive por defecto */
+    img { max-width: 100%; height: auto; }
+
+    /* Inputs/selects mínimo 16px en móvil (evita zoom iOS) */
+    @media (max-width: 639px) {
+      input, select, textarea { font-size: 16px !important; }
+    }
+
     /* Loader */
     #loader { position: fixed; inset: 0; background: #f4f5f9; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s; }
     #loader.hidden { opacity: 0; pointer-events: none; }

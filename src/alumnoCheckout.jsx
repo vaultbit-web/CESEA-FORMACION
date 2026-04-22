@@ -120,7 +120,7 @@ function AlumnoCheckoutModal() {
       step === 'form' && React.createElement('div', null,
         // Método de pago
         React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: theme.textLight, letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 10 } }, 'Método de pago'),
-        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 20 } },
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginBottom: 20 } },
           methodOptions.map(m => React.createElement('button', {
             key: m.id, type: 'button',
             onClick: () => setMethod(m.id),

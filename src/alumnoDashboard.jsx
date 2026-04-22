@@ -11,6 +11,8 @@ function AlumnoDashboardView() {
     user, courses, enrollments, diplomas, jobs, applications, badges,
     theme, setCurrentView, setDetailCourseId, advanceProgress,
   } = React.useContext(AppContext);
+  const vp = window.useViewport ? window.useViewport() : { isMobile: false, isSmall: false };
+  const isSmall = vp.isSmall;
 
   // ── Cálculos agregados ──
   const completed       = enrollments.filter(e => e.status === 'completado');
@@ -97,7 +99,7 @@ function AlumnoDashboardView() {
 
     // ── Grid principal: cursos en progreso | panel lateral ──
     React.createElement('div', {
-      style: { display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 18 },
+      style: { display: 'grid', gridTemplateColumns: isSmall ? '1fr' : 'minmax(0, 2fr) minmax(0, 1fr)', gap: isSmall ? 14 : 18 },
     },
       // ── Left column: cursos en progreso ──
       React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 14 } },

@@ -86,9 +86,12 @@ function AlumnoTopNav() {
   const [showProfile, setShowProfile] = React.useState(false);
   const [showNotif,   setShowNotif]   = React.useState(false);
   const [searchOpen,  setSearchOpen]  = React.useState(false);
+  const [showMenu,    setShowMenu]    = React.useState(false);
+  const vp = window.useViewport ? window.useViewport() : { isSmall: false };
+  const isSmall = vp.isSmall;
 
   const unread = (notifications || []).filter(n => !n.read).length;
-  const closeAll = () => { setShowProfile(false); setShowNotif(false); };
+  const closeAll = () => { setShowProfile(false); setShowNotif(false); setShowMenu(false); };
 
   // Atajo Cmd/Ctrl+K para búsqueda
   React.useEffect(() => {
@@ -107,26 +110,40 @@ function AlumnoTopNav() {
         position: 'sticky', top: 0, zIndex: 100,
         background: navTone,
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        padding: '0 40px', height: 64,
+        padding: isSmall ? '0 14px' : '0 40px', height: 64,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       },
     },
-      // ── Izquierda: logo + nav items ──
-      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 28 } },
+      // ── Izquierda: (hamburger) + logo + nav items ──
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: isSmall ? 10 : 28 } },
+        // Hamburger solo móvil/tablet
+        isSmall && React.createElement('button', {
+          onClick: () => { setShowMenu(!showMenu); setShowProfile(false); setShowNotif(false); },
+          'aria-label': 'Abrir menú',
+          style: {
+            width: 38, height: 38, borderRadius: 10, background: showMenu ? 'rgba(244,120,9,0.2)' : 'transparent',
+            border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer',
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 4, padding: 0,
+          },
+        },
+          React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+          React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+          React.createElement('span', { style: { width: 16, height: 2, background: '#fff', borderRadius: 2 } }),
+        ),
         React.createElement('div', {
           style: { display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' },
           onClick: () => { closeAll(); setCurrentView('inicio'); },
         },
           React.createElement('img', {
             src: 'assets/logotipo-blanco.png', alt: 'CESEA',
-            style: { height: 30, width: 'auto' },
+            style: { height: isSmall ? 26 : 30, width: 'auto' },
             onError: e => { e.target.style.display = 'none'; },
           }),
-          React.createElement('span', {
+          !isSmall && React.createElement('span', {
             style: { fontFamily: 'Bricolage Grotesque', fontSize: 9.5, color: 'rgba(255,255,255,0.55)', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 700 },
           }, 'Alumnado'),
         ),
-        React.createElement('div', { style: { display: 'flex', gap: 2 } },
+        !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
           NAV_ITEMS.map(item => {
             const activeMain = currentView === item.id ||
               (item.id === 'catalogo' && currentView === 'detalle-curso');
@@ -148,6 +165,37 @@ function AlumnoTopNav() {
               item.label,
             );
           }),
+        ),
+
+        // Drawer móvil
+        isSmall && showMenu && React.createElement('div', {
+          style: { position: 'fixed', top: 64, left: 0, right: 0, bottom: 0, background: 'rgba(15,16,32,0.55)', zIndex: 95 },
+          onClick: () => setShowMenu(false),
+        },
+          React.createElement('div', {
+            onClick: e => e.stopPropagation(),
+            style: { background: navTone, padding: '14px 12px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(0,0,0,0.4)' },
+          },
+            ...NAV_ITEMS.map(item => {
+              const activeMain = currentView === item.id || (item.id === 'catalogo' && currentView === 'detalle-curso');
+              return React.createElement('button', {
+                key: item.id,
+                onClick: () => { setCurrentView(item.id); setShowMenu(false); },
+                style: {
+                  width: '100%', padding: '13px 14px', borderRadius: 10, border: 'none',
+                  background: activeMain ? 'rgba(244,120,9,0.18)' : 'transparent',
+                  color: activeMain ? COLORS.yellow : 'rgba(255,255,255,0.9)',
+                  fontFamily: 'Lato', fontSize: 14, fontWeight: activeMain ? 700 : 600,
+                  cursor: 'pointer', textAlign: 'left',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  marginBottom: 4,
+                },
+              },
+                React.createElement('span', { style: { fontSize: 15, width: 22, textAlign: 'center', opacity: activeMain ? 1 : 0.7 } }, item.icon),
+                item.label,
+              );
+            }),
+          ),
         ),
       ),
 

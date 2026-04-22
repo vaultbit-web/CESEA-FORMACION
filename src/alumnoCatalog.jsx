@@ -84,7 +84,7 @@ function AlumnoCatalogView() {
       style: {
         background: theme.surface, border: `1px solid ${theme.border}`,
         borderRadius: 14, padding: 16, marginBottom: 18,
-        display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 10,
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10,
         boxShadow: theme.cardShadow,
       },
     },
