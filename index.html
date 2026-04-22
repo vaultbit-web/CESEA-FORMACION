@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CESEA Formación — Plataforma</title>
+
+  <!-- CSP: refine before production — 'unsafe-eval' required by Babel standalone -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Lato:wght@300;400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Lato', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+    body { background: #f4f5f9; overflow-x: hidden; transition: background 0.25s; }
+    body.dark { background: #0b0c1a; }
+    ::selection { background: rgba(244,120,9,0.14); }
+    input:focus, textarea:focus, select:focus { border-color: #f47809 !important; box-shadow: 0 0 0 3px rgba(244,120,9,0.1) !important; }
+    button { transition: transform 0.12s, opacity 0.12s, box-shadow 0.18s; }
+    button:active:not(:disabled) { transform: scale(0.96); }
+    button:disabled { cursor: not-allowed; }
+    .row-hover:hover { background: #f4f5f9 !important; }
+    body.dark .row-hover:hover { background: #15172d !important; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    body.dark ::-webkit-scrollbar-thumb { background: #2a2d4a; }
+    table { border-collapse: separate; border-spacing: 0 8px; }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in-up { animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* Loader */
+    #loader { position: fixed; inset: 0; background: #f4f5f9; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s; }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #fcad00, #35a9cd); animation: pulse 1s infinite ease-in-out; margin: 0 4px; }
+    .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+    .loader-dot:nth-child(3) { animation-delay: 0.30s; }
+    @keyframes pulse { 0%,100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
+  </style>
+
+  <!-- Dependencies -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/framer-motion@11.0.3/dist/framer-motion.js" crossorigin="anonymous"></script>
+  <script>window.Motion = window["framer-motion"] || window.Motion || {};</script>
+
+  <!-- PDF generation (diplomas) — html2canvas + jsPDF.
+       FILEMAKER: en producción, los diplomas los entrega FM Server desde el
+       contenedor FM del registro Diplomas. Estas libs son solo del prototipo. -->
+  <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="loader">
+    <div style="text-align:center">
+      <div style="display:flex;margin-bottom:14px">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:#8b8fa3;letter-spacing:2px;text-transform:uppercase">cesea formación</div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- Orden importa: data → widgets → auth → vistas por rol → layouts → admin → app -->
+  <script type="text/babel" src="src/mockData.jsx"></script>
+  <script type="text/babel" src="src/attendanceBus.jsx"></script>
+  <script type="text/babel" src="src/widgets.jsx"></script>
+  <script type="text/babel" src="src/auth.jsx"></script>
+
+  <!-- Vistas formador -->
+  <script type="text/babel" src="src/compliance.jsx"></script>
+  <script type="text/babel" src="src/swipe.jsx"></script>
+  <script type="text/babel" src="src/calendar.jsx"></script>
+  <script type="text/babel" src="src/finance.jsx"></script>
+  <script type="text/babel" src="src/bitacora.jsx"></script>
+  <script type="text/babel" src="src/tasks.jsx"></script>
+  <script type="text/babel" src="src/attendance.jsx"></script>
+  <script type="text/babel" src="src/layout.jsx"></script>
+
+  <!-- Vistas superadmin -->
+  <script type="text/babel" src="src/admin.jsx"></script>
+
+  <!-- Vistas alumno -->
+  <script type="text/babel" src="src/alumnoDashboard.jsx"></script>
+  <script type="text/babel" src="src/alumnoCatalog.jsx"></script>
+  <script type="text/babel" src="src/alumnoCourseDetail.jsx"></script>
+  <script type="text/babel" src="src/alumnoMyCourses.jsx"></script>
+  <script type="text/babel" src="src/alumnoDiplomas.jsx"></script>
+  <script type="text/babel" src="src/alumnoJobs.jsx"></script>
+  <script type="text/babel" src="src/alumnoProfile.jsx"></script>
+  <script type="text/babel" src="src/alumnoCheckout.jsx"></script>
+  <script type="text/babel" src="src/alumnoCalendar.jsx"></script>
+  <script type="text/babel" src="src/alumnoFaq.jsx"></script>
+  <script type="text/babel" src="src/alumnoOnboarding.jsx"></script>
+  <script type="text/babel" src="src/alumnoLayout.jsx"></script>
+
+  <script type="text/babel">
+    // FILEMAKER: Router unificado por rol.
+    //   If [ IsEmpty(Get(AccountName)) or Get(AccountName) = "[Guest]" ]
+    //     Go to Layout [ "Login_Global" ]
+    //   Else If [ Get(PrivilegeSetName) = "priv_Superadmin" ]
+    //     Go to Layout [ "Admin_Dashboard" ]
+    //   Else If [ Get(PrivilegeSetName) = "priv_Alumno" ]
+    //     Go to Layout [ "Alumno_Dashboard" ]
+    //   Else
+    //     Go to Layout [ "Formador_Dashboard" ]
+    //   End If
+    function App() {
+      const { user } = React.useContext(AppContext);
+      if (!user)                                return React.createElement(AuthScreens);
+      if (user.roleType === 'superadmin')       return React.createElement(AdminLayout);
+      if (user.roleType === 'alumno')           return React.createElement(AlumnoLayout);
+      return React.createElement(AppLayout);    // formador por defecto
+    }
+
+    // ErrorBoundary global: captura crashes y los muestra en pantalla en vez
+    // de dejar la app en blanco — crítico para depuración en producción.
+    class ErrorBoundary extends React.Component {
+      constructor(p){ super(p); this.state = { err: null, info: null }; }
+      static getDerivedStateFromError(err){ return { err }; }
+      componentDidCatch(err, info){ console.error('[ErrorBoundary]', err, info); this.setState({ err, info }); }
+      render(){
+        if (!this.state.err) return this.props.children;
+        return React.createElement('div', {
+          style: { minHeight: '100vh', background: '#fff', color: '#1a1a2e', padding: 40, fontFamily: 'Lato, sans-serif', maxWidth: 900, margin: '0 auto' }
+        },
+          React.createElement('h1', { style: { fontFamily: 'Bricolage Grotesque, sans-serif', fontSize: 28, color: '#e10c11', marginBottom: 10 } }, '⚠ Error en la aplicación'),
+          React.createElement('p', { style: { fontSize: 14, color: '#555', marginBottom: 18 } }, 'La plataforma ha encontrado un error inesperado. Recarga con Ctrl+Shift+R. Si persiste, reporta este detalle:'),
+          React.createElement('pre', { style: { background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: 18, borderRadius: 10, overflowX: 'auto', fontSize: 12, lineHeight: 1.5 } }, String(this.state.err && this.state.err.stack || this.state.err)),
+          React.createElement('button', {
+            onClick: () => { this.setState({ err: null, info: null }); window.location.reload(); },
+            style: { marginTop: 16, padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#fcad00,#f47809,#e10c11)', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer', fontFamily: 'Bricolage Grotesque, sans-serif' }
+          }, 'Recargar la plataforma')
+        );
+      }
+    }
+
+    // Capturador de errores fuera del árbol React (scripts async, etc.)
+    window.addEventListener('error', (e) => {
+      console.error('[window.error]', e.error || e.message, e.filename, e.lineno);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('[unhandledrejection]', e.reason);
+    });
+
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      React.createElement(ErrorBoundary, null,
+        React.createElement(AppProvider, null, React.createElement(App))
+      )
+    );
+
+    // Hide loader once React renders into #root
+    (function waitForRender() {
+      const l = document.getElementById('loader');
+      if (!l) return;
+      const root = document.getElementById('root');
+      if (root && root.children.length > 0) {
+        l.classList.add('hidden');
+        setTimeout(() => l.remove(), 450);
+      } else {
+        setTimeout(waitForRender, 80);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "name": "cesea-formacion",
+  "version": "1.0.0",
+  "description": "Plataforma de formación CESEA (WISHIT CSA SUPPLY SL) — alumnos, formadores y superadministración en una sola app, sin build step.",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "serve": "npx serve . -l 3000",
+    "test:parse": "node -e \"const b=require('@babel/core'),fs=require('fs'),p=require('path');let e=0;fs.readdirSync('src').filter(f=>f.endsWith('.jsx')).forEach(f=>{try{b.transformSync(fs.readFileSync(p.join('src',f),'utf8'),{filename:f,presets:[['@babel/preset-react',{}]]});console.log('OK',f)}catch(x){e++;console.error('ERR',f,x.message.split('\\n')[0])}});process.exit(e?1:0)\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaultbit-web/CESEA-FORMACION.git"
+  },
+  "keywords": [
+    "cesea",
+    "formacion",
+    "plataforma",
+    "alumnado",
+    "formadores",
+    "superadmin",
+    "filemaker",
+    "react",
+    "sin-build"
+  ],
+  "author": "WISHIT CSA SUPPLY SL",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/plugin-syntax-jsx": "^7.28.6",
+    "@babel/plugin-transform-react-jsx": "^7.28.6",
+    "@babel/preset-react": "^7.28.5",
+    "jsdom": "^29.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

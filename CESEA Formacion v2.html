@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CESEA Formación — Plataforma</title>
+
+  <!-- Content Security Policy (tighten before production) -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none';">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-family: 'Lato', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+    body { background: #f4f5f9; overflow-x: hidden; }
+
+    /* Selection */
+    ::selection { background: rgba(244,120,9,0.14); }
+
+    /* Focus rings */
+    input:focus, textarea:focus, select:focus {
+      border-color: #f47809 !important;
+      box-shadow: 0 0 0 3px rgba(244,120,9,0.1) !important;
+    }
+
+    /* Smooth button press */
+    button { transition: transform 0.12s, opacity 0.12s, box-shadow 0.18s; }
+    button:active:not(:disabled) { transform: scale(0.96); }
+    button:disabled { cursor: not-allowed; }
+
+    /* Subtle hover on interactive rows */
+    .row-hover:hover { background: #f4f5f9 !important; }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar       { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+    /* Table base */
+    table { border-collapse: separate; border-spacing: 0 8px; }
+
+    /* Shake animation for auth */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-7px); }
+      40%,80%  { transform: translateX(7px); }
+    }
+
+    /* Loading state */
+    #loader {
+      position: fixed; inset: 0; background: #f4f5f9;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.4s;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: linear-gradient(135deg, #fcad00, #35a9cd);
+      animation: pulse 1s infinite ease-in-out;
+      margin: 0 4px;
+    }
+    .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+    .loader-dot:nth-child(3) { animation-delay: 0.30s; }
+    @keyframes pulse { 0%,100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
+  </style>
+
+  <!-- Dependencies via CDN with SRI integrity where available -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+    integrity="sha384-5j+0EYiZ8XbX+gQkSM65B+mOUwG7/JHfVdR3tBNFlAKbUV+EHZD0z77Nef3GQyB"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+    integrity="sha384-kFPpWbAF3zV1F+e82+02YOlN5GHXFMgNVTD4vDFHePjHpI9nOVUOW+0F4XQYRMQ"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+    integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/framer-motion@11.0.3/dist/framer-motion.js" crossorigin="anonymous"></script>
+  <script>window.Motion = window["framer-motion"] || window.Motion || {};</script>
+</head>
+<body>
+
+  <!-- Loading splash -->
+  <div id="loader">
+    <div style="text-align:center">
+      <div style="display:flex;margin-bottom:14px">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:#8b8fa3;letter-spacing:2px;text-transform:uppercase">cesea formación</div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- Component scripts — order matters: data → components → layout → app -->
+  <script type="text/babel" src="src/mockData.jsx"></script>
+  <script type="text/babel" src="src/auth.jsx"></script>
+  <script type="text/babel" src="src/compliance.jsx"></script>
+  <script type="text/babel" src="src/swipe.jsx"></script>
+  <script type="text/babel" src="src/widgets.jsx"></script>
+  <script type="text/babel" src="src/calendar.jsx"></script>
+  <script type="text/babel" src="src/finance.jsx"></script>
+  <script type="text/babel" src="src/layout.jsx"></script>
+
+  <script type="text/babel">
+    function App() {
+      const { user } = React.useContext(AppContext);
+      return user
+        ? React.createElement(AppLayout)
+        : React.createElement(AuthScreens);
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      React.createElement(AppProvider, null, React.createElement(App))
+    );
+
+    // Hide loader once React renders into #root
+    (function waitForRender() {
+      const l = document.getElementById('loader');
+      if (!l) return;
+      const root = document.getElementById('root');
+      if (root && root.children.length > 0) {
+        l.classList.add('hidden');
+        setTimeout(() => l.remove(), 450);
+      } else {
+        setTimeout(waitForRender, 80);
+      }
+    })();
+  </script>
+</body>
+</html>
