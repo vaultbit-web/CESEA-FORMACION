@@ -20,11 +20,14 @@
 const { motion: adminMotion, AnimatePresence: AdminAP } = window.Motion || {};
 
 const ADMIN_NAV_ITEMS = [
-  { id: 'inicio',       label: 'Panel admin',      icon: '▤' },
-  { id: 'cursos',       label: 'Cursos',           icon: '▦' },
-  { id: 'solicitudes',  label: 'Solicitudes',      icon: '◉' },
-  { id: 'horas',        label: 'Validar horas',    icon: '◷' },
-  { id: 'formadores',   label: 'Formadores',       icon: '◈' },
+  { id: 'inicio',         label: 'Panel admin',      icon: '▤' },
+  { id: 'cursos',         label: 'Cursos',           icon: '▦' },
+  { id: 'solicitudes',    label: 'Solicitudes',      icon: '◉' },
+  { id: 'horas',          label: 'Validar horas',    icon: '◷' },
+  { id: 'formadores',     label: 'Formadores',       icon: '◈' },
+  { id: 'alumnos',        label: 'Alumnos',          icon: '◌' },
+  { id: 'ofertas-empleo', label: 'Ofertas empleo',   icon: '★' },
+  { id: 'configuracion',  label: 'Configuración',    icon: '⚙' },
 ];
 
 // ─── Top Nav (admin) ──────────────────────────────────────────────────────────
@@ -231,16 +234,24 @@ function AdminTopNav() {
 
 // ─── App Shell (admin) ────────────────────────────────────────────────────────
 function AdminLayout() {
-  const { currentView } = React.useContext(AppContext);
+  const { currentView, toast } = React.useContext(AppContext);
+  // Router admin con fallback: si currentView no coincide, vuelve al dashboard
+  const KNOWN = ['inicio', 'cursos', 'solicitudes', 'horas', 'formadores', 'alumnos', 'ofertas-empleo', 'configuracion'];
+  const safeView = KNOWN.includes(currentView) ? currentView : 'inicio';
   return React.createElement('div', { style: { minHeight: '100vh', background: '#f6f7fb' } },
     React.createElement(AdminTopNav),
     React.createElement('main', { style: { padding: '28px 40px 56px', maxWidth: 1360, margin: '0 auto' } },
-      currentView === 'inicio'      && React.createElement(AdminDashboardView),
-      currentView === 'cursos'      && React.createElement(AdminCoursesView),
-      currentView === 'solicitudes' && React.createElement(AdminRequestsView),
-      currentView === 'horas'       && React.createElement(AdminHoursView),
-      currentView === 'formadores'  && React.createElement(AdminTrainersView),
+      safeView === 'inicio'         && React.createElement(AdminDashboardView),
+      safeView === 'cursos'         && React.createElement(AdminCoursesView),
+      safeView === 'solicitudes'    && React.createElement(AdminRequestsView),
+      safeView === 'horas'          && React.createElement(AdminHoursView),
+      safeView === 'formadores'     && React.createElement(AdminTrainersView),
+      safeView === 'alumnos'        && React.createElement(AdminAlumnosView),
+      safeView === 'ofertas-empleo' && React.createElement(AdminOfertasView),
+      safeView === 'configuracion'  && React.createElement(AdminConfigView),
     ),
+    // Toast global (reutiliza el widget)
+    toast && window.Toast && React.createElement(window.Toast, { toast }),
   );
 }
 

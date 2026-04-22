@@ -490,6 +490,43 @@ const MOCK_FAQ = [
 ];
 
 // ─── AppContext + AppProvider unificado ──────────────────────────────────────
+// ─── Alumnos completos (vista superadmin + formador) ────────────────────────
+// FILEMAKER: Tabla Alumnos con portal completo para [priv_Superadmin].
+//   Los formadores solo ven alumnos inscritos en SUS cursos (filtrado por
+//   Inscripciones_Alumno::id_curso ⨯ Cursos::id_formador).
+const MOCK_STUDENTS_ALL = [
+  // Los 2 alumnos demo (reutilizan MOCK_STUDENT y MOCK_STUDENT_B)
+  { id: 'A-1001', name: 'María López Serrano',  email: 'maria.lopez@alumno.com',   sector: 'dental',  status: 'activo',    joinDate: '2025-03-12', coursesCount: 6, lastActivity: '2026-04-18', phone: '+34 611 222 333', location: 'Madrid' },
+  { id: 'A-1002', name: 'Javier Ruiz Márquez',  email: 'javier.ruiz@alumno.com',   sector: 'sanidad', status: 'activo',    joinDate: '2026-01-04', coursesCount: 2, lastActivity: '2026-04-15', phone: '+34 622 333 444', location: 'Valencia' },
+  // Alumnos adicionales para que la tabla admin sea representativa
+  { id: 'A-1003', name: 'Laura Sánchez Prieto', email: 'laura.sanchez@alumno.com', sector: 'sanidad', status: 'activo',    joinDate: '2025-09-22', coursesCount: 4, lastActivity: '2026-04-20', phone: '+34 633 444 555', location: 'Barcelona' },
+  { id: 'A-1004', name: 'Diego Fernández Polo', email: 'diego.fernandez@alumno.com', sector: 'sanidad', status: 'activo',   joinDate: '2025-06-10', coursesCount: 3, lastActivity: '2026-04-01', phone: '+34 644 555 666', location: 'Bilbao' },
+  { id: 'A-1005', name: 'Nuria Gómez Martín',   email: 'nuria.gomez@alumno.com',   sector: 'dental',  status: 'activo',    joinDate: '2024-11-18', coursesCount: 8, lastActivity: '2026-04-19', phone: '+34 655 666 777', location: 'Sevilla' },
+  { id: 'A-1006', name: 'Carlos Mateos Ibáñez', email: 'carlos.mateos@alumno.com', sector: 'sanidad', status: 'activo',    joinDate: '2024-08-02', coursesCount: 12, lastActivity: '2026-04-18', phone: '+34 666 777 888', location: 'Zaragoza' },
+  { id: 'A-1007', name: 'Isabel Torres Rivas',  email: 'isabel.torres@alumno.com', sector: 'dental',  status: 'inactivo',  joinDate: '2024-05-15', coursesCount: 1, lastActivity: '2025-10-03', phone: '+34 677 888 999', location: 'Málaga' },
+  { id: 'A-1008', name: 'Andrés Morales Luján', email: 'andres.morales@alumno.com',sector: 'sanidad', status: 'activo',    joinDate: '2025-12-01', coursesCount: 2, lastActivity: '2026-04-10', phone: '+34 688 999 000', location: 'Granada' },
+  { id: 'A-1009', name: 'Cristina Ayala Navas', email: 'cristina.ayala@alumno.com',sector: 'dental',  status: 'activo',    joinDate: '2026-02-14', coursesCount: 1, lastActivity: '2026-04-21', phone: '+34 699 000 111', location: 'Alicante' },
+  { id: 'A-1010', name: 'Pablo Herrera Soto',   email: 'pablo.herrera@alumno.com', sector: 'sanidad', status: 'pendiente', joinDate: '2026-04-18', coursesCount: 0, lastActivity: null,        phone: '+34 611 000 222', location: 'Santander' },
+];
+
+// ─── Reseñas enriquecidas (vista formador: valoraciones recibidas) ──────────
+// FILEMAKER: Vista calc join Valoraciones ⨯ Inscripciones_Alumno ⨯ Cursos.
+//   id_formador derivado del curso. Permite al formador ver todas las reseñas
+//   de sus cursos sin importar qué alumno las dejó.
+// courseId coincide con MOCK_COURSES; instructor se deriva de course.instructor.
+const MOCK_REVIEWS_BY_INSTRUCTOR = [
+  { id: 'RV-001', courseId: 1,  instructor: 'Aurora Martínez',      studentName: 'María López',    rating: 5, comment: 'Temario muy claro y ejercicios prácticos aplicables desde el primer día.', date: '2026-04-10' },
+  { id: 'RV-002', courseId: 4,  instructor: 'Ana García López',     studentName: 'Laura Sánchez',  rating: 5, comment: 'Ana transmite con pasión. Me ayudó a replantear protocolos en mi residencia.', date: '2026-04-08' },
+  { id: 'RV-003', courseId: 4,  instructor: 'Ana García López',     studentName: 'Diego Fernández',rating: 4, comment: 'Contenido sólido. Se agradecerían más casos del ámbito hospitalario.', date: '2026-04-02' },
+  { id: 'RV-004', courseId: 7,  instructor: 'Ana García López',     studentName: 'Nuria Gómez',    rating: 5, comment: 'El mejor curso de ACP que he hecho. Recomendadísimo.', date: '2026-03-28' },
+  { id: 'RV-005', courseId: 14, instructor: 'Luis Mendoza Vargas',  studentName: 'Carlos Mateos',  rating: 5, comment: 'Imprescindible. Cambia la forma de mirar el cuidado.', date: '2026-01-22' },
+  { id: 'RV-006', courseId: 22, instructor: 'Marta Ibáñez Reyes',   studentName: 'Isabel Torres',  rating: 4, comment: 'Ejercicios muy útiles para reuniones de equipo.', date: '2025-12-15' },
+  { id: 'RV-007', courseId: 33, instructor: 'Jorge Pascual Torres', studentName: 'Andrés Morales', rating: 5, comment: 'La profesora explica de maravilla. Recomendado al 100%.', date: '2025-09-10' },
+  { id: 'RV-008', courseId: 7,  instructor: 'Ana García López',     studentName: 'Cristina Ayala', rating: 5, comment: 'Muy profesional. Dinámica amena y útil.', date: '2026-03-15' },
+  { id: 'RV-009', courseId: 4,  instructor: 'Ana García López',     studentName: 'Pablo Herrera',  rating: 3, comment: 'Bueno, aunque el ritmo fue algo rápido para los perfiles menos técnicos.', date: '2026-02-28' },
+  { id: 'RV-010', courseId: 12, instructor: 'Ana García López',     studentName: 'María López',    rating: 5, comment: 'Me abrió los ojos. Skin care como herramienta profesional, no como frivolidad.', date: '2026-04-15' },
+];
+
 const AppContext = React.createContext();
 
 function AppProvider({ children }) {
@@ -526,13 +563,17 @@ function AppProvider({ children }) {
 
   // ── Estado SUPERADMIN ───────────────────────────────────────────────────────
   const [trainers, setTrainers]               = React.useState(MOCK_TRAINERS);
+  const [students, setStudents]               = React.useState(MOCK_STUDENTS_ALL);
   const [pendingRequests, setPendingRequests] = React.useState(MOCK_PENDING_REQUESTS);
   const [notifAdmin, setNotifAdmin]           = React.useState(MOCK_NOTIFICATIONS_ADMIN);
+  const [reviewsPublic]                       = React.useState(MOCK_REVIEWS_BY_INSTRUCTOR);
+  const [companyConfig, setCompanyConfig]     = React.useState(COMPANY);
 
   // ── Estado ALUMNO ───────────────────────────────────────────────────────────
   const [enrollments, setEnrollments]         = React.useState(MOCK_ENROLLMENTS);
   const [diplomas, setDiplomas]               = React.useState(MOCK_DIPLOMAS);
-  const [jobs]                                = React.useState(MOCK_JOB_OFFERS);
+  // jobs ahora mutable: el superadmin puede crear/editar/archivar ofertas
+  const [jobs, setJobs]                       = React.useState(MOCK_JOB_OFFERS);
   const [applications, setApplications]       = React.useState(MOCK_APPLICATIONS);
   const [reviews, setReviews]                 = React.useState(MOCK_REVIEWS);
   const [payments, setPayments]               = React.useState(MOCK_PAYMENTS);
@@ -697,6 +738,54 @@ function AppProvider({ children }) {
                     : user?.roleType === 'superadmin' ? markAllReadAdmin
                     : markAllReadFormador;
 
+  // ── Acciones superadmin: Alumnos CRUD ───────────────────────────────────────
+  // FILEMAKER: Scripts "Crear_Alumno", "Editar_Alumno", "Cambiar_Estado_Alumno".
+  //   En producción: New Record en tabla Alumnos con privilege [priv_Superadmin].
+  const createStudent = (data) => {
+    const id = 'A-' + Date.now();
+    setStudents(prev => [{
+      id, coursesCount: 0, lastActivity: null,
+      status: 'pendiente', joinDate: new Date().toISOString().slice(0, 10),
+      sector: 'dental', phone: '', location: '',
+      ...data,
+    }, ...prev]);
+    showToast('Alumno añadido correctamente');
+  };
+  const updateStudent = (id, patch) =>
+    setStudents(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
+  const setStudentStatus = (id, status) => updateStudent(id, { status });
+
+  // ── Acciones superadmin: Ofertas de empleo CRUD ────────────────────────────
+  // FILEMAKER: Scripts "Crear_Oferta", "Editar_Oferta", "Archivar_Oferta".
+  //   Los alumnos consumen esta misma tabla Ofertas_Empleo vía portal filtrado.
+  const createJobOffer = (data) => {
+    const id = 'J-' + Date.now();
+    setJobs(prev => [{
+      id, posted: new Date().toISOString().slice(0, 10),
+      sector: 'dental', modality: 'Presencial', hours: 'Jornada completa',
+      salary: '', location: '', desc: '', company: '', title: '',
+      status: 'activa',
+      ...data,
+    }, ...prev]);
+    showToast('Oferta publicada');
+  };
+  const updateJobOffer = (id, patch) =>
+    setJobs(prev => prev.map(j => j.id === id ? { ...j, ...patch } : j));
+  const archiveJobOffer = (id) => updateJobOffer(id, { status: 'archivada' });
+
+  // ── Acción superadmin: actualizar configuración de la organización ─────────
+  // FILEMAKER: Script "Actualizar_Config_Organizacion" — Modify Record en
+  //   tabla Organizacion (registro único) con [priv_Superadmin].
+  const updateCompanyConfig = (patch) => {
+    setCompanyConfig(prev => ({ ...prev, ...patch }));
+    showToast('Configuración actualizada');
+  };
+
+  // ── Acción alumno: marcar UNA notificación como leída ──────────────────────
+  // FILEMAKER: Script "Marcar_Notificacion_Leida" — Set Field notificacion.leida.
+  const markOneNotifRead = (id) =>
+    setNotifAlumno(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+
   return React.createElement(AppContext.Provider, {
     value: {
       // Shared
@@ -714,10 +803,13 @@ function AppProvider({ children }) {
       tasks, signTask, uploadSignedPdf, addTaskDeliverable, setTaskStatus,
       attendance, setStudentAttendance, addAttendanceRecord,
       // Superadmin
-      trainers, pendingRequests,
+      trainers, students, pendingRequests, reviewsPublic,
       createCourse, updateCourse, archiveCourse,
       approveRequest, rejectRequest,
       validateHours, rejectHours, setTrainerStatus,
+      createStudent, updateStudent, setStudentStatus,
+      createJobOffer, updateJobOffer, archiveJobOffer,
+      companyConfig, updateCompanyConfig,
       // Alumno
       enrollments, diplomas, jobs, applications, reviews, payments, favorites,
       badges: BADGES, testimonials: MOCK_TESTIMONIALS, stats: MOCK_STATS, faq: MOCK_FAQ,
@@ -725,6 +817,7 @@ function AppProvider({ children }) {
       toggleFavorite, submitReview,
       applyToJob, withdrawApplication,
       updateProfile, uploadCV, validateDiscount,
+      markOneNotifRead,
       checkoutCourse, setCheckoutCourse, detailCourseId, setDetailCourseId,
       onboardingDone, completeOnboarding, cookiesAccepted, acceptCookies,
     },

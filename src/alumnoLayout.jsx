@@ -13,13 +13,15 @@
 const { motion: layMotion, AnimatePresence: layAP } = window.Motion || {};
 
 const NAV_ITEMS = [
-  { id: 'inicio',       label: 'Inicio',       icon: '▤' },
-  { id: 'catalogo',     label: 'Catálogo',     icon: '▦' },
-  { id: 'mis-cursos',   label: 'Mis cursos',   icon: '◈' },
-  { id: 'diplomas',     label: 'Diplomas',     icon: '◆' },
-  { id: 'empleo',       label: 'Empleo',       icon: '★' },
-  { id: 'calendario',   label: 'Agenda',       icon: '◷' },
-  { id: 'ayuda',        label: 'Ayuda',        icon: '?' },
+  { id: 'inicio',          label: 'Inicio',         icon: '▤' },
+  { id: 'catalogo',        label: 'Catálogo',       icon: '▦' },
+  { id: 'mis-cursos',      label: 'Mis cursos',     icon: '◈' },
+  { id: 'diplomas',        label: 'Diplomas',       icon: '◆' },
+  { id: 'empleo',          label: 'Empleo',         icon: '★' },
+  { id: 'pagos',           label: 'Pagos',          icon: '€' },
+  { id: 'notificaciones',  label: 'Notificaciones', icon: '◔' },
+  { id: 'calendario',      label: 'Agenda',         icon: '◷' },
+  { id: 'ayuda',           label: 'Ayuda',          icon: '?' },
 ];
 
 // ─── Search Modal (global) ──────────────────────────────────────────────────
@@ -321,6 +323,8 @@ function AlumnoLayout() {
       case 'mis-cursos':     return React.createElement(AlumnoMyCoursesView);
       case 'diplomas':       return React.createElement(AlumnoDiplomasView);
       case 'empleo':         return React.createElement(AlumnoJobsView);
+      case 'pagos':          return React.createElement(AlumnoPagosView);
+      case 'notificaciones': return React.createElement(AlumnoNotificacionesView);
       case 'perfil':         return React.createElement(AlumnoProfileView);
       case 'calendario':     return React.createElement(AlumnoCalendarView);
       case 'ayuda':          return React.createElement(AlumnoFAQView);
