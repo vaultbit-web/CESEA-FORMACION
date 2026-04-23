@@ -10,7 +10,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 function AdminConfigView() {
-  const { companyConfig, updateCompanyConfig, showToast } = React.useContext(AppContext);
+  const { companyConfig, updateCompanyConfig, showToast, tipologias, addTipologia, removeTipologia } = React.useContext(AppContext);
+  const [newTipologia, setNewTipologia] = React.useState('');
   const [form, setForm] = React.useState({
     legalName:    companyConfig?.legalName    || '',
     brandName:    companyConfig?.brandName    || '',
@@ -151,6 +152,36 @@ function AdminConfigView() {
             style: { accentColor: COLORS.orange, width: 18, height: 18, cursor: 'pointer' },
           }),
         )),
+      ),
+
+      // ── Tarjeta Tipologías de formación ──
+      // FILEMAKER: Value List "Tipologias_Formacion". Alimenta dropdown del
+      //   formador ("Añadir propuesta formativa") y multiselect del perfil.
+      React.createElement('div', {
+        style: { background: '#fff', border: '1px solid #eceef4', borderRadius: 14, padding: 22, boxShadow: '0 4px 18px rgba(15,16,32,0.04)' },
+      },
+        React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 16, fontWeight: 800, color: COLORS.dark, marginBottom: 6 } }, '◆ Tipologías de formación'),
+        React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: COLORS.textLight, marginBottom: 14 } }, 'Catálogo común de tipologías. Se usa en el formulario "Añadir propuesta formativa" del formador y en el multiselect de su perfil.'),
+        React.createElement('div', { style: { display: 'flex', gap: 8, marginBottom: 14 } },
+          React.createElement('input', { value: newTipologia, onChange: e => setNewTipologia(e.target.value), placeholder: 'Nueva tipología…', style: { ...field } }),
+          React.createElement('button', {
+            onClick: () => { const v = newTipologia.trim(); if (v) { addTipologia(v); setNewTipologia(''); showToast('Tipología añadida'); } },
+            style: { padding: '10px 16px', borderRadius: 9, background: COLORS.gradient, color: '#fff', border: 'none', fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' },
+          }, '+ Añadir'),
+        ),
+        React.createElement('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+          ...(tipologias || []).map(t => React.createElement('span', {
+            key: t,
+            style: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 7, background: `${COLORS.orange}0d`, color: COLORS.orange, fontFamily: 'Lato', fontSize: 11, fontWeight: 700, border: `1px solid ${COLORS.orange}30` },
+          },
+            t,
+            React.createElement('button', {
+              onClick: () => removeTipologia(t),
+              style: { background: 'none', border: 'none', color: COLORS.orange, cursor: 'pointer', fontSize: 13, lineHeight: 1, padding: 0 },
+              title: 'Eliminar tipología',
+            }, '×'),
+          )),
+        ),
       ),
 
       // ── Tarjeta Legal ──

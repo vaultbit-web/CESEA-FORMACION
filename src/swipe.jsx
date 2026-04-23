@@ -1,6 +1,134 @@
 // ─── Swipe Cards ──────────────────────────────────────────────────────────────
 const { motion, AnimatePresence, useMotionValue, useTransform } = window.Motion || {};
 
+// ─── Modal: Proponer fechas al solicitar plaza ───────────────────────────────
+// FILEMAKER: Layout modal "Propuesta_Plaza_Formador". Genera un registro en
+//   Solicitudes con type="new" y el JSON de fechas propuestas.
+function ProposeDatesModal({ course, open, onClose, onSubmit }) {
+  const { courses, calendarEvents } = React.useContext(AppContext);
+  const initStart = course?.startDate || '';
+  const initEnd   = course?.endDate   || course?.startDate || '';
+  const [startDate, setStartDate] = React.useState(initStart);
+  const [endDate,   setEndDate]   = React.useState(initEnd);
+  const [numDays,   setNumDays]   = React.useState(1);
+  const [sessions,  setSessions]  = React.useState([{ day: initStart, from: '09:00', to: '14:00' }]);
+  const [note,      setNote]      = React.useState('');
+
+  React.useEffect(() => {
+    if (!open) return;
+    setStartDate(initStart);
+    setEndDate(initEnd);
+    setNumDays(1);
+    setSessions([{ day: initStart, from: '09:00', to: '14:00' }]);
+    setNote('');
+  }, [open, course]);
+
+  // Redimensiona la lista de sesiones al cambiar el nº de días
+  React.useEffect(() => {
+    setSessions(prev => {
+      const copy = [...prev];
+      while (copy.length < numDays) copy.push({ day: startDate, from: '09:00', to: '14:00' });
+      while (copy.length > numDays) copy.pop();
+      return copy;
+    });
+  }, [numDays, startDate]);
+
+  const isPresencial = course && course.modality !== 'Online';
+
+  // Construye string "D1, D2, D3 Mes Año" a partir de las sesiones
+  const buildDatesString = () => {
+    const MN = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const days = sessions.map(s => s.day).filter(Boolean);
+    if (days.length === 0) return '';
+    const parsed = days.map(d => new Date(d));
+    const monthIdx = parsed[0].getMonth();
+    const year = parsed[0].getFullYear();
+    const dayNums = parsed.map(d => d.getDate()).join(', ');
+    return `${dayNums} ${MN[monthIdx]} ${year}`;
+  };
+
+  // Construye string horario representativo para detección de solape
+  const representativeTime = sessions[0] ? `${sessions[0].from}-${sessions[0].to}` : '';
+
+  const clashes = typeof window.detectScheduleClash === 'function'
+    ? window.detectScheduleClash(buildDatesString(), representativeTime, (courses || []).filter(c => c.id !== course?.id), calendarEvents)
+    : [];
+
+  if (!open || !course) return null;
+
+  const inp = { padding: '10px 12px', borderRadius: 8, border: '1px solid #e4e7ef', fontSize: 13, fontFamily: 'Lato', outline: 'none', width: '100%', boxSizing: 'border-box', color: COLORS.dark, background: '#fff' };
+
+  return React.createElement('div', {
+    style: { position: 'fixed', inset: 0, background: 'rgba(15,16,32,0.44)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 400, padding: 20 },
+    onClick: e => { if (e.target === e.currentTarget) onClose(); },
+  },
+    React.createElement('div', {
+      style: { background: '#fff', borderRadius: 18, width: '100%', maxWidth: 560, padding: 28, boxShadow: '0 30px 80px rgba(15,16,32,0.24)', maxHeight: '90vh', overflowY: 'auto' },
+    },
+      React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 11, color: COLORS.orange, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 } }, 'Solicitar plaza'),
+      React.createElement('h2', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 18, fontWeight: 800, color: COLORS.dark, margin: '0 0 4px', lineHeight: 1.3 } }, course.title),
+      React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: COLORS.textLight, marginBottom: 16 } }, 'El cliente propone: ', React.createElement('b', { style: { color: COLORS.text } }, course.dates), ' · ', course.time, '. Confirma o propón tus fechas.'),
+
+      clashes.length > 0 && React.createElement('div', {
+        style: { marginBottom: 14, padding: '10px 12px', borderRadius: 10, background: `${COLORS.yellow}18`, border: `1px solid ${COLORS.yellow}40`, fontFamily: 'Lato', fontSize: 12, color: '#a16207' },
+      },
+        React.createElement('b', null, '⚠ Duplicidad horaria: '),
+        'Tus fechas/horas solapan con ', clashes.map(t => `"${t.slice(0, 40)}${t.length > 40 ? '…' : ''}"`).join(' · '),
+      ),
+
+      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 } },
+        React.createElement('div', null,
+          React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Fecha inicio'),
+          React.createElement('input', { type: 'date', style: inp, value: startDate, onChange: e => setStartDate(e.target.value) }),
+        ),
+        React.createElement('div', null,
+          React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Fecha fin'),
+          React.createElement('input', { type: 'date', style: inp, value: endDate, onChange: e => setEndDate(e.target.value) }),
+        ),
+      ),
+
+      isPresencial && React.createElement('div', { style: { marginBottom: 14 } },
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Nº de días de impartición'),
+        React.createElement('select', { style: { ...inp, cursor: 'pointer' }, value: numDays, onChange: e => setNumDays(parseInt(e.target.value, 10) || 1) },
+          ...[1,2,3,4,5,6,7,8,9,10].map(n => React.createElement('option', { key: n, value: n }, n + (n === 1 ? ' día' : ' días'))),
+        ),
+      ),
+
+      isPresencial && React.createElement('div', { style: { marginBottom: 14 } },
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 6 } }, 'Horarios por día'),
+        ...sessions.map((s, idx) => React.createElement('div', {
+          key: idx,
+          style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 8, marginBottom: 6 }
+        },
+          React.createElement('input', { type: 'date', style: inp, value: s.day, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, day: e.target.value } : ss)) }),
+          React.createElement('input', { type: 'time', style: inp, value: s.from, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, from: e.target.value } : ss)) }),
+          React.createElement('input', { type: 'time', style: inp, value: s.to,   onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, to: e.target.value } : ss)) }),
+        )),
+      ),
+
+      React.createElement('div', { style: { marginBottom: 16 } },
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Mensaje al superadmin (opcional)'),
+        React.createElement('textarea', { style: { ...inp, minHeight: 72, resize: 'vertical' }, placeholder: 'Observaciones, condiciones, etc.', value: note, onChange: e => setNote(e.target.value) }),
+      ),
+
+      React.createElement('div', { style: { display: 'flex', gap: 10, justifyContent: 'flex-end' } },
+        React.createElement('button', {
+          onClick: onClose,
+          style: { padding: '10px 18px', borderRadius: 9, border: '1px solid #e4e7ef', background: '#fff', color: COLORS.text, fontFamily: 'Lato', fontSize: 13, fontWeight: 700, cursor: 'pointer' },
+        }, 'Cancelar'),
+        React.createElement('button', {
+          onClick: () => onSubmit({
+            dates: buildDatesString(),
+            schedule: sessions,
+            note,
+          }),
+          style: { padding: '10px 20px', borderRadius: 9, border: 'none', background: COLORS.gradient, color: '#fff', fontFamily: 'Bricolage Grotesque', fontSize: 13, fontWeight: 800, cursor: 'pointer', letterSpacing: 0.3 },
+        }, 'Enviar propuesta →'),
+      ),
+    ),
+  );
+}
+
 const TAG_COLORS = [COLORS.cyan, COLORS.fuchsia, COLORS.orange, COLORS.pink, COLORS.lavender, COLORS.yellow];
 const MOD_COLORS = { Presencial: COLORS.orange, Online: COLORS.cyan, Híbrido: COLORS.fuchsia };
 
@@ -131,6 +259,10 @@ function SwipeStack() {
   const { courses, swipeRight, swipeLeft } = React.useContext(AppContext);
   const [areaFilter, setAreaFilter] = React.useState('all');
   const [toast, setToast] = React.useState(null);
+  // FILEMAKER: el modal de propuesta se abre al hacer "Solicitar plaza" en el botón
+  //   o al deslizar la card a la derecha. Un gesto rápido no debe confirmar sin
+  //   validar fechas/horas del formador.
+  const [proposeCourse, setProposeCourse] = React.useState(null);
 
   const availableAll = courses.filter(c => c.status === 'available');
   const availableAreas = ['all', ...Array.from(new Set(availableAll.map(c => c.area)))];
@@ -138,14 +270,20 @@ function SwipeStack() {
 
   const handleRight = (id) => {
     const c = courses.find(c => c.id === id);
-    swipeRight(id);
-    setToast({ title: c?.title, type: 'right' });
-    setTimeout(() => setToast(null), 3200);
+    if (c) setProposeCourse(c);
   };
   const handleLeft = (id) => {
     swipeLeft(id);
     setToast({ title: 'Oferta descartada', type: 'left' });
     setTimeout(() => setToast(null), 2200);
+  };
+
+  const submitPropose = (proposal) => {
+    if (!proposeCourse) return;
+    swipeRight(proposeCourse.id, proposal);
+    setToast({ title: proposeCourse.title, type: 'right' });
+    setProposeCourse(null);
+    setTimeout(() => setToast(null), 3200);
   };
 
   return React.createElement('div', null,
@@ -226,6 +364,14 @@ function SwipeStack() {
         ),
       ),
     ),
+
+    // Modal de propuesta de fechas
+    React.createElement(ProposeDatesModal, {
+      course: proposeCourse,
+      open:   !!proposeCourse,
+      onClose: () => setProposeCourse(null),
+      onSubmit: submitPropose,
+    }),
   );
 }
 
@@ -233,7 +379,7 @@ function SwipeStack() {
 // Organización por Área → Subcategoría, idéntica a csaformacion.com/formacion.
 // Filtros por estado, área formativa, subcategoría y búsqueda de texto.
 function OfertasView() {
-  const { courses, submitChange, setComplianceModal } = React.useContext(AppContext);
+  const { courses, submitChange, setComplianceModal, setCurrentView } = React.useContext(AppContext);
   const [status, setStatus]     = React.useState('all');
   const [area, setArea]         = React.useState('all');
   const [sub, setSub]           = React.useState('all');
@@ -241,6 +387,7 @@ function OfertasView() {
   const [editId, setEditId]     = React.useState(null);
   const [form, setForm]         = React.useState({ dates: '', topic: '', notes: '' });
   const [viewMode, setViewMode] = React.useState('grouped');  // 'grouped' | 'list'
+  const [showAddProposal, setShowAddProposal] = React.useState(false);
   const Mc                      = motion ? motion.div : 'div';
 
   const STATUS_CONF = {
@@ -295,9 +442,15 @@ function OfertasView() {
 
   return React.createElement('div', null,
     // Header
-    React.createElement('div', { style: { marginBottom: 22 } },
-      React.createElement('h1', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 24, fontWeight: 800, color: COLORS.dark, margin: '0 0 4px' } }, 'Catálogo de formaciones'),
-      React.createElement('p', { style: { fontFamily: 'Lato', fontSize: 13, color: COLORS.textLight, margin: 0 } }, 'Explora el catálogo completo organizado por área y categoría, filtra por estado y consulta los detalles de cada formación.'),
+    React.createElement('div', { style: { marginBottom: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' } },
+      React.createElement('div', null,
+        React.createElement('h1', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 24, fontWeight: 800, color: COLORS.dark, margin: '0 0 4px' } }, 'Mis formaciones'),
+        React.createElement('p', { style: { fontFamily: 'Lato', fontSize: 13, color: COLORS.textLight, margin: 0 } }, 'Tu catálogo de cursos: revisa ofertas, edita contenidos, consulta alumnos o propón una nueva formación.'),
+      ),
+      React.createElement('button', {
+        onClick: () => setShowAddProposal(true),
+        style: { padding: '10px 18px', borderRadius: 10, border: 'none', background: COLORS.gradient, color: '#fff', fontFamily: 'Bricolage Grotesque', fontSize: 13, fontWeight: 800, cursor: 'pointer', letterSpacing: 0.3, boxShadow: '0 4px 14px rgba(244,120,9,0.24)' },
+      }, '+ Añadir propuesta formativa'),
     ),
 
     // Filter bar (sticky card)
@@ -389,11 +542,16 @@ function OfertasView() {
             ),
 
     React.createElement(ComplianceModal),
+    // Modal "Añadir propuesta formativa"
+    typeof AddProposalModal !== 'undefined' && React.createElement(AddProposalModal, {
+      open: showAddProposal, onClose: () => setShowAddProposal(false),
+    }),
   );
 }
 
 // ─── Individual course row (used in both grouped and list views) ──────────────
 function CourseRow({ course: c, areaColor, statusConf: st, dense, onCloseCompliance, onEdit, isEditing, form, setForm, submitChange, onCancelEdit, animIdx }) {
+  const { setCurrentView } = React.useContext(AppContext);
   const Mc = motion ? motion.div : 'div';
   const inp = { padding: '9px 12px', borderRadius: 8, border: '1px solid #e4e7ef', fontSize: 13, fontFamily: 'Lato', outline: 'none', width: '100%', boxSizing: 'border-box', color: COLORS.dark, background: '#fff' };
 
@@ -435,6 +593,22 @@ function CourseRow({ course: c, areaColor, statusConf: st, dense, onCloseComplia
       ),
     ),
 
+    // Acciones rápidas para cursos aceptados (alumnos / incidencias)
+    // FILEMAKER: "Ver alumnos" abre Alumnos_Formador filtrado por id_curso.
+    //   "Reportar incidencia" lleva al layout Formador_Incidencias con prefill.
+    c.status === 'accepted' && !dense && React.createElement('div', {
+      style: { display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' },
+    },
+      React.createElement('button', {
+        onClick: () => setCurrentView && setCurrentView('mis-alumnos'),
+        style: { padding: '6px 12px', borderRadius: 7, border: `1px solid ${COLORS.cyan}30`, background: `${COLORS.cyan}0c`, color: COLORS.cyan, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Lato' },
+      }, '◌ Ver alumnos'),
+      React.createElement('button', {
+        onClick: () => setCurrentView && setCurrentView('incidencias'),
+        style: { padding: '6px 12px', borderRadius: 7, border: `1px solid ${COLORS.red}30`, background: `${COLORS.red}0a`, color: COLORS.red, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Lato' },
+      }, '⚠ Reportar incidencia'),
+    ),
+
     // Change request badge
     c.changeRequest && React.createElement('div', {
       style: { marginTop: 10, padding: '10px 12px', background: `${COLORS.fuchsia}08`, borderRadius: 8, fontSize: 12, color: COLORS.fuchsia, fontFamily: 'Lato', borderLeft: `3px solid ${COLORS.fuchsia}` }
@@ -470,6 +644,7 @@ function CourseRow({ course: c, areaColor, statusConf: st, dense, onCloseComplia
   );
 }
 
-window.SwipeCard   = SwipeCard;
-window.SwipeStack  = SwipeStack;
-window.OfertasView = OfertasView;
+window.SwipeCard          = SwipeCard;
+window.SwipeStack         = SwipeStack;
+window.OfertasView        = OfertasView;
+window.ProposeDatesModal  = ProposeDatesModal;
