@@ -7,7 +7,7 @@ const { motion, AnimatePresence } = window.Motion || {};
 // FILEMAKER: El formador NO ve los layouts Diplomas ni Ofertas_Empleo
 //   (son exclusivos del alumnado). "Incidencias" es un nuevo layout que permite
 //   reportar problemas (enfermedad, cambio fecha…) al superadmin.
-const NAV_ITEMS = [
+const FORMADOR_NAV_ITEMS = [
   { id: 'inicio',       label: 'Resumen',          icon: '▤' },
   { id: 'cursos',       label: 'Mis formaciones',  icon: '▦' },
   { id: 'calendario',   label: 'Calendario',       icon: '▥' },
@@ -76,7 +76,7 @@ function TopNav() {
 
       // Items inline (solo desktop)
       !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
-        ...NAV_ITEMS.map(item => {
+        ...FORMADOR_NAV_ITEMS.map(item => {
           const active = currentView === item.id;
           return React.createElement('button', {
             key: item.id,
@@ -111,7 +111,7 @@ function TopNav() {
           onClick: e => e.stopPropagation(),
           style: { background: '#fff', borderBottom: '1px solid #eceef4', padding: '14px 12px 20px', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(15,16,32,0.1)' },
         },
-          ...NAV_ITEMS.map(item => {
+          ...FORMADOR_NAV_ITEMS.map(item => {
             const active = currentView === item.id;
             return React.createElement('button', {
               key: item.id,
