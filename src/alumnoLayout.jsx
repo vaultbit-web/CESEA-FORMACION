@@ -12,10 +12,10 @@
 
 const { motion: layMotion, AnimatePresence: layAP } = window.Motion || {};
 
-// FILEMAKER: NAV_ITEMS equivalen a los layouts Alumno_*. "Diplomas" se ha
+// FILEMAKER: ALUMNO_NAV_ITEMS equivalen a los layouts Alumno_*. "Diplomas" se ha
 //   fusionado con "Mis cursos" — el descargable vive dentro de cada curso
 //   completado (Portal Certificados en Inscripciones_Alumno).
-const NAV_ITEMS = [
+const ALUMNO_NAV_ITEMS = [
   { id: 'inicio',          label: 'Inicio',         icon: '▤' },
   { id: 'catalogo',        label: 'Catálogo',       icon: '▦' },
   { id: 'mis-cursos',      label: 'Mis cursos',     icon: '◈' },
@@ -144,11 +144,11 @@ function AlumnoTopNav() {
             onError: e => { e.target.style.display = 'none'; },
           }),
           !isSmall && React.createElement('span', {
-            style: { fontFamily: 'Bricolage Grotesque', fontSize: 9.5, color: 'rgba(255,255,255,0.55)', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 700 },
-          }, 'Alumnado'),
+            style: { padding: '3px 9px', borderRadius: 5, background: COLORS.gradient, color: '#fff', fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5, fontFamily: 'Bricolage Grotesque', textTransform: 'uppercase' },
+          }, 'Alumno'),
         ),
         !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
-          NAV_ITEMS.map(item => {
+          ALUMNO_NAV_ITEMS.map(item => {
             const activeMain = currentView === item.id ||
               (item.id === 'catalogo' && currentView === 'detalle-curso');
             return React.createElement('button', {
@@ -180,7 +180,7 @@ function AlumnoTopNav() {
             onClick: e => e.stopPropagation(),
             style: { background: navTone, padding: '14px 12px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(0,0,0,0.4)' },
           },
-            ...NAV_ITEMS.map(item => {
+            ...ALUMNO_NAV_ITEMS.map(item => {
               const activeMain = currentView === item.id || (item.id === 'catalogo' && currentView === 'detalle-curso');
               return React.createElement('button', {
                 key: item.id,

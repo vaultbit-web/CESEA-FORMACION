@@ -7,7 +7,7 @@ const { motion, AnimatePresence } = window.Motion || {};
 // FILEMAKER: El formador NO ve los layouts Diplomas ni Ofertas_Empleo
 //   (son exclusivos del alumnado). "Incidencias" es un nuevo layout que permite
 //   reportar problemas (enfermedad, cambio fecha…) al superadmin.
-const NAV_ITEMS = [
+const FORMADOR_NAV_ITEMS = [
   { id: 'inicio',       label: 'Resumen',          icon: '▤' },
   { id: 'cursos',       label: 'Mis formaciones',  icon: '▦' },
   { id: 'calendario',   label: 'Calendario',       icon: '▥' },
@@ -59,7 +59,7 @@ function TopNav() {
         React.createElement('span', { style: { width: 16, height: 2, background: COLORS.dark, borderRadius: 2 } }),
       ),
       React.createElement('div', {
-        style: { display: 'flex', alignItems: 'center', cursor: 'pointer' },
+        style: { display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' },
         onClick: () => { closeAll(); setCurrentView('inicio'); },
         title: 'CESEA Formación',
       },
@@ -69,11 +69,14 @@ function TopNav() {
           style: { height: isSmall ? 26 : 34, width: 'auto', display: 'block' },
           onError: e => { e.target.style.display = 'none'; },
         }),
+        !isSmall && React.createElement('span', {
+          style: { padding: '3px 9px', borderRadius: 5, background: COLORS.gradient, color: '#fff', fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5, fontFamily: 'Bricolage Grotesque', textTransform: 'uppercase' },
+        }, 'Formador'),
       ),
 
       // Items inline (solo desktop)
       !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
-        ...NAV_ITEMS.map(item => {
+        ...FORMADOR_NAV_ITEMS.map(item => {
           const active = currentView === item.id;
           return React.createElement('button', {
             key: item.id,
@@ -108,7 +111,7 @@ function TopNav() {
           onClick: e => e.stopPropagation(),
           style: { background: '#fff', borderBottom: '1px solid #eceef4', padding: '14px 12px 20px', animation: 'fadeInUp 0.22s ease-out both', boxShadow: '0 12px 32px rgba(15,16,32,0.1)' },
         },
-          ...NAV_ITEMS.map(item => {
+          ...FORMADOR_NAV_ITEMS.map(item => {
             const active = currentView === item.id;
             return React.createElement('button', {
               key: item.id,
@@ -212,8 +215,32 @@ function TopNav() {
 }
 
 // ─── App Shell ────────────────────────────────────────────────────────────────
+// FILEMAKER: el router del formador tiene un conjunto fijo de layouts permitidos.
+//   Si llega un layout externo al rol (p.ej. "empleo", "catalogo", "pagos"), se
+//   hace fallback a Formador_Dashboard para evitar pantalla en blanco.
 function AppLayout() {
-  const { currentView } = React.useContext(AppContext);
+  const { currentView, setCurrentView } = React.useContext(AppContext);
+  const KNOWN = ['inicio', 'cursos', 'calendario', 'bitacora', 'tareas', 'asistencia', 'mis-alumnos', 'incidencias', 'valoraciones', 'horas', 'perfil'];
+  const safeView = KNOWN.includes(currentView) ? currentView : 'inicio';
+
+  // Si alguien intentó entrar a una ruta ajena al rol, corregir el estado global.
+  React.useEffect(() => {
+    if (!KNOWN.includes(currentView)) setCurrentView('inicio');
+  }, [currentView]);
+
+  const renderView = () => {
+    if (safeView === 'cursos')       return React.createElement(OfertasView);
+    if (safeView === 'calendario')   return React.createElement(CalendarFullView);
+    if (safeView === 'bitacora')     return React.createElement(BitacoraView);
+    if (safeView === 'tareas')       return React.createElement(TasksView);
+    if (safeView === 'asistencia')   return React.createElement(AttendanceView);
+    if (safeView === 'mis-alumnos')  return React.createElement(AlumnosFormadorView);
+    if (safeView === 'incidencias')  return React.createElement(IncidenciasView);
+    if (safeView === 'valoraciones') return React.createElement(ValoracionesRecibidasView);
+    if (safeView === 'horas')        return React.createElement(HoursView);
+    if (safeView === 'perfil')       return React.createElement(ProfileView);
+    return React.createElement(DashboardView);
+  };
 
   return React.createElement('div', { style: { minHeight: '100vh', background: '#f6f7fb' } },
     React.createElement(TopNav),
@@ -221,38 +248,14 @@ function AppLayout() {
       AnimatePresence
         ? React.createElement(AnimatePresence, { mode: 'wait' },
             React.createElement(motion.div, {
-              key: currentView,
+              key: safeView,
               initial: { opacity: 0, y: 10 },
               animate: { opacity: 1, y: 0 },
               exit:    { opacity: 0, y: -6 },
               transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
-            },
-              currentView === 'inicio'       && React.createElement(DashboardView),
-              currentView === 'cursos'       && React.createElement(OfertasView),
-              currentView === 'calendario'   && React.createElement(CalendarFullView),
-              currentView === 'bitacora'     && React.createElement(BitacoraView),
-              currentView === 'tareas'       && React.createElement(TasksView),
-              currentView === 'asistencia'   && React.createElement(AttendanceView),
-              currentView === 'mis-alumnos'  && React.createElement(AlumnosFormadorView),
-              currentView === 'incidencias'  && React.createElement(IncidenciasView),
-              currentView === 'valoraciones' && React.createElement(ValoracionesRecibidasView),
-              currentView === 'horas'        && React.createElement(HoursView),
-              currentView === 'perfil'       && React.createElement(ProfileView),
-            ),
+            }, renderView()),
           )
-        : React.createElement('div', null,
-            currentView === 'inicio'       && React.createElement(DashboardView),
-            currentView === 'cursos'       && React.createElement(OfertasView),
-            currentView === 'calendario'   && React.createElement(CalendarFullView),
-            currentView === 'bitacora'     && React.createElement(BitacoraView),
-            currentView === 'tareas'       && React.createElement(TasksView),
-            currentView === 'asistencia'   && React.createElement(AttendanceView),
-            currentView === 'mis-alumnos'  && React.createElement(AlumnosFormadorView),
-            currentView === 'incidencias'  && React.createElement(IncidenciasView),
-            currentView === 'valoraciones' && React.createElement(ValoracionesRecibidasView),
-            currentView === 'horas'        && React.createElement(HoursView),
-            currentView === 'perfil'       && React.createElement(ProfileView),
-          ),
+        : React.createElement('div', null, renderView()),
     ),
   );
 }
