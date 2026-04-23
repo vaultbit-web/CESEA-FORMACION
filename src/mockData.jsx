@@ -245,28 +245,52 @@ const OFFICIAL_TITLES = new Set([
 
 // MOCK_COURSES — superconjunto de campos para todos los roles.
 // FILEMAKER: Tabla Cursos (única para todos los roles).
-const MOCK_COURSES = CATALOG.map((c, i) => ({
-  id:         i + 1,
-  title:      c.title,
-  subtitle:   c.subtitle,
-  area:       c.area,
-  category:   c.sub,
-  modality:   MODALITIES[i % MODALITIES.length],
-  dates:      '1 enero 2026',
-  startDate:  '2026-01-01',
-  time:       TIMES[i % TIMES.length],
-  location:   LOCATIONS[i % LOCATIONS.length],
-  tags:       [c.sub, c.area],
-  hours:      HOURS[i % HOURS.length],
-  price:      PRICES[i % PRICES.length],
-  level:      LEVELS[i % LEVELS.length],
-  rating:     +(3.8 + ((i * 7) % 12) / 10).toFixed(1),
-  students:   120 + ((i * 17) % 380),
-  instructor: INSTRUCTORS[i % INSTRUCTORS.length],
-  official:   OFFICIAL_TITLES.has(c.title),
-  // Estado solo relevante para formador; los alumnos ven todos como "available".
-  status:     i < 3 ? 'available' : i < 6 ? 'accepted' : i < 8 ? 'review' : i < 10 ? 'completed' : 'available',
-}));
+// FILEMAKER: los cursos aceptados/completados del formador se demuestran en el
+//   calendario con fechas multidía en el mes actual (abril 2026). Se asignan
+//   de forma determinista a los primeros índices para mantener la demo estable.
+const DEMO_DATES_BY_STATUS = {
+  0:  { dates: '13, 16, 23 Abril 2026',   startDate: '2026-04-13', time: '09:00-14:00' }, // disponible — cliente propone
+  3:  { dates: '13-16 Abril 2026',        startDate: '2026-04-13', time: '09:00-14:00' }, // aceptado mañana multifecha
+  4:  { dates: '7 Abril 2026',            startDate: '2026-04-07', time: '16:00-20:00' }, // aceptado tarde
+  5:  { dates: '21, 23, 28 Abril 2026',   startDate: '2026-04-21', time: '10:00-13:30' }, // aceptado mañana
+  6:  { dates: '9 Abril 2026',            startDate: '2026-04-09', time: '15:00-19:00' }, // revisión tarde
+  7:  { dates: '14-17 Abril 2026',        startDate: '2026-04-14', time: '09:30-13:30' }, // revisión mañana
+  8:  { dates: '1-3 Abril 2026',          startDate: '2026-04-01', time: '09:00-14:00' }, // completed
+  9:  { dates: '27 Marzo 2026',           startDate: '2026-03-27', time: '15:00-20:00' }, // completed
+};
+
+const MOCK_COURSES = CATALOG.map((c, i) => {
+  const status = i < 3 ? 'available' : i < 6 ? 'accepted' : i < 8 ? 'review' : i < 10 ? 'completed' : 'available';
+  const override = DEMO_DATES_BY_STATUS[i] || {};
+  // createdAt: los 4 primeros cursos se consideran "nuevos" (últimas 24h) para
+  // demostrar la acción "Descargar últimos subidos" del superadmin.
+  const daysAgo = i < 4 ? 0 : 3 + (i * 7) % 90;
+  const createdAt = new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
+  return {
+    id:         i + 1,
+    title:      c.title,
+    subtitle:   c.subtitle,
+    area:       c.area,
+    category:   c.sub,
+    modality:   MODALITIES[i % MODALITIES.length],
+    dates:      override.dates    || '1 enero 2026',
+    startDate:  override.startDate || '2026-01-01',
+    endDate:    override.endDate   || null,
+    time:       override.time     || TIMES[i % TIMES.length],
+    location:   LOCATIONS[i % LOCATIONS.length],
+    tags:       [c.sub, c.area],
+    hours:      HOURS[i % HOURS.length],
+    price:      PRICES[i % PRICES.length],
+    level:      LEVELS[i % LEVELS.length],
+    rating:     +(3.8 + ((i * 7) % 12) / 10).toFixed(1),
+    students:   120 + ((i * 17) % 380),
+    instructor: INSTRUCTORS[i % INSTRUCTORS.length],
+    official:   OFFICIAL_TITLES.has(c.title),
+    createdAt,  // FILEMAKER: campo Cursos::creado_en (Timestamp). Filtro rápido en exports.
+    // Estado solo relevante para formador; los alumnos ven todos como "available".
+    status,
+  };
+});
 
 // ─── Horas impartidas (formador) ─────────────────────────────────────────────
 const MOCK_HOURS_LOG = [
@@ -340,32 +364,79 @@ const DEMO_CREDENTIALS = [
 ];
 
 // ─── Formadores (vista superadmin) ───────────────────────────────────────────
+// FILEMAKER: Tabla Formadores. Campos tarifa_venta_directa, tarifa_venta_indirecta,
+//   tarifa_km (€/km) y trust_score son editables SOLO por [priv_Superadmin].
+//   El formador los lee en solo lectura desde su perfil.
 const MOCK_TRAINERS = [
-  { id: 'F-R01', name: 'Aurora Martínez',         email: 'aurora.martinez@csaformacion.com',  specialty: 'Dirección de marketing',            hoursYTD:  42, status: 'Activo',     joinDate: '2024-05-12', photo: 'assets/formadores/aurora.png',         dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: true },
-  { id: 'F-R02', name: 'Jesús Santiago',          email: 'jesus.santiago@csaformacion.com',   specialty: 'Prótesis dental',                   hoursYTD:  96, status: 'Activo',     joinDate: '2023-11-02', photo: 'assets/formadores/jesus-santiago.png', dni: '***128J', iban: 'ES12 **** **** **** ****7788', official: true },
-  { id: 'F-R03', name: 'María Elena',             email: 'maria.elena@csaformacion.com',      specialty: 'Medicina odontológica',             hoursYTD: 144, status: 'Activo',     joinDate: '2023-04-15', photo: 'assets/formadores/maria-elena.png',    dni: '***602M', iban: 'ES98 **** **** **** ****1134', official: true },
-  { id: 'F-001', name: 'Ana García López',        email: 'ana.garcia@formador.com',           specialty: 'Acompañamiento, Competencias, ACP', hoursYTD:  90, status: 'Activo',     joinDate: '2025-01-15', photo: null,                                   dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: false },
-  { id: 'F-002', name: 'Luis Mendoza Vargas',     email: 'luis.mendoza@formador.com',         specialty: 'Movilizaciones, Atención médica',   hoursYTD:  72, status: 'Activo',     joinDate: '2024-11-02', photo: null,                                   dni: '***412V', iban: 'ES44 **** **** **** ****5566', official: false },
-  { id: 'F-003', name: 'Marta Ibáñez Reyes',      email: 'marta.ibanez@formador.com',         specialty: 'Liderazgo, Gestión de equipos',     hoursYTD: 128, status: 'Activo',     joinDate: '2024-06-20', photo: null,                                   dni: '***779R', iban: 'ES77 **** **** **** ****8899', official: false },
-  { id: 'F-004', name: 'Jorge Pascual Torres',    email: 'jorge.pascual@formador.com',        specialty: 'ACP, Humanización',                 hoursYTD:  54, status: 'Activo',     joinDate: '2025-02-10', photo: null,                                   dni: '***224T', iban: 'ES61 **** **** **** ****1032', official: false },
-  { id: 'F-005', name: 'Elena Soriano Quintana',  email: 'elena.soriano@formador.com',        specialty: 'Nutrición, Técnicas culinarias',    hoursYTD:  38, status: 'En pausa',   joinDate: '2024-09-05', photo: null,                                   dni: '***515Q', iban: 'ES22 **** **** **** ****2211', official: false },
-  { id: 'F-006', name: 'Rubén Castillo Navarro',  email: 'ruben.castillo@formador.com',       specialty: 'Autocuidados, Bienestar emocional', hoursYTD:  64, status: 'Activo',     joinDate: '2025-03-12', photo: null,                                   dni: '***881N', iban: 'ES88 **** **** **** ****4455', official: false },
-  { id: 'F-007', name: 'Sofía Vargas Herrera',    email: 'sofia.vargas@formador.com',         specialty: 'Voluntariado, Ética',               hoursYTD:  22, status: 'Pendiente',  joinDate: '2026-04-01', photo: null,                                   dni: '***073H', iban: 'ES14 **** **** **** ****9900', official: false },
+  { id: 'F-R01', name: 'Aurora Martínez',         email: 'aurora.martinez@csaformacion.com',  specialty: 'Dirección de marketing',            hoursYTD:  42, status: 'Activo',     joinDate: '2024-05-12', photo: 'assets/formadores/aurora.png',         dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: true,  rating: 4.8, trustScore: 92, tarifaVentaDirecta: 55, tarifaVentaIndirecta: 42, tarifaKm: 0.30, tipologias: ['Marketing y comunicación', 'Gestión directiva'], cursosAsignados: [] },
+  { id: 'F-R02', name: 'Jesús Santiago',          email: 'jesus.santiago@csaformacion.com',   specialty: 'Prótesis dental',                   hoursYTD:  96, status: 'Activo',     joinDate: '2023-11-02', photo: 'assets/formadores/jesus-santiago.png', dni: '***128J', iban: 'ES12 **** **** **** ****7788', official: true,  rating: 4.6, trustScore: 88, tarifaVentaDirecta: 60, tarifaVentaIndirecta: 48, tarifaKm: 0.32, tipologias: ['Técnica odontológica'], cursosAsignados: [] },
+  { id: 'F-R03', name: 'María Elena',             email: 'maria.elena@csaformacion.com',      specialty: 'Medicina odontológica',             hoursYTD: 144, status: 'Activo',     joinDate: '2023-04-15', photo: 'assets/formadores/maria-elena.png',    dni: '***602M', iban: 'ES98 **** **** **** ****1134', official: true,  rating: 4.9, trustScore: 96, tarifaVentaDirecta: 65, tarifaVentaIndirecta: 52, tarifaKm: 0.32, tipologias: ['Medicina y salud', 'Técnica odontológica'], cursosAsignados: [] },
+  { id: 'F-001', name: 'Ana García López',        email: 'ana.garcia@formador.com',           specialty: 'Acompañamiento, Competencias, ACP', hoursYTD:  90, status: 'Activo',     joinDate: '2025-01-15', photo: null,                                   dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: false, rating: 4.7, trustScore: 85, tarifaVentaDirecta: 50, tarifaVentaIndirecta: 40, tarifaKm: 0.28, tipologias: ['ACP y Modelo de Atención', 'Acompañamiento emocional'], cursosAsignados: [4, 5, 6, 7] },
+  { id: 'F-002', name: 'Luis Mendoza Vargas',     email: 'luis.mendoza@formador.com',         specialty: 'Movilizaciones, Atención médica',   hoursYTD:  72, status: 'Activo',     joinDate: '2024-11-02', photo: null,                                   dni: '***412V', iban: 'ES44 **** **** **** ****5566', official: false, rating: 4.5, trustScore: 80, tarifaVentaDirecta: 48, tarifaVentaIndirecta: 38, tarifaKm: 0.30, tipologias: ['Movilizaciones seguras'], cursosAsignados: [] },
+  { id: 'F-003', name: 'Marta Ibáñez Reyes',      email: 'marta.ibanez@formador.com',         specialty: 'Liderazgo, Gestión de equipos',     hoursYTD: 128, status: 'Activo',     joinDate: '2024-06-20', photo: null,                                   dni: '***779R', iban: 'ES77 **** **** **** ****8899', official: false, rating: 4.8, trustScore: 90, tarifaVentaDirecta: 58, tarifaVentaIndirecta: 46, tarifaKm: 0.30, tipologias: ['Liderazgo y gestión', 'Competencias directivas'], cursosAsignados: [] },
+  { id: 'F-004', name: 'Jorge Pascual Torres',    email: 'jorge.pascual@formador.com',        specialty: 'ACP, Humanización',                 hoursYTD:  54, status: 'Activo',     joinDate: '2025-02-10', photo: null,                                   dni: '***224T', iban: 'ES61 **** **** **** ****1032', official: false, rating: 4.4, trustScore: 78, tarifaVentaDirecta: 45, tarifaVentaIndirecta: 36, tarifaKm: 0.28, tipologias: ['ACP y Modelo de Atención'], cursosAsignados: [] },
+  { id: 'F-005', name: 'Elena Soriano Quintana',  email: 'elena.soriano@formador.com',        specialty: 'Nutrición, Técnicas culinarias',    hoursYTD:  38, status: 'En pausa',   joinDate: '2024-09-05', photo: null,                                   dni: '***515Q', iban: 'ES22 **** **** **** ****2211', official: false, rating: 4.2, trustScore: 72, tarifaVentaDirecta: 42, tarifaVentaIndirecta: 34, tarifaKm: 0.28, tipologias: ['Nutrición y dietética'], cursosAsignados: [] },
+  { id: 'F-006', name: 'Rubén Castillo Navarro',  email: 'ruben.castillo@formador.com',       specialty: 'Autocuidados, Bienestar emocional', hoursYTD:  64, status: 'Activo',     joinDate: '2025-03-12', photo: null,                                   dni: '***881N', iban: 'ES88 **** **** **** ****4455', official: false, rating: 4.6, trustScore: 82, tarifaVentaDirecta: 48, tarifaVentaIndirecta: 38, tarifaKm: 0.30, tipologias: ['Autocuidados', 'Bienestar emocional'], cursosAsignados: [] },
+  { id: 'F-007', name: 'Sofía Vargas Herrera',    email: 'sofia.vargas@formador.com',         specialty: 'Voluntariado, Ética',               hoursYTD:  22, status: 'Pendiente',  joinDate: '2026-04-01', photo: null,                                   dni: '***073H', iban: 'ES14 **** **** **** ****9900', official: false, rating: 0.0, trustScore: 0,  tarifaVentaDirecta: 0,  tarifaVentaIndirecta: 0,  tarifaKm: 0.00, tipologias: [], cursosAsignados: [] },
+];
+
+// ─── Tipologías de formación (value list) ────────────────────────────────────
+// FILEMAKER: Value List "Tipologias_Formacion" editable desde Admin_Config.
+//   Alimenta: (a) dropdown "Tipología" del modal "Añadir propuesta formativa"
+//   del formador, (b) multiselect "Tipologías que imparte" del perfil formador.
+const MOCK_TIPOLOGIAS = [
+  'ACP y Modelo de Atención',
+  'Acompañamiento emocional',
+  'Movilizaciones seguras',
+  'Liderazgo y gestión',
+  'Competencias directivas',
+  'Marketing y comunicación',
+  'Gestión directiva',
+  'Técnica odontológica',
+  'Medicina y salud',
+  'Nutrición y dietética',
+  'Autocuidados',
+  'Bienestar emocional',
+  'Risoterapia',
+  'Humanización asistencial',
 ];
 
 // ─── Solicitudes pendientes (superadmin) ─────────────────────────────────────
+// FILEMAKER: Tabla Solicitudes. Los tipos nuevos (proposal, incidencia) son
+//   generados desde el portal del formador:
+//     - proposal: Modal "Añadir propuesta formativa" → crea registro con
+//       campos titulo, tipologia, objetivos, contenidos, fechas_propuestas.
+//     - incidencia: Pantalla "Incidencias" → crea registro con tipo_incidencia
+//       (enfermedad, cambio_fecha, problema_alumnos, otro) y descripción.
+// El superadmin agrupa en la UI por courseTitle (GetSummary en FM).
 const MOCK_PENDING_REQUESTS = [
-  { id: 'R-001', type: 'change',   trainer: 'Luis Mendoza Vargas',    courseTitle: 'MOVILIZACIONES SEGURAS',       detail: 'Solicita cambio de fecha: del 14/05 al 21/05', date: '2026-04-18' },
-  { id: 'R-002', type: 'new',      trainer: 'Marta Ibáñez Reyes',     courseTitle: 'GESTIÓN DE CONFLICTOS',        detail: 'Acepta impartir la oferta',                     date: '2026-04-19' },
-  { id: 'R-003', type: 'hours',    trainer: 'Jorge Pascual Torres',   courseTitle: 'IMPLEMENTACIÓN DE ACP',        detail: 'Reporta 15h impartidas el 05/02/2026',          date: '2026-04-20' },
-  { id: 'R-004', type: 'register', trainer: 'Sofía Vargas Herrera',   courseTitle: '—',                             detail: 'Solicitud de alta como formadora',              date: '2026-04-21' },
+  { id: 'R-001', type: 'new',      trainer: 'Luis Mendoza Vargas',    trainerId: 'F-002', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 14/05, 21/05 · 09:00-14:00', date: '2026-04-18', proposedDates: '14, 21 Mayo 2026', rate: 48 },
+  { id: 'R-006', type: 'new',      trainer: 'Jorge Pascual Torres',   trainerId: 'F-004', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 19/05 · 16:00-20:00',        date: '2026-04-19', proposedDates: '19 Mayo 2026',     rate: 45 },
+  { id: 'R-007', type: 'new',      trainer: 'Marta Ibáñez Reyes',     trainerId: 'F-003', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 27/05 · 09:30-13:30',        date: '2026-04-20', proposedDates: '27 Mayo 2026',     rate: 58 },
+  { id: 'R-002', type: 'new',      trainer: 'Marta Ibáñez Reyes',     trainerId: 'F-003', courseTitle: 'GESTIÓN DE CONFLICTOS',  detail: 'Acepta impartir la oferta',                   date: '2026-04-19', proposedDates: '12 Mayo 2026',     rate: 58 },
+  { id: 'R-003', type: 'hours',    trainer: 'Jorge Pascual Torres',   trainerId: 'F-004', courseTitle: 'IMPLEMENTACIÓN DE ACP',  detail: 'Reporta 15h impartidas el 05/02/2026',        date: '2026-04-20' },
+  { id: 'R-004', type: 'register', trainer: 'Sofía Vargas Herrera',   trainerId: 'F-007', courseTitle: '—',                       detail: 'Solicitud de alta como formadora',            date: '2026-04-21' },
+  { id: 'R-008', type: 'proposal', trainer: 'Ana García López',       trainerId: 'F-001', courseTitle: 'ACOMPAÑAMIENTO EMOCIONAL EN FINAL DE VIDA', detail: 'Nueva propuesta formativa · Presencial · 10 h · tipología: Acompañamiento emocional', date: '2026-04-22', proposedDates: '15-17 Junio 2026' },
+  { id: 'R-009', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'GESTIÓN DE CONFLICTOS',  detail: 'Cancelación por enfermedad — solicita reprogramar el 25/04', date: '2026-04-22' },
 ];
 
 // ─── Bitácora, tareas, asistencia (formador) ─────────────────────────────────
+// FILEMAKER: Tabla Bitacora. FK: id_curso, id_sesion. El superadmin consulta
+//   las entradas filtradas por curso en el "Expediente del curso" (modo
+//   Expedientes de Admin_Horas).
 const MOCK_BITACORAS = [
-  { id: 'B-001', courseId: 4, sessionDate: '2026-04-18', timeFrom: '09:00', timeTo: '14:00', incidents: 'Una alumna salió 30 min antes por urgencia familiar. Todos los ejercicios se completaron.', notes: 'Grupo muy participativo. Se ampliará el módulo 3 con más casos prácticos la próxima sesión.', present: 12, total: 14 },
-  { id: 'B-002', courseId: 4, sessionDate: '2026-04-25', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias reseñables.', notes: 'Cierre del programa completado. Buen nivel en los ejercicios finales.', present: 13, total: 14 },
-  { id: 'B-003', courseId: 7, sessionDate: '2026-04-20', timeFrom: '16:00', timeTo: '20:00', incidents: 'Problema puntual con el micrófono del aula. Resuelto a los 15 min.', notes: 'Excelente debate sobre casos reales aportados por los asistentes.', present: 9, total: 10 },
+  // Curso 4 (accepted — activo)
+  { id: 'B-001', courseId: 4, sessionDate: '2026-04-13', timeFrom: '09:00', timeTo: '14:00', incidents: 'Una alumna salió 30 min antes por urgencia familiar. Todos los ejercicios se completaron.', notes: 'Grupo muy participativo. Se ampliará el módulo 3 con más casos prácticos la próxima sesión.', present: 12, total: 14 },
+  { id: 'B-002', courseId: 4, sessionDate: '2026-04-14', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias reseñables.', notes: 'Se completó la teoría del módulo 2. Algunos alumnos pidieron material extra.', present: 13, total: 14 },
+  { id: 'B-003', courseId: 4, sessionDate: '2026-04-15', timeFrom: '09:00', timeTo: '14:00', incidents: 'Retraso de 10 min en el inicio por problema de accesibilidad.', notes: 'Dinámica en grupos de 4. Resultados muy positivos.', present: 14, total: 14 },
+  // Curso 7 (review)
+  { id: 'B-004', courseId: 7, sessionDate: '2026-04-14', timeFrom: '09:30', timeTo: '13:30', incidents: 'Problema puntual con el micrófono del aula. Resuelto a los 15 min.', notes: 'Excelente debate sobre casos reales aportados por los asistentes.', present: 9, total: 10 },
+  // Curso 9 (completed) — expediente completo
+  { id: 'B-010', courseId: 9, sessionDate: '2026-04-01', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias.',                                                                                notes: 'Arranque del curso. Presentación de objetivos y evaluación inicial.',                                             present: 14, total: 15 },
+  { id: 'B-011', courseId: 9, sessionDate: '2026-04-02', timeFrom: '09:00', timeTo: '14:00', incidents: 'Un alumno tuvo que ausentarse la última hora por motivos laborales.',                             notes: 'Teoría completa del bloque 1. Se entrega material complementario.',                                              present: 14, total: 15 },
+  { id: 'B-012', courseId: 9, sessionDate: '2026-04-03', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias.',                                                                                notes: 'Cierre del curso. Evaluación final superada por 13/15 alumnos. Se generan diplomas.',                             present: 15, total: 15 },
+  // Curso 10 (completed)
+  { id: 'B-020', courseId: 10, sessionDate: '2026-03-27', timeFrom: '15:00', timeTo: '20:00', incidents: 'Retraso inicial de 20 min por conexión VPN. Solventado.',                                        notes: 'Sesión online. Alta interacción en chat. Se graba para los ausentes.',                                           present: 11, total: 12 },
 ];
 
 const MOCK_TASKS = [
@@ -568,6 +639,10 @@ function AppProvider({ children }) {
   const [notifAdmin, setNotifAdmin]           = React.useState(MOCK_NOTIFICATIONS_ADMIN);
   const [reviewsPublic]                       = React.useState(MOCK_REVIEWS_BY_INSTRUCTOR);
   const [companyConfig, setCompanyConfig]     = React.useState(COMPANY);
+  // FILEMAKER: Value List "Tipologias_Formacion" — editable desde Admin_Config
+  const [tipologias, setTipologias]           = React.useState(MOCK_TIPOLOGIAS);
+  // FILEMAKER: Tabla Expedientes_Cerrados (id_curso, fecha, observaciones_admin).
+  const [closedExpedientes, setClosedExpedientes] = React.useState([]);
 
   // ── Estado ALUMNO ───────────────────────────────────────────────────────────
   const [enrollments, setEnrollments]         = React.useState(MOCK_ENROLLMENTS);
@@ -614,10 +689,70 @@ function AppProvider({ children }) {
   };
 
   // ── Acciones formador ───────────────────────────────────────────────────────
-  const swipeRight = (id) => setCourses(prev => prev.map(c => c.id === id ? { ...c, status: 'review' } : c));
+  // FILEMAKER: Script "Propuesta_Fecha_Formador" — al solicitar plaza, el formador
+  //   puede proponer fechas propias. Se guardan en Cursos::fechas_propuestas (JSON)
+  //   y se crea un registro en Solicitudes con type="new".
+  const swipeRight = (id, proposal) => {
+    setCourses(prev => prev.map(c => c.id === id ? { ...c, status: 'review', proposedDates: proposal?.dates || null, proposedSchedule: proposal?.schedule || null, proposedNote: proposal?.note || null } : c));
+    const course = MOCK_COURSES.find(c => c.id === id);
+    if (course && user?.name) {
+      setPendingRequests(prev => [{
+        id: 'R-' + Date.now(),
+        type: 'new',
+        trainer: user.name,
+        trainerId: user.id || 'F-001',
+        courseTitle: course.title,
+        detail: proposal?.dates ? `Propone fechas: ${proposal.dates}` : 'Solicita plaza',
+        date: new Date().toISOString().slice(0, 10),
+        proposedDates: proposal?.dates || null,
+        note: proposal?.note || null,
+      }, ...prev]);
+    }
+  };
   const swipeLeft  = (id) => setCourses(prev => prev.filter(c => c.id !== id));
   const submitChange = (id, data) => setCourses(prev => prev.map(c => c.id === id ? { ...c, changeRequest: data } : c));
   const addCalendarEvent = (ev) => setCalendarEvents(prev => [...prev, { ...ev, id: Date.now() }]);
+
+  // FILEMAKER: Script "Crear_Propuesta_Formativa" — el formador envía una
+  //   propuesta de curso nuevo al superadmin. Se guarda en Solicitudes con
+  //   type="proposal" y campos extra (objetivos, contenidos, tipologia).
+  const createProposal = (payload) => {
+    setPendingRequests(prev => [{
+      id: 'R-' + Date.now(),
+      type: 'proposal',
+      trainer: user?.name || 'Formador/a',
+      trainerId: user?.id || 'F-001',
+      courseTitle: payload.title || 'Propuesta sin título',
+      detail: `Nueva propuesta formativa · ${payload.modality || '—'} · ${payload.hours || 0} h · tipología: ${payload.tipologia || '—'}`,
+      date: new Date().toISOString().slice(0, 10),
+      proposedDates: payload.dates || null,
+      objectives: payload.objectives || '',
+      contents: payload.contents || '',
+      tipologia: payload.tipologia || '',
+      hours: payload.hours || 0,
+      modality: payload.modality || '',
+    }, ...prev]);
+    showToast('Propuesta enviada al superadmin');
+  };
+
+  // FILEMAKER: Script "Nueva_Incidencia" — el formador reporta una incidencia
+  //   ligada a un curso. Se guarda en Solicitudes con type="incidencia".
+  const createIncidencia = (payload) => {
+    setPendingRequests(prev => [{
+      id: 'R-' + Date.now(),
+      type: 'incidencia',
+      trainer: user?.name || 'Formador/a',
+      trainerId: user?.id || 'F-001',
+      courseTitle: payload.courseTitle || '—',
+      courseId: payload.courseId,
+      detail: `${payload.incidenciaType || 'Otro'}: ${payload.description || ''}`,
+      description: payload.description || '',
+      incidenciaType: payload.incidenciaType || 'Otro',
+      status: 'abierta',
+      date: new Date().toISOString().slice(0, 10),
+    }, ...prev]);
+    showToast('Incidencia reportada al superadmin');
+  };
   const completeCourse = (id) => {
     setCourses(prev => prev.map(c => c.id === id ? { ...c, status: 'completed' } : c));
     setComplianceModal(null);
@@ -668,6 +803,63 @@ function AppProvider({ children }) {
   };
   const updateCourse = (id, patch) => setCourses(prev => prev.map(c => c.id === id ? { ...c, ...patch } : c));
   const archiveCourse = (id) => setCourses(prev => prev.map(c => c.id === id ? { ...c, status: 'archived' } : c));
+
+  // FILEMAKER: Script "Import_Cursos_CSV" — upsert por título.
+  //   Devuelve conteo { created, updated, errors }.
+  const bulkUpsertCourses = (rows) => {
+    let created = 0, updated = 0;
+    setCourses(prev => {
+      const next = [...prev];
+      rows.forEach(row => {
+        const idx = next.findIndex(c => (c.title || '').trim().toLowerCase() === (row.title || '').trim().toLowerCase());
+        if (idx >= 0) { next[idx] = { ...next[idx], ...row, createdAt: next[idx].createdAt }; updated++; }
+        else {
+          const id = next.reduce((m, c) => Math.max(m, c.id), 0) + 1;
+          next.unshift({ id, status: 'available', rating: 0, students: 0, tags: [row.category, row.area].filter(Boolean), createdAt: new Date().toISOString().slice(0, 10), ...row });
+          created++;
+        }
+      });
+      return next;
+    });
+    showToast(`${created} nuevos · ${updated} actualizados`);
+    return { created, updated };
+  };
+
+  // FILEMAKER: Scripts "Actualizar_Formador" y "Fijar_Kilometraje". Estos
+  //   campos son read-only para el formador y editables solo por superadmin.
+  const updateTrainer = (trainerId, patch) =>
+    setTrainers(prev => prev.map(t => t.id === trainerId ? { ...t, ...patch } : t));
+
+  // FILEMAKER: Scripts CRUD de Value List "Tipologias_Formacion".
+  const addTipologia = (name) => {
+    const clean = String(name || '').trim();
+    if (!clean) return;
+    setTipologias(prev => prev.includes(clean) ? prev : [...prev, clean]);
+  };
+  const removeTipologia = (name) => setTipologias(prev => prev.filter(t => t !== name));
+
+  // FILEMAKER: Scripts "Cerrar_Expediente" y "Devolver_Expediente_Formador".
+  const closeExpediente = (courseId, note = '') => {
+    setClosedExpedientes(prev => [...prev, { courseId, date: new Date().toISOString().slice(0, 10), note, status: 'cerrado' }]);
+    setHoursLog(prev => prev.map(h => {
+      const course = MOCK_COURSES.find(c => c.id === courseId);
+      return course && h.course === course.title ? { ...h, status: 'Validado' } : h;
+    }));
+    showToast('Expediente cerrado');
+  };
+  const returnExpediente = (courseId, note = '') => {
+    const course = MOCK_COURSES.find(c => c.id === courseId);
+    if (!course) return;
+    setPendingRequests(prev => [{
+      id: 'R-' + Date.now(),
+      type: 'change',
+      trainer: course.instructor || '—',
+      courseTitle: course.title,
+      detail: `Expediente devuelto por superadmin: ${note || 'revisar datos'}`,
+      date: new Date().toISOString().slice(0, 10),
+    }, ...prev]);
+    showToast('Expediente devuelto al formador');
+  };
   const approveRequest = (id) => {
     const req = pendingRequests.find(r => r.id === id);
     if (!req) return;
@@ -802,14 +994,17 @@ function AppProvider({ children }) {
       bitacoras, addBitacoraEntry, updateBitacoraEntry,
       tasks, signTask, uploadSignedPdf, addTaskDeliverable, setTaskStatus,
       attendance, setStudentAttendance, addAttendanceRecord,
+      createProposal, createIncidencia,
       // Superadmin
       trainers, students, pendingRequests, reviewsPublic,
-      createCourse, updateCourse, archiveCourse,
+      createCourse, updateCourse, archiveCourse, bulkUpsertCourses,
       approveRequest, rejectRequest,
-      validateHours, rejectHours, setTrainerStatus,
+      validateHours, rejectHours, setTrainerStatus, updateTrainer,
       createStudent, updateStudent, setStudentStatus,
       createJobOffer, updateJobOffer, archiveJobOffer,
       companyConfig, updateCompanyConfig,
+      tipologias, addTipologia, removeTipologia,
+      closedExpedientes, closeExpediente, returnExpediente,
       // Alumno
       enrollments, diplomas, jobs, applications, reviews, payments, favorites,
       badges: BADGES, testimonials: MOCK_TESTIMONIALS, stats: MOCK_STATS, faq: MOCK_FAQ,

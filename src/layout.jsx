@@ -4,6 +4,9 @@
 // activo, KPIs) — no se usa como fondo permanente.
 const { motion, AnimatePresence } = window.Motion || {};
 
+// FILEMAKER: El formador NO ve los layouts Diplomas ni Ofertas_Empleo
+//   (son exclusivos del alumnado). "Incidencias" es un nuevo layout que permite
+//   reportar problemas (enfermedad, cambio fecha…) al superadmin.
 const NAV_ITEMS = [
   { id: 'inicio',       label: 'Resumen',          icon: '▤' },
   { id: 'cursos',       label: 'Mis formaciones',  icon: '▦' },
@@ -12,6 +15,7 @@ const NAV_ITEMS = [
   { id: 'tareas',       label: 'Tareas',           icon: '◆' },
   { id: 'asistencia',   label: 'Asistencia',       icon: '☰' },
   { id: 'mis-alumnos',  label: 'Mis alumnos',      icon: '◌' },
+  { id: 'incidencias',  label: 'Incidencias',      icon: '⚠' },
   { id: 'valoraciones', label: 'Valoraciones',     icon: '★' },
   { id: 'horas',        label: 'Horas impartidas', icon: '◷' },
   { id: 'perfil',       label: 'Mi perfil',        icon: '◎' },
@@ -230,6 +234,7 @@ function AppLayout() {
               currentView === 'tareas'       && React.createElement(TasksView),
               currentView === 'asistencia'   && React.createElement(AttendanceView),
               currentView === 'mis-alumnos'  && React.createElement(AlumnosFormadorView),
+              currentView === 'incidencias'  && React.createElement(IncidenciasView),
               currentView === 'valoraciones' && React.createElement(ValoracionesRecibidasView),
               currentView === 'horas'        && React.createElement(HoursView),
               currentView === 'perfil'       && React.createElement(ProfileView),
@@ -243,6 +248,7 @@ function AppLayout() {
             currentView === 'tareas'       && React.createElement(TasksView),
             currentView === 'asistencia'   && React.createElement(AttendanceView),
             currentView === 'mis-alumnos'  && React.createElement(AlumnosFormadorView),
+            currentView === 'incidencias'  && React.createElement(IncidenciasView),
             currentView === 'valoraciones' && React.createElement(ValoracionesRecibidasView),
             currentView === 'horas'        && React.createElement(HoursView),
             currentView === 'perfil'       && React.createElement(ProfileView),
@@ -327,7 +333,10 @@ function DashboardView() {
 //   Datos sensibles (DNI / IBAN) siempre enmascarados para [priv_Formador].
 //   Solo [priv_Superadmin] ve los campos completos. Ver anotaciones en mockData.
 function ProfileView() {
-  const { user, hoursLog, courses, uploadFormadorDoc, removeFormadorDoc, showToast } = React.useContext(AppContext);
+  const { user, hoursLog, courses, trainers, uploadFormadorDoc, removeFormadorDoc, showToast } = React.useContext(AppContext);
+  // FILEMAKER: busca el registro del formador logueado en tabla Formadores para
+  //   leer las tarifas (solo lectura desde [priv_Formador]).
+  const trainerRec = (trainers || []).find(t => t.id === user?.id || t.email === user?.email) || {};
   const [editMode, setEditMode] = React.useState(false);
   const [form, setForm] = React.useState({
     phone:     user?.phone     || '',
@@ -425,6 +434,29 @@ function ProfileView() {
             React.createElement('div', { style: { fontSize: 10, fontWeight: 700, color: COLORS.textLight, fontFamily: 'Lato', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 } }, 'IBAN'),
             React.createElement('div', { style: { fontSize: 16, fontFamily: 'Bricolage Grotesque', fontWeight: 800, color: COLORS.dark, padding: '6px 0', letterSpacing: 0.8 } }, user?.iban || '—'),
           ),
+        ),
+      ),
+
+      // ── Tarifas (fijadas por administración) ─────────────────────────────
+      // FILEMAKER: campos Formadores::tarifa_venta_directa, tarifa_venta_indirecta
+      //   y tarifa_km. Editables solo por [priv_Superadmin]. Aquí en solo lectura.
+      React.createElement('div', { style: { padding: '22px 28px', borderBottom: '1px solid #f0f1f5' } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 } },
+          React.createElement('h3', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 14, fontWeight: 800, color: COLORS.dark, margin: 0, textTransform: 'uppercase', letterSpacing: 0.8 } }, 'Tarifas'),
+          React.createElement('span', { style: { fontFamily: 'Lato', fontSize: 10, color: COLORS.textLight, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' } }, '🔒 fijadas por administración'),
+        ),
+        React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: COLORS.textLight, marginBottom: 16 } },
+          'El kilometraje lo decide el superadministrador. Para cualquier ajuste, contacta con administración.',
+        ),
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 } },
+          [
+            { label: 'Venta directa',    value: trainerRec.tarifaVentaDirecta   ? trainerRec.tarifaVentaDirecta   + ' €/h' : '—' },
+            { label: 'Venta indirecta',  value: trainerRec.tarifaVentaIndirecta ? trainerRec.tarifaVentaIndirecta + ' €/h' : '—' },
+            { label: 'Kilometraje',      value: trainerRec.tarifaKm             ? trainerRec.tarifaKm.toFixed(2)  + ' €/km' : '—' },
+          ].map(f => React.createElement('div', { key: f.label, style: { background: '#fafbfc', borderRadius: 10, padding: '14px 16px', border: '1px solid #eceef4' } },
+            React.createElement('div', { style: { fontSize: 10, fontWeight: 700, color: COLORS.textLight, fontFamily: 'Lato', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 } }, f.label),
+            React.createElement('div', { style: { fontSize: 18, fontFamily: 'Bricolage Grotesque', fontWeight: 800, color: COLORS.dark } }, f.value),
+          )),
         ),
       ),
 

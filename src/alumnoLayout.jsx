@@ -12,11 +12,13 @@
 
 const { motion: layMotion, AnimatePresence: layAP } = window.Motion || {};
 
+// FILEMAKER: NAV_ITEMS equivalen a los layouts Alumno_*. "Diplomas" se ha
+//   fusionado con "Mis cursos" — el descargable vive dentro de cada curso
+//   completado (Portal Certificados en Inscripciones_Alumno).
 const NAV_ITEMS = [
   { id: 'inicio',          label: 'Inicio',         icon: '▤' },
   { id: 'catalogo',        label: 'Catálogo',       icon: '▦' },
   { id: 'mis-cursos',      label: 'Mis cursos',     icon: '◈' },
-  { id: 'diplomas',        label: 'Diplomas',       icon: '◆' },
   { id: 'empleo',          label: 'Empleo',         icon: '★' },
   { id: 'pagos',           label: 'Pagos',          icon: '€' },
   { id: 'notificaciones',  label: 'Notificaciones', icon: '◔' },
@@ -277,12 +279,11 @@ function AlumnoTopNav() {
           showProfile && React.createElement('div', {
             style: { position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: 240, background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: 12, boxShadow: '0 16px 44px rgba(0,0,0,0.2)', overflow: 'hidden', zIndex: 200 },
           },
+            // FILEMAKER: el badge de sector se ha ocultado a petición del cliente
+            //   (el campo sigue existiendo en Alumnos::sector para filtros internos).
             React.createElement('div', { style: { padding: 14, borderBottom: `1px solid ${theme.border}` } },
               React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 13, fontWeight: 800, color: theme.text, marginBottom: 2 } }, user?.name),
               React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 11, color: theme.textLight } }, user?.email),
-              React.createElement('div', { style: { marginTop: 8 } },
-                React.createElement(Pill, { text: user?.sector, small: true, color: user?.sector === 'dental' ? COLORS.orange : COLORS.cyan, bg: user?.sector === 'dental' ? `${COLORS.orange}15` : `${COLORS.cyan}15` }),
-              ),
             ),
             React.createElement('div', { style: { padding: 6 } },
               React.createElement('button', {

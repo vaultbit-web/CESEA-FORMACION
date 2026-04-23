@@ -16,16 +16,17 @@
 
 function AlumnoJobsView() {
   const { jobs, applications, applyToJob, withdrawApplication, user, theme } = React.useContext(AppContext);
-  const [sectorFilter, setSectorFilter] = React.useState(user.sector);
   const [query, setQuery] = React.useState('');
   const [onlyMine, setOnlyMine] = React.useState(false);
 
   const appFor = (jobId) => applications.find(a => a.jobId === jobId);
 
+  // FILEMAKER: filtrado por sector es interno (Alumnos::sector == Ofertas::sector),
+  //   no se expone en la UI — el alumno ve sólo las ofertas de su sector.
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     return jobs.filter(j => {
-      if (sectorFilter !== 'all' && j.sector !== sectorFilter) return false;
+      if (j.sector !== user.sector) return false;
       if (onlyMine && !appFor(j.id)) return false;
       if (q) {
         const hay = (j.title + ' ' + j.company + ' ' + j.location + ' ' + j.desc).toLowerCase();
@@ -33,10 +34,10 @@ function AlumnoJobsView() {
       }
       return true;
     });
-  }, [jobs, sectorFilter, query, onlyMine, applications]);
+  }, [jobs, user.sector, query, onlyMine, applications]);
 
   const statusPalette = {
-    postulado:  { color: '#1d3557', bg: '#e3f2fd', label: 'Postulado' },
+    postulado:  { color: '#1d3557', bg: '#e3f2fd', label: 'Preinscrito' },
     visto:      { color: COLORS.cyan, bg: `${COLORS.cyan}15`, label: 'CV visto' },
     entrevista: { color: COLORS.orange, bg: `${COLORS.orange}15`, label: 'Entrevista' },
     aceptado:   { color: '#16a34a', bg: '#16a34a15', label: 'Aceptada' },
@@ -47,21 +48,21 @@ function AlumnoJobsView() {
     React.createElement('div', { style: { marginBottom: 22 } },
       React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: theme.textLight, fontWeight: 700, letterSpacing: 1.3, textTransform: 'uppercase', marginBottom: 4 } }, 'Bolsa de empleo'),
       React.createElement('h1', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 28, fontWeight: 800, color: theme.text, letterSpacing: -0.5 } },
-        'Ofertas en tu ',
-        React.createElement('span', { style: { background: COLORS.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }, 'sector'),
+        'Ofertas ',
+        React.createElement('span', { style: { background: COLORS.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }, 'para ti'),
         '.',
       ),
       React.createElement('p', { style: { fontFamily: 'Lato', fontSize: 13, color: theme.textLight, marginTop: 4 } },
-        'Ofertas publicadas por empresas colaboradoras del sector ', React.createElement('b', null, 'dental'), ' y ', React.createElement('b', null, 'sanitario'), '. Postúlate con un clic usando el CV de tu perfil.',
+        'Ofertas publicadas por empresas colaboradoras. Preinscríbete con un clic usando el CV de tu perfil.',
       ),
     ),
 
-    // Resumen de postulaciones activas
+    // Resumen de preinscripciones activas
     applications.length > 0 && React.createElement('div', {
       style: { marginBottom: 20, padding: 18, background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: 14, boxShadow: theme.cardShadow },
     },
       React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 14, fontWeight: 800, color: theme.text, marginBottom: 10 } },
-        'Tus postulaciones activas (', applications.length, ')',
+        'Tus preinscripciones activas (', applications.length, ')',
       ),
       React.createElement('div', { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } },
         applications.map(a => {
@@ -79,7 +80,7 @@ function AlumnoJobsView() {
             React.createElement(Pill, { text: p.label, color: p.color, bg: p.bg, small: true }),
             React.createElement('button', {
               onClick: () => withdrawApplication(a.id),
-              title: 'Retirar postulación',
+              title: 'Retirar preinscripción',
               style: { background: 'none', border: 'none', color: theme.textLight, cursor: 'pointer', fontSize: 18, padding: '0 4px' },
             }, '×'),
           );
@@ -96,22 +97,7 @@ function AlumnoJobsView() {
         placeholder: '🔍 Buscar por título, empresa, ciudad…',
         style: { flex: 1, minWidth: 260, padding: '11px 14px', borderRadius: 10, border: `1px solid ${theme.border}`, background: theme.surface, fontSize: 13, fontFamily: 'Lato', outline: 'none', color: theme.text },
       }),
-      React.createElement('div', { style: { display: 'flex', gap: 6 } },
-        ['all', 'dental', 'sanidad'].map(s =>
-          React.createElement('button', {
-            key: s,
-            onClick: () => setSectorFilter(s),
-            style: {
-              padding: '10px 18px', borderRadius: 9,
-              background: sectorFilter === s ? COLORS.gradient : theme.surface,
-              color: sectorFilter === s ? '#fff' : theme.text,
-              border: sectorFilter === s ? 'none' : `1px solid ${theme.border}`,
-              fontFamily: 'Bricolage Grotesque', fontSize: 12, fontWeight: 700,
-              cursor: 'pointer', textTransform: 'capitalize',
-            },
-          }, s === 'all' ? 'Todas' : s),
-        ),
-      ),
+      // FILEMAKER: El filtro de sector se resuelve en backend — ocultado en la UI.
       React.createElement('label', {
         style: { display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontFamily: 'Lato', fontSize: 12, color: theme.text, marginLeft: 8 },
       },
@@ -119,7 +105,7 @@ function AlumnoJobsView() {
           type: 'checkbox', checked: onlyMine, onChange: e => setOnlyMine(e.target.checked),
           style: { accentColor: COLORS.orange },
         }),
-        'Solo mis postulaciones',
+        'Solo mis preinscripciones',
       ),
     ),
 
@@ -140,8 +126,7 @@ function AlumnoJobsView() {
             },
               React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 } },
                 React.createElement('div', { style: { flex: 1, minWidth: 0 } },
-                  React.createElement(Pill, { text: j.sector, color: j.sector === 'dental' ? COLORS.orange : COLORS.cyan, bg: j.sector === 'dental' ? `${COLORS.orange}15` : `${COLORS.cyan}15`, small: true }),
-                  React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 16, fontWeight: 800, color: theme.text, marginTop: 8, lineHeight: 1.3 } }, j.title),
+                  React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 16, fontWeight: 800, color: theme.text, lineHeight: 1.3 } }, j.title),
                   React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: theme.textLight, marginTop: 2 } }, j.company, ' · ', j.location),
                 ),
                 p && React.createElement(Pill, { text: p.label, color: p.color, bg: p.bg, small: true }),
@@ -163,11 +148,11 @@ function AlumnoJobsView() {
                   ? React.createElement('button', {
                       onClick: () => withdrawApplication(app.id),
                       style: { flex: 1, padding: '10px 14px', borderRadius: 9, background: theme.surface2 || '#fafbfc', color: COLORS.red, border: `1px solid ${COLORS.red}40`, fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 12, cursor: 'pointer' },
-                    }, 'Retirar postulación')
+                    }, 'Retirar preinscripción')
                   : React.createElement('button', {
                       onClick: () => applyToJob(j.id),
                       disabled: !user.cvFileName,
-                      title: user.cvFileName ? 'Postularse con tu CV actual' : 'Sube un CV desde tu perfil para postularte',
+                      title: user.cvFileName ? 'Preinscribirse con tu CV actual' : 'Sube un CV desde tu perfil para preinscribirte',
                       style: {
                         flex: 1, padding: '10px 14px', borderRadius: 9,
                         background: user.cvFileName ? COLORS.gradient : '#e4e7ef',
@@ -175,7 +160,7 @@ function AlumnoJobsView() {
                         border: 'none', fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 12,
                         cursor: user.cvFileName ? 'pointer' : 'not-allowed',
                       },
-                    }, user.cvFileName ? 'Postularme →' : 'Sube tu CV primero'),
+                    }, user.cvFileName ? 'Preinscribirme →' : 'Sube tu CV primero'),
               ),
             );
           }),
