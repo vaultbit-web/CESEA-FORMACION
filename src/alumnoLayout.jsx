@@ -144,8 +144,8 @@ function AlumnoTopNav() {
             onError: e => { e.target.style.display = 'none'; },
           }),
           !isSmall && React.createElement('span', {
-            style: { fontFamily: 'Bricolage Grotesque', fontSize: 9.5, color: 'rgba(255,255,255,0.55)', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 700 },
-          }, 'Alumnado'),
+            style: { padding: '3px 9px', borderRadius: 5, background: COLORS.gradient, color: '#fff', fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5, fontFamily: 'Bricolage Grotesque', textTransform: 'uppercase' },
+          }, 'Alumno'),
         ),
         !isSmall && React.createElement('div', { style: { display: 'flex', gap: 2 } },
           NAV_ITEMS.map(item => {

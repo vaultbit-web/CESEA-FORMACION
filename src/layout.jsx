@@ -59,7 +59,7 @@ function TopNav() {
         React.createElement('span', { style: { width: 16, height: 2, background: COLORS.dark, borderRadius: 2 } }),
       ),
       React.createElement('div', {
-        style: { display: 'flex', alignItems: 'center', cursor: 'pointer' },
+        style: { display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' },
         onClick: () => { closeAll(); setCurrentView('inicio'); },
         title: 'CESEA Formación',
       },
@@ -69,6 +69,9 @@ function TopNav() {
           style: { height: isSmall ? 26 : 34, width: 'auto', display: 'block' },
           onError: e => { e.target.style.display = 'none'; },
         }),
+        !isSmall && React.createElement('span', {
+          style: { padding: '3px 9px', borderRadius: 5, background: COLORS.gradient, color: '#fff', fontSize: 9.5, fontWeight: 800, letterSpacing: 1.5, fontFamily: 'Bricolage Grotesque', textTransform: 'uppercase' },
+        }, 'Formador'),
       ),
 
       // Items inline (solo desktop)
