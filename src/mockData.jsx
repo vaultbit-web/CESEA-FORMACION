@@ -416,8 +416,10 @@ const MOCK_PENDING_REQUESTS = [
   { id: 'R-002', type: 'new',      trainer: 'Marta Ibáñez Reyes',     trainerId: 'F-003', courseTitle: 'GESTIÓN DE CONFLICTOS',  detail: 'Acepta impartir la oferta',                   date: '2026-04-19', proposedDates: '12 Mayo 2026',     rate: 58 },
   { id: 'R-003', type: 'hours',    trainer: 'Jorge Pascual Torres',   trainerId: 'F-004', courseTitle: 'IMPLEMENTACIÓN DE ACP',  detail: 'Reporta 15h impartidas el 05/02/2026',        date: '2026-04-20' },
   { id: 'R-004', type: 'register', trainer: 'Sofía Vargas Herrera',   trainerId: 'F-007', courseTitle: '—',                       detail: 'Solicitud de alta como formadora',            date: '2026-04-21' },
-  { id: 'R-008', type: 'proposal', trainer: 'Ana García López',       trainerId: 'F-001', courseTitle: 'ACOMPAÑAMIENTO EMOCIONAL EN FINAL DE VIDA', detail: 'Nueva propuesta formativa · Presencial · 10 h · tipología: Acompañamiento emocional', date: '2026-04-22', proposedDates: '15-17 Junio 2026' },
-  { id: 'R-009', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'GESTIÓN DE CONFLICTOS',  detail: 'Cancelación por enfermedad — solicita reprogramar el 25/04', date: '2026-04-22' },
+  { id: 'R-008', type: 'proposal', trainer: 'Ana García López',       trainerId: 'F-001', courseTitle: 'ACOMPAÑAMIENTO EMOCIONAL EN FINAL DE VIDA', detail: 'Nueva propuesta formativa · Presencial · 10 h · tipología: Acompañamiento emocional', date: '2026-04-22', proposedDates: '15-17 Junio 2026', objectives: 'Dotar al personal sanitario de herramientas para acompañar en los últimos días.', contents: 'Módulo 1: la escucha activa. Módulo 2: comunicación de malas noticias. Módulo 3: autocuidado profesional.', tipologia: 'Acompañamiento emocional', hours: 10, modality: 'Presencial' },
+  { id: 'R-009', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'GESTIÓN DE CONFLICTOS',        detail: 'Cancelación por enfermedad — solicita reprogramar el 25/04', incidenciaType: 'Cancelación por enfermedad', description: 'Tengo una gripe fuerte y no podré impartir la sesión del 25/04. Solicito reprogramarla al 2 de mayo.',       status: 'en revisión', date: '2026-04-22' },
+  { id: 'R-010', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'IMPLEMENTACIÓN DE ACP',        detail: 'Aula sin retroproyector — problema de infraestructura', incidenciaType: 'Infraestructura / aula',    description: 'El aula 3 no tiene retroproyector operativo. Lo llevé yo personal para esta sesión; por favor resolver antes de la próxima.', status: 'resuelta',    date: '2026-04-11' },
+  { id: 'R-011', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'HABILIDADES COMUNICATIVAS',    detail: 'Alumno con comportamiento disruptivo',                   incidenciaType: 'Problema con alumnos',       description: 'Un alumno interrumpió reiteradamente. Hablé con él en privado y se comprometió a respetar dinámicas. Dejo constancia.', status: 'abierta',     date: '2026-04-18' },
 ];
 
 // ─── Bitácora, tareas, asistencia (formador) ─────────────────────────────────
@@ -446,16 +448,40 @@ const MOCK_TASKS = [
   { id: 'T-004', type: 'sesion',      title: 'Supervisión de caso — acompañamiento final de vida', client: 'Residencia San Rafael', clientContact: 'coordinacion@sanrafael.com', location: 'Sevilla', startDate: '2026-05-05', endDate: '2026-05-05', amount: 280, status: 'asignada', contractPdf: null, signatureImg: null, signedPdf: null, attachments: [], deliverables: [], description: 'Supervisión profesional a coordinación del centro.' },
 ];
 
+// FILEMAKER: Tabla Asistencia (cabecera) + Asistencia_Alumnos (líneas).
+//   Cada sesión está vinculada a id_curso + fecha_sesion.
 const MOCK_ATTENDANCE = [
-  { id: 'AT-001', courseId: 4, sessionDate: '2026-04-18', records: [
+  { id: 'AT-001', courseId: 4, sessionDate: '2026-04-13', records: [
     { studentId: 'A-1001', studentName: 'María López Serrano',     status: 'asiste',    origin: 'match',  notes: '' },
     { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'parcial',   origin: 'manual', notes: 'Llegó 15 min tarde' },
     { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
     { studentId: 'A-1004', studentName: 'Diego Fernández',         status: 'no_asiste', origin: 'manual', notes: 'Aviso por email' },
   ] },
+  { id: 'AT-002', courseId: 4, sessionDate: '2026-04-14', records: [
+    { studentId: 'A-1001', studentName: 'María López Serrano',     status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1004', studentName: 'Diego Fernández',         status: 'asiste',    origin: 'manual', notes: 'Recuperó la sesión anterior' },
+  ] },
+  { id: 'AT-003', courseId: 5, sessionDate: '2026-04-21', records: [
+    { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1005', studentName: 'Nuria Gómez Bravo',       status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1006', studentName: 'Pablo Herrera Gil',       status: 'parcial',   origin: 'manual', notes: 'Urgencia familiar, salió a las 12:30' },
+    { studentId: 'A-1007', studentName: 'Cristina Ayala Ruiz',     status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1008', studentName: 'Andrés Morales López',    status: 'no_asiste', origin: 'manual', notes: 'Baja médica justificada' },
+  ] },
+  { id: 'AT-004', courseId: 7, sessionDate: '2026-04-14', records: [
+    { studentId: 'A-1009', studentName: 'Isabel Torres Cano',      status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1010', studentName: 'Carlos Mateos Díaz',      status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1011', studentName: 'Rocío Jiménez Prieto',    status: 'asiste',    origin: 'manual', notes: '' },
+    { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'asiste',    origin: 'match',  notes: '' },
+  ] },
 ];
 
 // ─── Inscripciones alumno ────────────────────────────────────────────────────
+// FILEMAKER: Tabla Inscripciones_Alumno. FK id_alumno + id_curso. Las primeras 6
+//   corresponden al alumno logueado (María López); el resto se usan para poblar
+//   "Mis alumnos" del formador (cruza con students[] via módulo en la vista).
 const MOCK_ENROLLMENTS = [
   { id: 'E-001', courseId: 1,  status: 'en_progreso', progress: 65, enrolledAt: '2026-01-10', lastAccess: '2026-04-18', nextSession: '2026-04-25 10:00' },
   { id: 'E-002', courseId: 9,  status: 'en_progreso', progress: 30, enrolledAt: '2026-02-05', lastAccess: '2026-04-15', nextSession: '2026-04-27 16:00' },
@@ -463,6 +489,19 @@ const MOCK_ENROLLMENTS = [
   { id: 'E-004', courseId: 22, status: 'completado',  progress: 100,enrolledAt: '2025-09-15', lastAccess: '2025-12-10', completedAt: '2025-12-10' },
   { id: 'E-005', courseId: 33, status: 'completado',  progress: 100,enrolledAt: '2025-07-01', lastAccess: '2025-09-08', completedAt: '2025-09-08' },
   { id: 'E-006', courseId: 48, status: 'inscrito',    progress: 0,  enrolledAt: '2026-04-10', lastAccess: null, nextSession: '2026-05-02 09:00' },
+  // Inscripciones adicionales para poblar "Mis alumnos" del formador (cursos 4, 5, 6, 7)
+  { id: 'E-101', courseId: 4,  status: 'en_progreso', progress: 80, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
+  { id: 'E-102', courseId: 4,  status: 'en_progreso', progress: 75, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
+  { id: 'E-103', courseId: 4,  status: 'en_progreso', progress: 85, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
+  { id: 'E-104', courseId: 5,  status: 'en_progreso', progress: 60, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
+  { id: 'E-105', courseId: 5,  status: 'en_progreso', progress: 55, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
+  { id: 'E-106', courseId: 5,  status: 'en_progreso', progress: 68, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
+  { id: 'E-107', courseId: 6,  status: 'inscrito',    progress: 10, enrolledAt: '2026-04-18', lastAccess: '2026-04-22', nextSession: '2026-04-28 10:00' },
+  { id: 'E-108', courseId: 7,  status: 'en_progreso', progress: 40, enrolledAt: '2026-04-05', lastAccess: '2026-04-20', nextSession: '2026-04-22 16:00' },
+  { id: 'E-109', courseId: 7,  status: 'en_progreso', progress: 45, enrolledAt: '2026-04-05', lastAccess: '2026-04-19', nextSession: '2026-04-22 16:00' },
+  { id: 'E-110', courseId: 9,  status: 'completado',  progress: 100,enrolledAt: '2026-03-01', lastAccess: '2026-04-03', completedAt: '2026-04-03' },
+  { id: 'E-111', courseId: 9,  status: 'completado',  progress: 100,enrolledAt: '2026-03-01', lastAccess: '2026-04-03', completedAt: '2026-04-03' },
+  { id: 'E-112', courseId: 10, status: 'completado',  progress: 100,enrolledAt: '2026-02-15', lastAccess: '2026-03-27', completedAt: '2026-03-27' },
 ];
 
 const MOCK_DIPLOMAS = [
