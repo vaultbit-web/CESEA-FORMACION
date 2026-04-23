@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plataforma de formación corporativa — Demo comercial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0c1a;--muted:#6b7280;--bg:#f4f5f9;--card:#fff;--border:#e5e7eb;
+    --accent:#f47809;--accent2:#fcad00;--cyan:#35a9cd;
+    --grad:linear-gradient(135deg,#fcad00 0%,#f47809 100%);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Lato',sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.5px;line-height:1.1}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* NAV */
+  nav.top{position:sticky;top:0;z-index:40;background:rgba(244,245,249,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+  nav.top .wrap{display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;letter-spacing:-.3px}
+  .brand img{width:34px;height:34px}
+  nav.top ul{display:flex;gap:32px;list-style:none}
+  nav.top a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+  nav.top a:hover{color:var(--ink)}
+  .btn{display:inline-block;padding:12px 22px;border-radius:100px;background:var(--grad);color:#fff;text-decoration:none;font-weight:700;font-size:14px;border:none;cursor:pointer;box-shadow:0 10px 30px -8px rgba(244,120,9,.5);transition:transform .15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--border);box-shadow:none}
+
+  /* HERO */
+  .hero{padding:96px 0 64px;position:relative;overflow:hidden;background:
+    linear-gradient(135deg,rgba(244,245,249,.88) 0%,rgba(244,245,249,.72) 55%,rgba(244,245,249,.35) 100%),
+    url('assets/landing-hero.jpeg') center right/cover no-repeat}
+  .hero::before{content:'';position:absolute;top:-180px;right:-120px;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.28),transparent 70%);filter:blur(10px);pointer-events:none}
+  .hero::after{content:'';position:absolute;bottom:-120px;left:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(53,169,205,.18),transparent 70%);pointer-events:none}
+  .hero .wrap{position:relative;z-index:2}
+  @media (max-width:900px){.hero{background:linear-gradient(135deg,rgba(244,245,249,.97),rgba(244,245,249,.88)),url('assets/landing-hero.jpeg') center/cover no-repeat}}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:100px;background:rgba(252,173,0,.12);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:20px;border:1px solid rgba(244,120,9,.2)}
+  .pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  h1.title{font-size:clamp(44px,6vw,72px);font-weight:800;max-width:900px;line-height:1.02}
+  h1.title span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lead{font-size:19px;color:var(--muted);max-width:640px;margin:24px 0 36px;line-height:1.6}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:80px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px}
+  .stat .n{font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;color:var(--ink);letter-spacing:-.8px}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:4px;font-weight:600}
+  @media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* SECTION */
+  section{padding:96px 0}
+  .eyebrow{display:block;font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h2.section-title{font-size:clamp(32px,4vw,44px);font-weight:700;max-width:760px;margin-bottom:16px}
+  .section-lead{color:var(--muted);max-width:640px;font-size:17px;line-height:1.6;margin-bottom:56px}
+
+  /* ROLES */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .role{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:36px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+  .role:hover{transform:translateY(-4px);border-color:var(--accent)}
+  .role .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:5px 10px;border-radius:8px;margin-bottom:18px}
+  .role.a .badge{background:rgba(252,173,0,.14);color:var(--accent)}
+  .role.f .badge{background:rgba(53,169,205,.14);color:var(--cyan)}
+  .role.s .badge{background:#0b0c1a;color:#fcad00}
+  .role h3{font-size:24px;font-weight:700;margin-bottom:10px}
+  .role p{color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:20px}
+  .role ul{list-style:none}
+  .role li{padding:8px 0 8px 24px;position:relative;font-size:14px;color:var(--ink)}
+  .role li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:800}
+  @media (max-width:900px){.roles{grid-template-columns:1fr}}
+
+  /* FEATURES */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;transition:transform .2s,border-color .2s}
+  .feat:hover{transform:translateY(-3px);border-color:var(--cyan)}
+  .feat .icon{width:44px;height:44px;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;margin-bottom:16px;font-family:'Bricolage Grotesque',sans-serif}
+  .feat h4{font-size:17px;font-weight:700;margin-bottom:8px}
+  .feat p{color:var(--muted);font-size:14px;line-height:1.55}
+  @media (max-width:900px){.features{grid-template-columns:1fr}}
+
+  /* FLOW */
+  .flow{background:var(--ink);color:#fff;border-radius:28px;padding:56px;position:relative;overflow:hidden}
+  .flow::before{content:'';position:absolute;top:-200px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.15),transparent 70%)}
+  .flow h2{font-size:clamp(28px,3.6vw,38px);margin-bottom:40px;position:relative}
+  .flow-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative}
+  .step{padding:0 18px;border-left:1px solid rgba(255,255,255,.1);position:relative}
+  .step:first-child{border-left:none;padding-left:0}
+  .step .num{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+  .step h5{font-size:15px;font-weight:700;margin-bottom:6px}
+  .step p{font-size:13px;color:#9ca3af;line-height:1.5}
+  @media (max-width:900px){.flow{padding:36px 24px}.flow-steps{grid-template-columns:1fr 1fr;gap:20px}.step{border-left:none;padding:0}}
+
+  /* SECTORES */
+  .sectors{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .sector{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;display:flex;align-items:center;gap:14px;transition:border-color .2s,transform .2s}
+  .sector:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .sector .dot{width:10px;height:10px;border-radius:50%;background:var(--grad);flex-shrink:0}
+  .sector strong{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700}
+  .sector small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+  /* TECH */
+  .tech{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center}
+  .tech-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:40px}
+  .tech-card h3{font-size:24px;margin-bottom:14px}
+  .tech-list{list-style:none;margin-top:20px}
+  .tech-list li{padding:14px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:14.5px}
+  .tech-list li:last-child{border-bottom:none}
+  .tech-list strong{font-weight:700}
+  .tech-list .chip{font-size:12px;padding:4px 10px;border-radius:100px;background:rgba(53,169,205,.12);color:var(--cyan);font-weight:700}
+  @media (max-width:900px){.tech{grid-template-columns:1fr}}
+
+  /* PRICE */
+  .prices{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .price{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;transition:transform .2s;display:flex;flex-direction:column}
+  .price:hover{transform:translateY(-4px)}
+  .price.featured{border:2px solid var(--accent);background:linear-gradient(135deg,#fff 0%,#fff5e6 100%)}
+  .price.featured::before{content:'Más popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:6px 14px;border-radius:100px;white-space:nowrap}
+  .price h3{font-size:18px;margin-bottom:6px}
+  .price p.tag{color:var(--muted);font-size:12.5px;margin-bottom:18px;min-height:36px;line-height:1.45}
+  .price .n{font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.8px}
+  .price .per{color:var(--muted);font-size:13px}
+  .price ul{list-style:none;margin:18px 0 22px;flex:1}
+  .price li{padding:6px 0 6px 20px;position:relative;font-size:13px;line-height:1.5}
+  .price li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:800}
+  .price .btn{width:100%;text-align:center;font-size:13px;padding:11px 18px}
+  @media (max-width:1100px){.prices{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.prices{grid-template-columns:1fr}}
+
+  /* QUOTE — editorial layout: foto grande izquierda con fade a la derecha */
+  .quote{background:var(--card);border:1px solid var(--border);border-radius:28px;max-width:1140px;margin:0 auto;position:relative;display:grid;grid-template-columns:minmax(360px,0.9fr) 1fr;min-height:460px;overflow:hidden;box-shadow:0 30px 80px -40px rgba(11,12,26,.25)}
+  .quote .portrait-wrap{position:relative;overflow:hidden}
+  .quote .portrait{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
+  .quote .portrait-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,transparent 55%,rgba(255,255,255,.4) 75%,#fff 100%);pointer-events:none}
+  .quote .text{padding:56px 64px 56px 40px;display:flex;flex-direction:column;justify-content:center;position:relative}
+  .quote .text::before{content:'"';position:absolute;top:28px;right:40px;font-size:180px;font-family:'Bricolage Grotesque',sans-serif;color:var(--accent);opacity:.12;line-height:.8;font-weight:800}
+  .quote .text .eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+  .quote p.statement{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;line-height:1.4;font-weight:500;margin-bottom:32px;letter-spacing:-.4px;color:var(--ink);position:relative;z-index:2}
+  .quote .signature{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+  .quote .signature::before{content:'';width:40px;height:2px;background:var(--grad);border-radius:2px}
+  @media (max-width:860px){.quote{grid-template-columns:1fr;min-height:auto}.quote .portrait-wrap{aspect-ratio:16/10}.quote .portrait-wrap::after{background:linear-gradient(180deg,transparent 50%,rgba(255,255,255,.4) 80%,#fff 100%)}.quote .text{padding:32px}.quote p.statement{font-size:20px}}
+
+  /* CTA BAND */
+  .cta-band{background:var(--grad);border-radius:28px;padding:64px 56px;color:#fff;text-align:center;position:relative;overflow:hidden}
+  .cta-band::before{content:'';position:absolute;top:-40px;right:-40px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.1)}
+  .cta-band::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .cta-band h2{font-size:clamp(28px,4vw,42px);margin-bottom:16px;position:relative}
+  .cta-band p{font-size:17px;margin-bottom:32px;opacity:.95;position:relative}
+  .cta-band .btn{background:#fff;color:var(--accent);box-shadow:0 14px 40px -10px rgba(0,0,0,.3);position:relative}
+
+  /* FOOTER */
+  footer{padding:56px 0 48px;border-top:1px solid var(--border);margin-top:96px}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  footer small{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <div class="brand"><img src="assets/isotipo.png" alt=""> Plataforma de formación</div>
+    <ul>
+      <li><a href="#roles">Roles</a></li>
+      <li><a href="#features">Módulos</a></li>
+      <li><a href="#alcance">Alcance</a></li>
+      <li><a href="#precios">Precios</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="btn" href="#cta">Solicitar demo</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="pill">Plataforma all-in-one</div>
+    <h1 class="title">La formación de tu empresa, <span>ordenada en una sola plataforma.</span></h1>
+    <p class="lead">Del catálogo al diploma. Tres roles conectados —alumno, formador y administración— en un único entorno configurable para tu sector, sin instalaciones ni implantaciones eternas.</p>
+    <div class="cta-row">
+      <a class="btn" href="#cta">Reservar demo de 30 min</a>
+      <a class="btn ghost" href="#features">Ver cómo funciona</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">3</div><div class="l">Roles conectados</div></div>
+      <div class="stat"><div class="n">15+</div><div class="l">Módulos operativos</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">Responsive y móvil</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">Instalación</div></div>
+    </div>
+  </div>
+</header>
+
+<section style="padding:80px 0 40px">
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center">
+      <div>
+        <span class="eyebrow">El paso que llevas años aplazando</span>
+        <h2 class="section-title" style="margin-bottom:22px">De la carpeta de archivador a un sistema que se actualiza solo.</h2>
+        <p style="font-size:17px;color:var(--muted);line-height:1.65;margin-bottom:14px">Tu formación hoy vive entre carpetas físicas, hojas de cálculo y hilos de WhatsApp. Funciona — hasta que alguien pide el justificante de un curso de hace ocho meses.</p>
+        <p style="font-size:17px;color:var(--muted);line-height:1.65">Con la plataforma, <strong style="color:var(--ink)">cada acción queda registrada</strong>: la asistencia de cada alumno, la anotación del formador, la validación del admin, la firma del diploma. La trazabilidad deja de ser un esfuerzo — es un efecto secundario de usarla.</p>
+      </div>
+      <div style="position:relative">
+        <img src="assets/concept-before-after.jpeg" alt="Antes y después: del papel al sistema digital" style="width:100%;border-radius:24px;box-shadow:0 40px 80px -30px rgba(11,12,26,.35);display:block">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="roles" style="padding-top:40px">
+  <div class="wrap">
+    <span class="eyebrow">Tres vistas, una plataforma</span>
+    <h2 class="section-title">Diseñada para quien aprende, quien enseña y quien gestiona.</h2>
+    <p class="section-lead">Cada rol ve lo que necesita, sin ruido. Los flujos están pensados para minimizar clics y maximizar trazabilidad: todo lo que ocurre queda registrado.</p>
+
+    <div class="roles">
+      <div class="role a">
+        <div class="badge">Alumno</div>
+        <h3>Formación con contexto</h3>
+        <p>El alumno ve su catálogo filtrado, sus cursos en marcha, sus preinscripciones, su agenda y sus diplomas. Sin pasos de más.</p>
+        <ul>
+          <li>Catálogo con cursos relacionados</li>
+          <li>Progreso y calificaciones</li>
+          <li>Preinscripciones a ofertas</li>
+          <li>Descarga de diplomas</li>
+          <li>Calendario y notificaciones</li>
+        </ul>
+      </div>
+      <div class="role f">
+        <div class="badge">Formador</div>
+        <h3>Herramientas de impartición</h3>
+        <p>El formador propone fechas, imparte, pasa lista, lleva bitácora, reporta incidencias y firma sus horas — todo desde la misma pantalla.</p>
+        <ul>
+          <li>Propuesta de fechas con aviso de solape</li>
+          <li>Asistencia y valoraciones</li>
+          <li>Bitácora y tareas</li>
+          <li>Incidencias y cambios de contenido</li>
+          <li>Mis alumnos por curso</li>
+        </ul>
+      </div>
+      <div class="role s">
+        <div class="badge">Administración</div>
+        <h3>Control y trazabilidad</h3>
+        <p>Administración ve solicitudes agrupadas por propuesta, expediente completo por curso, validación de horas y configuración por valor-listas.</p>
+        <ul>
+          <li>Solicitudes agrupadas por curso</li>
+          <li>Perfil de formador con tarifas</li>
+          <li>Importación masiva de cursos (CSV)</li>
+          <li>Expediente completo del curso</li>
+          <li>Configuración sin desarrollador</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:80px 0;background:linear-gradient(180deg,var(--bg) 0%,#fff 100%)">
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center">
+      <div style="position:relative">
+        <img src="assets/concept-three-roles.jpeg" alt="Tres roles conectados" style="width:100%;border-radius:24px;box-shadow:0 40px 80px -30px rgba(11,12,26,.35);display:block">
+      </div>
+      <div>
+        <span class="eyebrow">Filosofía del producto</span>
+        <h2 class="section-title" style="margin-bottom:22px">No son tres portales separados. Es un solo flujo con tres puntos de vista.</h2>
+        <p style="font-size:17px;color:var(--muted);line-height:1.65;margin-bottom:18px">La mayoría de los LMS replican el mismo panel con permisos distintos. Eso genera ruido y duplicidad. Aquí cada rol tiene una interfaz propia — pero los datos circulan entre ellos sin fricción.</p>
+        <ul style="list-style:none;margin-top:20px">
+          <li style="padding:10px 0 10px 28px;position:relative;font-size:15px;line-height:1.55"><span style="position:absolute;left:0;top:10px;width:18px;height:18px;border-radius:50%;background:var(--grad);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">1</span>La bitácora que escribe el <strong>formador</strong> se convierte en parte del <strong>expediente</strong> del admin.</li>
+          <li style="padding:10px 0 10px 28px;position:relative;font-size:15px;line-height:1.55"><span style="position:absolute;left:0;top:10px;width:18px;height:18px;border-radius:50%;background:var(--grad);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">2</span>Las valoraciones del <strong>alumno</strong> alimentan el <strong>trust score</strong> del formador.</li>
+          <li style="padding:10px 0 10px 28px;position:relative;font-size:15px;line-height:1.55"><span style="position:absolute;left:0;top:10px;width:18px;height:18px;border-radius:50%;background:var(--grad);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">3</span>Las solicitudes se priorizan por <strong>rating + tarifa</strong> sin intervención manual.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <span class="eyebrow">Módulos</span>
+    <h2 class="section-title">Todo lo que una operación de formación necesita.</h2>
+    <p class="section-lead">Construida a partir de la operativa real de empresas que imparten formación regulada, con atención a los detalles que cambian la jornada del equipo.</p>
+
+    <div class="features">
+      <div class="feat"><div class="icon">▦</div><h4>Catálogo inteligente</h4><p>Ordenado por áreas, con cursos relacionados y recomendaciones en función del perfil del alumno.</p></div>
+      <div class="feat"><div class="icon">◈</div><h4>Mis cursos</h4><p>En curso, completados y diplomas fusionados. El alumno descarga el certificado desde la ficha del curso.</p></div>
+      <div class="feat"><div class="icon">◷</div><h4>Calendario por franjas</h4><p>Mañana / tarde divididos a las 14:00 con detección automática de solape horario.</p></div>
+      <div class="feat"><div class="icon">✎</div><h4>Bitácora de formador</h4><p>Registro cronológico por sesión con incidencias, anotaciones y firmas — integrado al expediente.</p></div>
+      <div class="feat"><div class="icon">✓</div><h4>Asistencia</h4><p>Pase de lista por sesión con estados personalizables y exportación para justificaciones.</p></div>
+      <div class="feat"><div class="icon">★</div><h4>Valoraciones</h4><p>Encuestas al final del curso con trust score y rating consolidado por formador.</p></div>
+      <div class="feat"><div class="icon">€</div><h4>Tarifas y kilometraje</h4><p>Tarifa venta directa, indirecta y €/km configurables desde administración. Solo lectura para el formador.</p></div>
+      <div class="feat"><div class="icon">⚠</div><h4>Incidencias</h4><p>Cancelación, cambio de fecha o problema con alumnos — canal directo al admin con trazabilidad.</p></div>
+      <div class="feat"><div class="icon">⬆</div><h4>Importación CSV</h4><p>Carga masiva de cursos con preview de altas vs. actualizaciones y descarga de plantilla.</p></div>
+      <div class="feat"><div class="icon">⎘</div><h4>Expedientes</h4><p>Panel del curso finalizado con sesiones validables, bitácora, asistencia y tareas firmadas.</p></div>
+      <div class="feat"><div class="icon">◉</div><h4>Diplomas</h4><p>Certificados con plantilla corporativa, datos del alumno, horas impartidas y firma del director.</p></div>
+      <div class="feat"><div class="icon">≡</div><h4>Valor-listas configurables</h4><p>Tipologías, áreas, estados — ajustables sin tocar código ni esperar al desarrollador.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="flow">
+      <h2>Del descubrimiento al diploma en un único flujo.</h2>
+      <div class="flow-steps">
+        <div class="step"><div class="num">01</div><h5>Catálogo</h5><p>El alumno descubre cursos alineados con su perfil y se preinscribe en un clic.</p></div>
+        <div class="step"><div class="num">02</div><h5>Asignación</h5><p>Administración agrupa solicitudes y asigna formador con criterio de rating y tarifa.</p></div>
+        <div class="step"><div class="num">03</div><h5>Impartición</h5><p>El formador pasa lista, lleva bitácora y reporta incidencias en tiempo real.</p></div>
+        <div class="step"><div class="num">04</div><h5>Validación</h5><p>Admin abre el expediente del curso, valida horas y cierra sesiones una a una.</p></div>
+        <div class="step"><div class="num">05</div><h5>Diploma</h5><p>Emisión automática del certificado descargable por el alumno desde su portal.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sectores" style="background:linear-gradient(180deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.98) 100%),url('assets/landing-sectors-bg.jpeg') center/cover no-repeat fixed;border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative">
+  <div class="wrap" style="position:relative;z-index:2">
+    <span class="eyebrow">Adaptable</span>
+    <h2 class="section-title">Una base, múltiples sectores.</h2>
+    <p class="section-lead">Las áreas, tipologías y flujos se configuran desde administración. Los ejemplos que verás en la demo están en sanidad — pero la plataforma está preparada para cualquier vertical con formación interna o externa.</p>
+
+    <div class="sectors">
+      <div class="sector"><div class="dot"></div><div><strong>Sanidad</strong><small>Formación clínica, ACP, autocuidados</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Industria</strong><small>PRL, máquinas, certificaciones</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Retail</strong><small>Onboarding, producto, ventas</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Logística</strong><small>Manipulación, conducción, protocolo</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Consultoría</strong><small>Compliance, metodología, upskilling</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Educación</strong><small>Academias, centros, extraescolar</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Administración pública</strong><small>Reciclaje, normativa, oposiciones</small></div></div>
+      <div class="sector"><div class="dot"></div><div><strong>Hostelería</strong><small>Manipulación, servicio, idiomas</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="wrap">
+    <div class="tech">
+      <div>
+        <span class="eyebrow">Tecnología</span>
+        <h2 class="section-title">Lista para desplegar como web o como FileMaker Pro.</h2>
+        <p class="section-lead">El producto está construido para escalar a tu entorno: si ya operas con FileMaker Pro, te entregamos los scripts y layouts equivalentes. Si prefieres web, se despliega como aplicación responsive accesible desde cualquier dispositivo.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px;max-width:480px">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">Front-end</div><div style="font-size:14px;font-weight:700;margin-top:2px">React 18</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">PDF nativo</div><div style="font-size:14px;font-weight:700;margin-top:2px">html2canvas · jsPDF</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">Integración</div><div style="font-size:14px;font-weight:700;margin-top:2px">FileMaker Pro ready</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">Despliegue</div><div style="font-size:14px;font-weight:700;margin-top:2px">Cloud o on-premise</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">Idioma</div><div style="font-size:14px;font-weight:700;margin-top:2px">ES · i18n ready</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px">Accesibilidad</div><div style="font-size:14px;font-weight:700;margin-top:2px">WCAG AA objetivo</div></div>
+        </div>
+
+        <a class="btn" href="#cta" style="margin-top:28px">Ver opciones de despliegue</a>
+      </div>
+      <div style="position:relative">
+        <img src="assets/landing-tech-devices.jpeg" alt="Plataforma en laptop, tablet y móvil" style="width:100%;border-radius:22px;box-shadow:0 40px 80px -30px rgba(0,0,0,.3);display:block">
+        <div style="position:absolute;bottom:-18px;right:-18px;background:var(--grad);color:#fff;padding:12px 20px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;letter-spacing:.3px;box-shadow:0 20px 40px -10px rgba(244,120,9,.4)">100% responsive</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="quote">
+      <div class="portrait-wrap">
+        <img class="portrait" src="assets/slide-13-quote.jpeg" alt="Dirección · empresa piloto">
+      </div>
+      <div class="text">
+        <div class="eyebrow">Lo que dicen de nosotros</div>
+        <p class="statement">El punto diferencial no es la lista de módulos: es que los tres roles están pensados para trabajar entre sí. La bitácora del formador alimenta el expediente del admin, y el admin retroalimenta al alumno. Eso nos ahorra cruzar mails.</p>
+        <div class="signature">Dirección · empresa piloto</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="alcance">
+  <div class="wrap">
+    <span class="eyebrow">Qué se vende exactamente</span>
+    <h2 class="section-title">El producto incluye todo esto. De serie.</h2>
+    <p class="section-lead">Sin extras ocultos. Todos los planes incluyen los tres roles, los 15 módulos operativos, actualizaciones continuas del producto, hosting seguro, backups diarios y soporte por email. Lo único que varía entre planes son los <strong style="color:var(--ink)">límites de volumen</strong> (alumnos, formadores) y las <strong style="color:var(--ink)">integraciones avanzadas</strong> (SSO, FileMaker, API).</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:32px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">A</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">Acceso web para los tres roles</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Alumnos, formadores y administración acceden desde navegador. Sin app nativa. URL dedicada (<code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px">tuempresa.formacion.app</code>) o tu dominio propio desde plan Business.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">B</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">15 módulos operativos completos</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Catálogo, mis cursos, preinscripciones, calendario con franjas, asistencia digital, bitácora, valoraciones, incidencias, tarifas, expedientes, diplomas, importación CSV, valor-listas configurables.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">C</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">Hosting, backups y seguridad</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Infraestructura en la UE. HTTPS forzado. Backups diarios con retención 30 días. Datos cifrados en reposo. Cumplimiento RGPD. Todo incluido en la suscripción.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">D</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">Actualizaciones sin coste extra</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Mejoras del producto, parches de seguridad y nuevos módulos se despliegan automáticamente. No hay coste de "versión nueva" ni fee de mantenimiento. Pagas suscripción, recibes producto vivo.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">E</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">Soporte humano</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Email con respuesta &lt; 24 h laborables en todos los planes. Business y superiores incluyen canal prioritario. Scale y Enterprise añaden gestor de cuenta dedicado.</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--grad);color:#fff;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px">F</div>
+        <h4 style="font-size:17px;font-weight:700;margin-bottom:8px">Personalización visual</h4>
+        <p style="color:var(--muted);font-size:14px;line-height:1.55">Desde el plan Business: subimos tu logo, ajustamos la paleta a tus colores corporativos y personalizamos la plantilla de diplomas. Todo sin tocar código.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--ink);color:#fff;padding-top:64px;padding-bottom:64px;position:relative;overflow:hidden">
+  <div style="position:absolute;top:-180px;left:-120px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.18),transparent 70%);filter:blur(20px);pointer-events:none"></div>
+  <div class="wrap" style="position:relative;z-index:2">
+    <span class="eyebrow" style="background:rgba(252,173,0,.15);color:#fcad00">Cómo se vende</span>
+    <h2 class="section-title" style="color:#fff">Modelo comercial transparente.</h2>
+    <p class="section-lead" style="color:rgba(255,255,255,.75)">Tres componentes económicos, sin sorpresas. Ni fees ocultos, ni cláusulas de permanencia larga, ni comisiones por usuario adicional dentro del tramo.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px">
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:32px">
+        <p style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#fcad00;text-transform:uppercase;margin-bottom:10px">1 · Suscripción mensual</p>
+        <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;line-height:1.1;margin-bottom:10px">Pagas por tramo de volumen</p>
+        <p style="color:rgba(255,255,255,.7);font-size:14px;line-height:1.55">Cada plan cubre un rango de alumnos activos. Si te pasas del tramo, ampliamos sin cambiar de plan. Facturación mensual, sin permanencia. 20% de descuento en contrato anual.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:32px">
+        <p style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#fcad00;text-transform:uppercase;margin-bottom:10px">2 · Implementación (opcional)</p>
+        <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;line-height:1.1;margin-bottom:10px">Pago único desde 390€</p>
+        <p style="color:rgba(255,255,255,.7);font-size:14px;line-height:1.55">Configuración inicial, migración de tu catálogo vía CSV y 2 sesiones de formación al equipo. Lo puede hacer tu equipo por su cuenta (incluido en Starter) o lo hacemos nosotros.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:32px">
+        <p style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#fcad00;text-transform:uppercase;margin-bottom:10px">3 · Extras a demanda</p>
+        <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;line-height:1.1;margin-bottom:10px">Sólo si los necesitas</p>
+        <p style="color:rgba(255,255,255,.7);font-size:14px;line-height:1.55">Integración FileMaker Pro, SSO corporativo (SAML/OAuth), dominio propio, entornos de staging, desarrollos específicos. Presupuesto transparente caso a caso.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="precios" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <span class="eyebrow">Modelos</span>
+    <h2 class="section-title">Precio transparente, adaptado al tamaño del equipo.</h2>
+    <p class="section-lead">Los planes abajo son orientativos. El precio final depende del volumen de alumnos activos, personalización visual y si se integra con tu FileMaker existente.</p>
+
+    <div class="prices">
+      <div class="price">
+        <h3>Starter</h3>
+        <p class="tag">Equipos pequeños · hasta 50 alumnos activos</p>
+        <div><span class="n">79€</span><span class="per"> / mes</span></div>
+        <ul>
+          <li>3 roles · web responsive</li>
+          <li>Hasta 3 formadores</li>
+          <li>Catálogo ilimitado</li>
+          <li>Diplomas con plantilla</li>
+          <li>Soporte por email</li>
+          <li>Implementación incluida</li>
+        </ul>
+        <a class="btn ghost" href="#cta">Empezar</a>
+      </div>
+      <div class="price featured">
+        <h3>Business</h3>
+        <p class="tag">El más elegido · hasta 250 alumnos activos</p>
+        <div><span class="n">249€</span><span class="per"> / mes</span></div>
+        <ul>
+          <li>Todo lo de Starter</li>
+          <li>Hasta 15 formadores</li>
+          <li>Importación CSV masiva</li>
+          <li>Expedientes y validación de horas</li>
+          <li>Personalización visual (logo + colores)</li>
+          <li>Soporte prioritario</li>
+          <li><small style="color:var(--muted)">+ 390€ de implementación única (opcional)</small></li>
+        </ul>
+        <a class="btn" href="#cta">Reservar demo</a>
+      </div>
+      <div class="price">
+        <h3>Scale</h3>
+        <p class="tag">Crecimiento · hasta 750 alumnos activos</p>
+        <div><span class="n">499€</span><span class="per"> / mes</span></div>
+        <ul>
+          <li>Todo lo de Business</li>
+          <li>Formadores ilimitados</li>
+          <li>Multi-sede / multi-departamento</li>
+          <li>API + webhooks</li>
+          <li>Gestor de cuenta</li>
+          <li><small style="color:var(--muted)">+ 990€ de implementación única</small></li>
+        </ul>
+        <a class="btn ghost" href="#cta">Hablar con ventas</a>
+      </div>
+      <div class="price">
+        <h3>Enterprise</h3>
+        <p class="tag">Gran cuenta · FileMaker / on-premise</p>
+        <div><span class="n">desde 990€</span><span class="per"> / mes</span></div>
+        <ul>
+          <li>Alumnos ilimitados</li>
+          <li>Integración con FileMaker Pro</li>
+          <li>SSO (SAML / OAuth)</li>
+          <li>On-premise o cloud privado</li>
+          <li>SLA 99.9% y gestor dedicado</li>
+          <li>Implementación a medida</li>
+        </ul>
+        <a class="btn ghost" href="#cta">Contactar</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:32px;color:var(--muted);font-size:13.5px;max-width:720px;margin-left:auto;margin-right:auto">Precios sin IVA. Facturación mensual con cancelación libre (sin permanencia). Descuento del <strong style="color:var(--accent)">20%</strong> en contrato anual. Planes ampliables sin cambiar de tier si creces.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <span class="eyebrow">Preguntas habituales</span>
+    <h2 class="section-title">Lo que ya nos han preguntado.</h2>
+    <p class="section-lead">Si te surge alguna más, pregúntanosla directamente en la demo o por email.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px">
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Puedo migrar mi catálogo actual?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">Sí. Si tienes tu catálogo en Excel o Google Sheets, lo exportas como CSV y lo importas directamente desde administración con preview de altas/actualizaciones. Si prefieres, te lo migramos nosotros dentro del pack de implementación.</p></details>
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Qué pasa si supero el número de alumnos del plan?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">Nada dramático. Te avisamos antes de llegar al límite y te proponemos el cambio de tramo con antelación. No hay corte de servicio ni penalización.</p></details>
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Hay permanencia?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">No. Facturación mensual con cancelación libre. Si firmas contrato anual obtienes un 20% de descuento, pero sin obligación.</p></details>
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Es compatible con FileMaker Pro?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">Sí. El producto nace web, pero está documentado para portarse a FileMaker: entregamos los layouts, value-lists y scripts equivalentes en el plan Enterprise. Útil si ya operas con FM y no quieres migrar.</p></details>
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Cómo gestionáis los datos de los alumnos?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">Cumplimiento RGPD. Infraestructura en la UE. Datos cifrados en reposo y en tránsito. Firmamos DPA sin coste. Puedes exportar todos tus datos en cualquier momento en formato CSV/JSON.</p></details>
+      <details style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 26px;cursor:pointer"><summary style="font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:32px">¿Cuánto tarda la implementación?<span style="position:absolute;right:0;top:0;color:var(--accent);font-size:22px;line-height:1">+</span></summary><p style="margin-top:12px;color:var(--muted);font-size:14.5px;line-height:1.6">De la firma al primer curso impartido: <strong>6 semanas</strong> con el pack Business. Si te autoconfiguras (plan Starter) puedes estar operando en 3–5 días.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>Reserva una demo de 30 minutos.</h2>
+      <p>Te la enseñamos en tu idioma, con datos de ejemplo de tu sector. Sin compromiso.</p>
+      <a class="btn" href="mailto:direccion@csadental.com?subject=Demo%20plataforma%20de%20formaci%C3%B3n">Escribir al equipo comercial</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand"><img src="assets/isotipo.png" alt=""> Plataforma de formación corporativa</div>
+    <small>© 2026 · Producto basado en CESEA Formación · Adaptable a cualquier sector</small>
+  </div>
+</footer>
+
+</body>
+</html>

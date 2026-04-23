@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Email · Invitación a demo</title>
+<link rel="stylesheet" href="_email-base.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="preview-wrap">
+
+  <div class="meta">
+    <span class="chip">Plantilla 3 de 4</span>
+    <h1>Confirmación de demo</h1>
+    <p><strong>Asunto sugerido:</strong> <code>Confirmado · Demo {{FECHA}} · Plataforma de formación</code></p>
+    <p><strong>Objetivo:</strong> confirmar la reunión, prepararla y dejar claro qué se verá.</p>
+    <p><strong>Placeholders:</strong> <code>{{NOMBRE}}</code>, <code>{{FECHA}}</code>, <code>{{HORA}}</code>, <code>{{LINK_MEET}}</code>, <code>{{SECTOR}}</code>, <code>{{TU_NOMBRE}}</code>, <code>{{TU_ROL}}</code>.</p>
+  </div>
+
+  <!-- ══════════ EMAIL HTML ══════════ -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:18px;border:1px solid #e5e7eb;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#0b0c1a;box-shadow:0 20px 60px -30px rgba(0,0,0,.18)">
+
+    <!-- HEADER -->
+    <tr><td style="background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);padding:0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td style="padding:28px 32px">
+          <table role="presentation" width="100%"><tr>
+            <td style="color:#fff;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.3px">Plataforma de formación</td>
+            <td align="right" style="color:rgba(255,255,255,.92);font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase">All-in-one · 3 roles</td>
+          </tr></table>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <!-- BODY -->
+    <tr><td style="padding:36px 32px 0">
+      <p style="margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#f47809">Demo confirmada</p>
+      <h2 style="margin:0 0 8px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.7px;line-height:1.1;color:#0b0c1a">{{FECHA}}</h2>
+      <p style="margin:0 0 22px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.3px;color:#f47809">a las {{HORA}} · 30 minutos</p>
+      <p style="margin:0 0 20px;font-size:15.5px;line-height:1.62;color:#1f2937">Hola {{NOMBRE}}, confirmada la demo. Nos vemos en:</p>
+    </td></tr>
+
+    <!-- LINK BLOCK -->
+    <tr><td style="padding:0 32px 8px">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f9;border:1px solid #e5e7eb;border-radius:12px"><tr><td style="padding:18px 22px">
+        <p style="margin:0 0 4px;font-size:10px;font-weight:800;letter-spacing:1.4px;color:#6b7280;text-transform:uppercase">Enlace de la reunión</p>
+        <a href="{{LINK_MEET}}" style="font-size:15px;font-weight:700;color:#f47809;text-decoration:none;word-break:break-all;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">{{LINK_MEET}}</a>
+      </td></tr></table>
+    </td></tr>
+
+    <!-- AGENDA -->
+    <tr><td style="padding:28px 32px 0">
+      <p style="margin:0 0 14px;font-size:10px;font-weight:800;letter-spacing:1.4px;color:#6b7280;text-transform:uppercase">Qué vamos a ver</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tbody>
+        <tr><td style="padding:12px 0;border-bottom:1px solid #f1f1f1;font-size:14.5px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:36px">01 ·</strong> Vista del <strong>alumno</strong>: catálogo inteligente, preinscripciones y diplomas</td></tr>
+        <tr><td style="padding:12px 0;border-bottom:1px solid #f1f1f1;font-size:14.5px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:36px">02 ·</strong> Vista del <strong>formador</strong>: calendario por franjas, asistencia y bitácora</td></tr>
+        <tr><td style="padding:12px 0;border-bottom:1px solid #f1f1f1;font-size:14.5px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:36px">03 ·</strong> Vista de <strong>administración</strong>: solicitudes, expedientes y CSV masivo</td></tr>
+        <tr><td style="padding:12px 0;font-size:14.5px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:36px">04 ·</strong> Tus preguntas + mini-ejemplo con datos de <strong>{{SECTOR}}</strong></td></tr>
+      </tbody></table>
+    </td></tr>
+
+    <tr><td style="padding:24px 32px 8px">
+      <p style="margin:0 0 20px;font-size:15.5px;line-height:1.62;color:#1f2937">Te adjunto el <strong>one-pager</strong> por si quieres revisarlo antes de la llamada o compartirlo con tu equipo. Si necesitas mover la hora, respóndeme sin problema.</p>
+    </td></tr>
+
+    <!-- CTA -->
+    <tr><td align="left" style="padding:0 32px 8px">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:100px;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);box-shadow:0 10px 30px -10px rgba(244,120,9,.55)">
+        <a href="{{LINK_MEET}}" style="display:inline-block;padding:14px 30px;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Unirme a la reunión →</a>
+      </td></tr></table>
+    </td></tr>
+
+    <tr><td style="padding:28px 32px 32px">
+      <p style="margin:0;font-size:14.5px;line-height:1.55;color:#4b5563">Nos vemos pronto,<br><strong style="color:#0b0c1a">{{TU_NOMBRE}}</strong><br><span style="color:#6b7280;font-size:13px">{{TU_ROL}}</span></p>
+    </td></tr>
+
+    <!-- FOOTER -->
+    <tr><td style="padding:18px 32px;background:#f4f5f9;border-top:1px solid #e5e7eb;font-size:11px;line-height:1.55;color:#9ca3af;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      Plataforma basada en CESEA Formación · Adaptable a cualquier sector<br>
+      Añadir al calendario · Recordatorio automático 30 min antes
+    </td></tr>
+
+  </table>
+
+  <span class="label">Versión texto plano</span>
+  <textarea readonly>Asunto: Confirmado · Demo {{FECHA}} · Plataforma de formación
+
+Hola {{NOMBRE}},
+
+Confirmada la demo para el {{FECHA}} a las {{HORA}} (30 minutos).
+
+Enlace: {{LINK_MEET}}
+
+QUÉ VAMOS A VER
+01 · Vista del alumno: catálogo inteligente, preinscripciones y diplomas
+02 · Vista del formador: calendario por franjas, asistencia y bitácora
+03 · Vista de administración: solicitudes, expedientes y CSV masivo
+04 · Tus preguntas + mini-ejemplo con datos de {{SECTOR}}
+
+Te adjunto el one-pager por si quieres revisarlo antes o compartirlo con tu equipo. Si necesitas mover la hora, respóndeme sin problema.
+
+Nos vemos pronto,
+{{TU_NOMBRE}}
+{{TU_ROL}}
+</textarea>
+
+</div>
+</body>
+</html>

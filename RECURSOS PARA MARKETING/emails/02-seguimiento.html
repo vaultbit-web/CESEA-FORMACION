@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Email · Seguimiento</title>
+<link rel="stylesheet" href="_email-base.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="preview-wrap">
+
+  <div class="meta">
+    <span class="chip">Plantilla 2 de 4</span>
+    <h1>Seguimiento tras silencio</h1>
+    <p><strong>Asunto sugerido:</strong> <code>Una captura rápida, {{NOMBRE}}</code></p>
+    <p><strong>Cuándo enviar:</strong> 5–7 días después del outreach inicial sin respuesta.</p>
+    <p><strong>Objetivo:</strong> reactivar sin presionar. La captura visual reengancha mejor que más texto.</p>
+    <p><strong>Placeholders:</strong> <code>{{NOMBRE}}</code>, <code>{{TU_NOMBRE}}</code>, <code>{{TU_ROL}}</code>.</p>
+  </div>
+
+  <!-- ══════════ EMAIL HTML ══════════ -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:18px;border:1px solid #e5e7eb;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#0b0c1a;box-shadow:0 20px 60px -30px rgba(0,0,0,.18)">
+
+    <!-- HEADER -->
+    <tr><td style="background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);padding:0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td style="padding:28px 32px">
+          <table role="presentation" width="100%"><tr>
+            <td style="color:#fff;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.3px">Plataforma de formación</td>
+            <td align="right" style="color:rgba(255,255,255,.92);font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase">All-in-one · 3 roles</td>
+          </tr></table>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <!-- BODY -->
+    <tr><td style="padding:36px 32px 0">
+      <p style="margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#f47809">Seguimiento</p>
+      <h2 style="margin:0 0 18px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.18;color:#0b0c1a">No te molesto sin traerte algo.</h2>
+      <p style="margin:0 0 18px;font-size:15.5px;line-height:1.62;color:#1f2937">Hola {{NOMBRE}}, te dejo una captura del panel de administración para que veas el tipo de herramienta:</p>
+    </td></tr>
+
+    <!-- INLINE MOCKUP (mini admin) -->
+    <tr><td style="padding:0 32px">
+      <div style="border:1px solid #e5e7eb;border-radius:14px;overflow:hidden">
+        <!-- Browser chrome -->
+        <div style="background:#0b0c1a;padding:11px 14px;line-height:0">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff5f56;margin-right:6px"></span>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ffbd2e;margin-right:6px"></span>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#27c93f"></span>
+        </div>
+        <div style="padding:22px;background:#fafafa">
+          <table role="presentation" width="100%"><tr>
+            <td><strong style="font-family:'Bricolage Grotesque',sans-serif;font-size:15px">Panel de administración</strong></td>
+            <td align="right"><span style="background:linear-gradient(135deg,#fcad00,#f47809);color:#fff;font-size:9px;padding:4px 10px;border-radius:100px;font-weight:800;letter-spacing:1px;text-transform:uppercase">Superadmin</span></td>
+          </tr></table>
+          <table role="presentation" width="100%" style="margin-top:14px;border-spacing:6px 0" cellpadding="0" cellspacing="6"><tr>
+            <td width="25%" style="background:#fff;border-radius:10px;padding:12px;border:1px solid #e5e7eb"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#0b0c1a;line-height:1">247</div><div style="font-size:10px;color:#6b7280;font-weight:700;margin-top:4px">Alumnos</div></td>
+            <td width="25%" style="background:#fff;border-radius:10px;padding:12px;border:1px solid #e5e7eb"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#0b0c1a;line-height:1">32</div><div style="font-size:10px;color:#6b7280;font-weight:700;margin-top:4px">Cursos</div></td>
+            <td width="25%" style="background:#fff;border-radius:10px;padding:12px;border:1px solid #e5e7eb"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#0b0c1a;line-height:1">18</div><div style="font-size:10px;color:#6b7280;font-weight:700;margin-top:4px">Solicitudes</div></td>
+            <td width="25%" style="background:#fff;border-radius:10px;padding:12px;border:1px solid #e5e7eb"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#0b0c1a;line-height:1">94%</div><div style="font-size:10px;color:#6b7280;font-weight:700;margin-top:4px">Satisfacción</div></td>
+          </tr></table>
+          <div style="margin-top:14px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:11px;font-weight:800;margin-bottom:8px;color:#0b0c1a">Solicitudes agrupadas por curso</div>
+            <table role="presentation" width="100%"><tr><td style="font-size:11.5px;padding:5px 0;border-bottom:1px solid #f1f1f1;color:#0b0c1a">Movilizaciones · <span style="color:#6b7280">3 formadores</span></td><td align="right" style="padding:5px 0;border-bottom:1px solid #f1f1f1"><span style="background:rgba(252,173,0,.18);color:#f47809;font-size:9px;padding:3px 8px;border-radius:100px;font-weight:800;letter-spacing:.6px;text-transform:uppercase">Pendiente</span></td></tr>
+            <tr><td style="font-size:11.5px;padding:5px 0;color:#0b0c1a">ACP avanzado · <span style="color:#6b7280">María L.</span></td><td align="right" style="padding:5px 0"><span style="background:rgba(53,169,205,.16);color:#2b8aab;font-size:9px;padding:3px 8px;border-radius:100px;font-weight:800;letter-spacing:.6px;text-transform:uppercase">Revisión</span></td></tr></table>
+          </div>
+        </div>
+      </div>
+    </td></tr>
+
+    <tr><td style="padding:22px 32px 8px">
+      <p style="margin:0 0 16px;font-size:15.5px;line-height:1.62;color:#1f2937">Lo que ves arriba resume el enfoque: <strong>las solicitudes de los formadores se agrupan por curso</strong>, no por persona. Aprobar o reasignar es un clic, no un hilo de WhatsApp.</p>
+      <p style="margin:0 0 24px;font-size:15.5px;line-height:1.62;color:#1f2937">¿Te reservo 30 minutos la semana que viene para enseñarte también la vista del alumno y del formador? Si ahora no es prioridad, respóndeme "más adelante" y te escribo en el próximo trimestre.</p>
+    </td></tr>
+
+    <!-- CTA -->
+    <tr><td align="left" style="padding:0 32px 8px">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:100px;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);box-shadow:0 10px 30px -10px rgba(244,120,9,.55)">
+        <a href="mailto:direccion@csadental.com?subject=Reservar%20demo" style="display:inline-block;padding:14px 30px;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Reservar 30 minutos →</a>
+      </td></tr></table>
+    </td></tr>
+
+    <tr><td style="padding:28px 32px 32px">
+      <p style="margin:0;font-size:14.5px;line-height:1.55;color:#4b5563">Gracias por tu tiempo,<br><strong style="color:#0b0c1a">{{TU_NOMBRE}}</strong><br><span style="color:#6b7280;font-size:13px">{{TU_ROL}}</span></p>
+    </td></tr>
+
+    <!-- FOOTER -->
+    <tr><td style="padding:18px 32px;background:#f4f5f9;border-top:1px solid #e5e7eb;font-size:11px;line-height:1.55;color:#9ca3af;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      Plataforma basada en CESEA Formación · Adaptable a cualquier sector<br>
+      Si prefieres que no te contactemos más, responde "baja" y te sacamos de la lista.
+    </td></tr>
+
+  </table>
+
+  <span class="label">Versión texto plano</span>
+  <textarea readonly>Asunto: Una captura rápida, {{NOMBRE}}
+
+Hola {{NOMBRE}},
+
+No quería insistir sin aportarte algo. Te adjunto una captura del panel de administración para que veas el tipo de herramienta: las solicitudes de los formadores se agrupan por curso, no por persona. Aprobar o reasignar es un clic, no un hilo de WhatsApp.
+
+¿Te reservo 30 minutos la semana que viene para enseñarte también la vista del alumno y del formador? Si ahora no es prioridad, respóndeme "más adelante" y te escribo en el próximo trimestre.
+
+Gracias por tu tiempo,
+{{TU_NOMBRE}}
+{{TU_ROL}}
+</textarea>
+
+</div>
+</body>
+</html>

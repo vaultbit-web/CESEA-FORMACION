@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Post cuadrado · Ciclo completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:#2a2d40;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Lato',sans-serif}
+  .tip{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 16px;border-radius:100px;font-size:12px;color:#6b7280;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:99}
+  .card{width:1080px;height:1080px;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);color:#fff;position:relative;overflow:hidden;padding:80px;display:flex;flex-direction:column;justify-content:space-between;transform:scale(.6);transform-origin:center}
+  @media (min-width:1400px){.card{transform:scale(.7)}}
+  .card::before{content:'';position:absolute;top:-250px;left:-100px;width:600px;height:600px;border-radius:50%;background:rgba(255,255,255,.1)}
+  .card::after{content:'';position:absolute;bottom:-200px;right:-150px;width:500px;height:500px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .head{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
+  .brand{display:flex;align-items:center;gap:16px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px}
+  .brand img{width:48px;height:48px;filter:brightness(0) invert(1)}
+  .tag{font-size:15px;font-weight:800;letter-spacing:3px;text-transform:uppercase;background:#fff;color:#f47809;padding:10px 20px;border-radius:100px}
+  .main{position:relative;z-index:2}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:110px;font-weight:800;letter-spacing:-3px;line-height:.95;margin-bottom:40px}
+  .flow{display:flex;gap:16px;margin-top:50px;align-items:center}
+  .step{flex:1;background:rgba(255,255,255,.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:28px;position:relative}
+  .step .n{font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:800;line-height:1;margin-bottom:8px;color:#fff}
+  .step h4{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.3px}
+  .step p{font-size:13px;line-height:1.45;opacity:.9}
+  .arrow{font-size:36px;font-weight:800;color:rgba(255,255,255,.6);flex-shrink:0}
+  .foot{position:relative;z-index:2;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;opacity:.95}
+</style>
+</head>
+<body>
+<div class="tip">📸 1080×1080 · Feed · Flujo del producto</div>
+<div class="card">
+  <div class="head">
+    <div class="brand"><img src="../assets/isotipo.png" alt=""> Plataforma de formación</div>
+    <div class="tag">El ciclo</div>
+  </div>
+  <div class="main">
+    <h1>Del catálogo<br>al diploma.</h1>
+    <div class="flow">
+      <div class="step"><div class="n">01</div><h4>Descubre</h4><p>Catálogo filtrado por perfil.</p></div>
+      <div class="arrow">›</div>
+      <div class="step"><div class="n">02</div><h4>Aprende</h4><p>Clases con bitácora.</p></div>
+      <div class="arrow">›</div>
+      <div class="step"><div class="n">03</div><h4>Valida</h4><p>Expediente automático.</p></div>
+      <div class="arrow">›</div>
+      <div class="step"><div class="n">04</div><h4>Certifica</h4><p>Diploma descargable.</p></div>
+    </div>
+  </div>
+  <div class="foot">Un único flujo · Cero papel · Total trazabilidad</div>
+</div>
+</body>
+</html>

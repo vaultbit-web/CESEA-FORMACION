@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-pager — Plataforma de formación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0b0c1a;--muted:#6b7280;--bg:#f4f5f9;--card:#fff;--border:#e5e7eb;--accent:#f47809;--accent2:#fcad00;--cyan:#35a9cd;--grad:linear-gradient(135deg,#fcad00 0%,#f47809 100%)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Lato',sans-serif;color:var(--ink);background:#e9ebf1;padding:24px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.4px;line-height:1.1}
+
+  .page{width:210mm;min-height:297mm;background:#fff;margin:0 auto;padding:16mm 14mm;box-shadow:0 30px 60px -20px rgba(0,0,0,.15);position:relative;overflow:hidden}
+  .page::before{content:'';position:absolute;top:-80mm;right:-60mm;width:160mm;height:160mm;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.12),transparent 70%);pointer-events:none}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:10mm;border-bottom:2px solid var(--ink);position:relative;z-index:2}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand img{width:34px;height:34px}
+  .brand h1{font-size:18px;font-weight:800}
+  .brand small{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-top:2px}
+  .doc-meta{text-align:right}
+  .doc-meta .tag{display:inline-block;background:var(--grad);color:#fff;font-size:9px;font-weight:800;padding:4px 10px;border-radius:100px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
+  .doc-meta small{color:var(--muted);font-size:10px;display:block}
+
+  .hero{padding:8mm 0;position:relative;z-index:2}
+  .hero h2{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.05;max-width:170mm}
+  .hero h2 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px;max-width:170mm}
+
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin:2mm 0 6mm}
+  .kpi{background:var(--bg);border:1px solid var(--border);border-radius:4mm;padding:4mm}
+  .kpi .v{font-size:22px;font-weight:800;letter-spacing:-.5px;font-family:'Bricolage Grotesque',sans-serif}
+  .kpi .l{font-size:9px;color:var(--muted);font-weight:600;margin-top:1mm}
+
+  .body{display:grid;grid-template-columns:1.15fr 1fr;gap:6mm;margin-bottom:4mm}
+  h3.sect{font-size:14px;font-weight:800;margin-bottom:3mm;display:flex;align-items:center;gap:6px}
+  h3.sect::before{content:'';width:4px;height:16px;background:var(--grad);border-radius:2px}
+
+  .roles{display:flex;flex-direction:column;gap:3mm}
+  .role{border:1px solid var(--border);border-radius:4mm;padding:4mm;background:#fff}
+  .role .r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2mm}
+  .role .badge{font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+  .role.a .badge{background:rgba(252,173,0,.16);color:var(--accent)}
+  .role.f .badge{background:rgba(53,169,205,.16);color:var(--cyan)}
+  .role.s .badge{background:var(--ink);color:#fcad00}
+  .role h4{font-size:13px;margin-bottom:1mm}
+  .role p{font-size:10.5px;color:var(--muted);line-height:1.4}
+  .role .keys{margin-top:2mm;display:flex;flex-wrap:wrap;gap:4px}
+  .role .key{font-size:9px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--ink);font-weight:600}
+
+  .modules{display:grid;grid-template-columns:repeat(2,1fr);gap:2mm}
+  .mod{background:var(--bg);border:1px solid var(--border);border-radius:3mm;padding:3mm;display:flex;gap:2mm;align-items:flex-start}
+  .mod .ic{width:20px;height:20px;border-radius:5px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;flex-shrink:0}
+  .mod strong{font-size:10.5px;display:block;font-family:'Bricolage Grotesque',sans-serif}
+  .mod small{font-size:9.5px;color:var(--muted);line-height:1.35}
+
+  .flow{background:var(--ink);color:#fff;border-radius:4mm;padding:5mm;margin-top:3mm}
+  .flow h3{font-size:12px;margin-bottom:3mm;color:#fcad00;letter-spacing:1px;text-transform:uppercase;font-weight:800}
+  .flow-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm}
+  .fs{position:relative;padding-right:3mm}
+  .fs:not(:last-child)::after{content:'→';position:absolute;right:-1mm;top:0;color:var(--accent);font-weight:800}
+  .fs .n{font-size:16px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-family:'Bricolage Grotesque',sans-serif;line-height:1}
+  .fs h5{font-size:11px;margin:1mm 0}
+  .fs p{font-size:9px;color:rgba(255,255,255,.7);line-height:1.35}
+
+  .bottom-row{display:grid;grid-template-columns:1.2fr 1fr;gap:5mm;margin-top:5mm}
+  .prices{display:grid;grid-template-columns:repeat(4,1fr);gap:2mm}
+  .pr{border:1px solid var(--border);border-radius:3mm;padding:3mm}
+  .pr.hot{border:2px solid var(--accent);background:#fff5e6}
+  .pr h4{font-size:11px;margin-bottom:1mm}
+  .pr .tag{font-size:8.5px;color:var(--muted);min-height:16px;margin-bottom:2mm}
+  .pr .n{font-size:18px;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.5px}
+  .pr .per{font-size:9px;color:var(--muted)}
+  .pr ul{list-style:none;margin-top:2mm}
+  .pr li{font-size:9px;padding-left:3mm;position:relative;line-height:1.5;color:var(--ink)}
+  .pr li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:800}
+
+  .contact{background:var(--grad);color:#fff;border-radius:4mm;padding:5mm;text-align:center}
+  .contact h3{font-size:14px;color:#fff;margin-bottom:1mm}
+  .contact h3::before{display:none}
+  .contact p{font-size:10.5px;opacity:.95;margin-bottom:3mm}
+  .contact .cta{display:inline-block;background:#fff;color:var(--accent);padding:3mm 6mm;border-radius:100px;text-decoration:none;font-weight:800;font-size:11px}
+  .contact small{display:block;font-size:9px;opacity:.85;margin-top:2mm}
+
+  footer{margin-top:5mm;padding-top:3mm;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:9px;color:var(--muted)}
+
+  @page{size:A4;margin:0}
+  @media print{
+    body{background:#fff;padding:0}
+    .page{box-shadow:none;margin:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="brand">
+      <img src="assets/isotipo.png" alt="">
+      <div>
+        <h1>Plataforma de formación corporativa</h1>
+        <small>Adaptable · responsive · lista para despliegue</small>
+      </div>
+    </div>
+    <div class="doc-meta">
+      <span class="tag">One-pager comercial</span>
+      <small>Edición 2026 · v1.0</small>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h2>Ordena tu formación en una sola plataforma. <span>Tres roles, 15 módulos, cero ficheros sueltos.</span></h2>
+    <p>Del catálogo al diploma: alumno, formador y administración conectados en un único entorno configurable sin desarrollador. Despliegue web responsive o integración con FileMaker Pro existente.</p>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v">3</div><div class="l">Roles conectados</div></div>
+      <div class="kpi"><div class="v">15</div><div class="l">Módulos operativos</div></div>
+      <div class="kpi"><div class="v">100%</div><div class="l">Responsive</div></div>
+      <div class="kpi"><div class="v">6 sem</div><div class="l">De la firma al go-live</div></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div>
+      <h3 class="sect">Tres experiencias diseñadas a la vez</h3>
+      <div class="roles">
+        <div class="role a">
+          <div class="r-head"><h4>Alumno</h4><span class="badge">Aprende</span></div>
+          <p>Catálogo filtrado por perfil, preinscripciones, agenda y descarga de diplomas desde la ficha del curso. Sin ruido, con contexto.</p>
+          <div class="keys"><span class="key">Catálogo</span><span class="key">Mis cursos</span><span class="key">Empleo</span><span class="key">Agenda</span><span class="key">Diplomas</span></div>
+        </div>
+        <div class="role f">
+          <div class="r-head"><h4>Formador</h4><span class="badge">Imparte</span></div>
+          <p>Propone fechas con aviso de solape, pasa lista, lleva bitácora, valora, reporta incidencias y firma horas — todo desde un único panel.</p>
+          <div class="keys"><span class="key">Propuestas</span><span class="key">Asistencia</span><span class="key">Bitácora</span><span class="key">Incidencias</span><span class="key">Horas</span></div>
+        </div>
+        <div class="role s">
+          <div class="r-head"><h4>Administración</h4><span class="badge">Gestiona</span></div>
+          <p>Solicitudes agrupadas por propuesta, importación CSV, expediente completo del curso y validación de horas sesión a sesión.</p>
+          <div class="keys"><span class="key">Solicitudes</span><span class="key">Formadores</span><span class="key">CSV</span><span class="key">Expedientes</span><span class="key">Config</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="sect">Módulos destacados</h3>
+      <div class="modules">
+        <div class="mod"><div class="ic">▦</div><div><strong>Catálogo</strong><small>Áreas con contador, cursos relacionados</small></div></div>
+        <div class="mod"><div class="ic">◷</div><div><strong>Calendario</strong><small>Mañana / tarde, solape automático</small></div></div>
+        <div class="mod"><div class="ic">✎</div><div><strong>Bitácora</strong><small>Trazabilidad sesión a sesión</small></div></div>
+        <div class="mod"><div class="ic">✓</div><div><strong>Asistencia</strong><small>Lista digital exportable</small></div></div>
+        <div class="mod"><div class="ic">★</div><div><strong>Valoraciones</strong><small>Trust score por formador</small></div></div>
+        <div class="mod"><div class="ic">€</div><div><strong>Tarifas</strong><small>Venta directa / indirecta / km</small></div></div>
+        <div class="mod"><div class="ic">⚠</div><div><strong>Incidencias</strong><small>Canal directo a admin</small></div></div>
+        <div class="mod"><div class="ic">⬆</div><div><strong>CSV</strong><small>Altas masivas con preview</small></div></div>
+        <div class="mod"><div class="ic">⎘</div><div><strong>Expedientes</strong><small>Validación sesión a sesión</small></div></div>
+        <div class="mod"><div class="ic">◉</div><div><strong>Diplomas</strong><small>PDF con plantilla corporativa</small></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow">
+    <h3>Del descubrimiento al diploma</h3>
+    <div class="flow-grid">
+      <div class="fs"><div class="n">01</div><h5>Catálogo</h5><p>Alumno descubre y se preinscribe.</p></div>
+      <div class="fs"><div class="n">02</div><h5>Asignación</h5><p>Admin agrupa solicitudes.</p></div>
+      <div class="fs"><div class="n">03</div><h5>Impartición</h5><p>Formador registra todo.</p></div>
+      <div class="fs"><div class="n">04</div><h5>Validación</h5><p>Expediente y horas cerradas.</p></div>
+      <div class="fs"><div class="n">05</div><h5>Diploma</h5><p>Descarga automática.</p></div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div>
+      <h3 class="sect">Modelos orientativos</h3>
+      <div class="prices" style="grid-template-columns:repeat(4,1fr)">
+        <div class="pr">
+          <h4>Starter</h4>
+          <p class="tag">Hasta 50 alumnos</p>
+          <div><span class="n">79€</span><span class="per"> /mes</span></div>
+          <ul><li>3 formadores</li><li>Setup incl.</li></ul>
+        </div>
+        <div class="pr hot">
+          <h4>Business</h4>
+          <p class="tag">Hasta 250 alumnos</p>
+          <div><span class="n">249€</span><span class="per"> /mes</span></div>
+          <ul><li>15 formadores</li><li>CSV</li><li>Expedientes</li></ul>
+        </div>
+        <div class="pr">
+          <h4>Scale</h4>
+          <p class="tag">Hasta 750 alumnos</p>
+          <div><span class="n">499€</span><span class="per"> /mes</span></div>
+          <ul><li>Ilimitados</li><li>API</li><li>Multi-sede</li></ul>
+        </div>
+        <div class="pr">
+          <h4>Enterprise</h4>
+          <p class="tag">FileMaker / on-prem</p>
+          <div><span class="n">desde 990€</span></div>
+          <ul><li>SSO</li><li>Gestor dedicado</li></ul>
+        </div>
+      </div>
+      <p style="font-size:9px;color:var(--muted);margin-top:2mm;text-align:center">Sin IVA · Sin permanencia · 20% dto. anual · Setup desde 390€ (opcional)</p>
+    </div>
+    <div class="contact">
+      <h3>Demo de 30 min</h3>
+      <p>Te la enseñamos con ejemplos de tu sector, sin compromiso.</p>
+      <a class="cta" href="mailto:direccion@csadental.com?subject=Demo%20plataforma%20de%20formaci%C3%B3n">direccion@csadental.com</a>
+      <small>O responde a este correo indicando horario preferente</small>
+    </div>
+  </div>
+
+  <footer>
+    <span>Plataforma basada en CESEA Formación · Adaptable a cualquier sector</span>
+    <span>© 2026 · v1.0</span>
+  </footer>
+</div>
+</body>
+</html>

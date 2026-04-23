@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Email · Primer contacto</title>
+<link rel="stylesheet" href="_email-base.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="preview-wrap">
+
+  <div class="meta">
+    <span class="chip">Plantilla 1 de 4</span>
+    <h1>Primer contacto (outreach frío)</h1>
+    <p><strong>Asunto sugerido:</strong> <code>{{NOMBRE}}, ¿cómo lleváis hoy la formación interna en {{EMPRESA}}?</code></p>
+    <p><strong>Destinatario típico:</strong> Dir. RRHH · Dir. Formación · People Ops · Responsable de L&amp;D.</p>
+    <p><strong>Objetivo:</strong> despertar interés en 30 segundos y conseguir una demo de 30 min.</p>
+    <p><strong>Placeholders:</strong> <code>{{NOMBRE}}</code>, <code>{{EMPRESA}}</code>, <code>{{SECTOR}}</code>, <code>{{TU_NOMBRE}}</code>, <code>{{TU_ROL}}</code>.</p>
+  </div>
+
+  <!-- ══════════ EMAIL HTML ══════════ -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:18px;border:1px solid #e5e7eb;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#0b0c1a;box-shadow:0 20px 60px -30px rgba(0,0,0,.18)">
+
+    <!-- HEADER gradient band (idéntico en los 4 emails) -->
+    <tr><td style="background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);padding:0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td style="padding:28px 32px">
+          <table role="presentation" width="100%"><tr>
+            <td style="color:#fff;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.3px">Plataforma de formación</td>
+            <td align="right" style="color:rgba(255,255,255,.92);font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase">All-in-one · 3 roles</td>
+          </tr></table>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <!-- BODY (contenido específico del email) -->
+    <tr><td style="padding:36px 32px 8px">
+      <p style="margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#f47809">Primer contacto</p>
+      <h2 style="margin:0 0 18px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.15;color:#0b0c1a">Hola {{NOMBRE}},</h2>
+      <p style="margin:0 0 16px;font-size:15.5px;line-height:1.62;color:#1f2937">Te escribo desde {{EMPRESA_EMISORA}}. Este último año hemos construido internamente una plataforma para ordenar toda nuestra formación — <strong>un único entorno para alumno, formador y administración</strong>. Al ver que lo resuelve mejor que los LMS que probamos, hemos decidido abrirla a otras empresas.</p>
+      <p style="margin:0 0 16px;font-size:15.5px;line-height:1.62;color:#1f2937">No es otro LMS genérico. Se centra en la operativa real: propuesta de fechas con detección automática de solapes, bitácora del formador que alimenta el expediente del admin, importación masiva por CSV, validación de horas sesión a sesión.</p>
+      <p style="margin:0 0 24px;font-size:15.5px;line-height:1.62;color:#1f2937">¿Tendrías 30 minutos esta o la próxima semana para que te la enseñe con datos de {{SECTOR}}? Si ahora no es prioridad, también me vale un "escríbeme en Q3" y te dejo en paz con una pieza de una página adjunta por si te sirve de referencia.</p>
+    </td></tr>
+
+    <!-- CTA -->
+    <tr><td align="left" style="padding:0 32px 8px">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:100px;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);box-shadow:0 10px 30px -10px rgba(244,120,9,.55)">
+        <a href="mailto:direccion@csadental.com?subject=Demo%20plataforma%20de%20formaci%C3%B3n" style="display:inline-block;padding:14px 30px;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Reservar 30 minutos →</a>
+      </td></tr></table>
+    </td></tr>
+
+    <!-- SIGNATURE -->
+    <tr><td style="padding:28px 32px 32px">
+      <p style="margin:0;font-size:14.5px;line-height:1.55;color:#4b5563">Un saludo,<br><strong style="color:#0b0c1a">{{TU_NOMBRE}}</strong><br><span style="color:#6b7280;font-size:13px">{{TU_ROL}} · {{EMPRESA_EMISORA}}</span></p>
+    </td></tr>
+
+    <!-- FOOTER (idéntico en los 4) -->
+    <tr><td style="padding:18px 32px;background:#f4f5f9;border-top:1px solid #e5e7eb;font-size:11px;line-height:1.55;color:#9ca3af;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      Plataforma basada en CESEA Formación · Adaptable a cualquier sector<br>
+      Si prefieres que no te contactemos más, responde "baja" y te sacamos de la lista.
+    </td></tr>
+
+  </table>
+
+  <!-- ══════════ VERSIÓN TEXTO PLANO ══════════ -->
+  <span class="label">Versión texto plano</span>
+  <textarea readonly>Asunto: {{NOMBRE}}, ¿cómo lleváis hoy la formación interna en {{EMPRESA}}?
+
+Hola {{NOMBRE}},
+
+Te escribo desde {{EMPRESA_EMISORA}}. Este último año hemos construido internamente una plataforma para ordenar toda nuestra formación — un único entorno para alumno, formador y administración. Al ver que lo resuelve mejor que los LMS que probamos, hemos decidido abrirla a otras empresas.
+
+No es otro LMS genérico. Se centra en la operativa real: propuesta de fechas con detección automática de solapes, bitácora del formador que alimenta el expediente del admin, importación masiva por CSV, validación de horas sesión a sesión.
+
+¿Tendrías 30 minutos esta o la próxima semana para que te la enseñe con datos de {{SECTOR}}? Si ahora no es prioridad, también me vale un "escríbeme en Q3" y te dejo en paz con una pieza de una página adjunta por si te sirve de referencia.
+
+Un saludo,
+{{TU_NOMBRE}}
+{{TU_ROL}} · {{EMPRESA_EMISORA}}
+</textarea>
+
+</div>
+</body>
+</html>

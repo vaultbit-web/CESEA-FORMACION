@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Story vertical · 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:#2a2d40;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Lato',sans-serif}
+  .tip{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 16px;border-radius:100px;font-size:12px;color:#6b7280;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:99}
+  .card{width:1080px;height:1920px;background:linear-gradient(180deg,rgba(11,12,26,.88) 0%,rgba(11,12,26,.75) 50%,rgba(11,12,26,.92) 100%),url('../assets/social-story-bg.jpeg') center/cover no-repeat,#0b0c1a;color:#fff;position:relative;overflow:hidden;padding:100px 80px;display:flex;flex-direction:column;justify-content:space-between;transform:scale(.4);transform-origin:center}
+  @media (min-width:1400px){.card{transform:scale(.45)}}
+  @media (min-width:1800px){.card{transform:scale(.5)}}
+  .card::before{content:'';position:absolute;top:-200px;right:-200px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.45),transparent 70%);filter:blur(30px);z-index:1}
+  .card::after{content:'';position:absolute;bottom:-300px;left:-200px;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(53,169,205,.28),transparent 70%);filter:blur(30px);z-index:1}
+  .card > *{position:relative;z-index:2}
+  .top{position:relative;z-index:2;text-align:center}
+  .top .brand{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:40px}
+  .top .brand img{width:60px;height:60px}
+  .top .brand span{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800}
+  .top .tag{display:inline-block;font-size:18px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#fcad00;padding:10px 24px;border:2px solid #fcad00;border-radius:100px}
+  .main{position:relative;z-index:2;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;padding:60px 0}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:150px;font-weight:800;letter-spacing:-4px;line-height:.95;margin-bottom:50px}
+  h1 span{background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-size:34px;line-height:1.4;color:rgba(255,255,255,.85);max-width:720px;margin:0 auto;font-weight:400}
+  .sub strong{font-weight:800;color:#fff}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:80px 0 40px}
+  .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:40px 20px;text-align:center}
+  .stat .v{font-family:'Bricolage Grotesque',sans-serif;font-size:70px;font-weight:800;background:linear-gradient(135deg,#fcad00,#f47809);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+  .stat .l{font-size:18px;color:rgba(255,255,255,.7);margin-top:10px;font-weight:600}
+  .bottom{position:relative;z-index:2;text-align:center}
+  .cta{display:inline-block;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);color:#fff;padding:28px 60px;border-radius:100px;font-family:'Bricolage Grotesque',sans-serif;font-size:34px;font-weight:800;text-decoration:none;box-shadow:0 30px 60px -20px rgba(244,120,9,.6);letter-spacing:-.3px}
+  .bottom small{display:block;margin-top:30px;font-size:20px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="tip">📸 1080×1920 · Instagram Stories / LinkedIn vertical</div>
+<div class="card">
+  <div class="top">
+    <div class="brand"><img src="../assets/isotipo.png" alt=""><span>Plataforma de formación</span></div>
+    <div class="tag">Nueva en el mercado</div>
+  </div>
+  <div class="main">
+    <h1>La formación<br>de tu empresa,<br><span>ordenada.</span></h1>
+    <p class="sub">Tres roles · quince módulos · un único entorno.<br><strong>Adaptable a cualquier sector.</strong></p>
+    <div class="stats">
+      <div class="stat"><div class="v">3</div><div class="l">Roles</div></div>
+      <div class="stat"><div class="v">15</div><div class="l">Módulos</div></div>
+      <div class="stat"><div class="v">0</div><div class="l">Instalación</div></div>
+    </div>
+  </div>
+  <div class="bottom">
+    <a href="#" class="cta">Reservar demo →</a>
+    <small>Desliza para saber más · @csaformacion</small>
+  </div>
+</div>
+</body>
+</html>

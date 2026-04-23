@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockups del producto — Plataforma de formación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0b0c1a;--muted:#6b7280;--bg:#f4f5f9;--card:#fff;--border:#e5e7eb;--accent:#f47809;--accent2:#fcad00;--cyan:#35a9cd;--grad:linear-gradient(135deg,#fcad00 0%,#f47809 100%)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Lato',sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;padding:56px 28px}
+  h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.5px}
+  .wrap{max-width:1400px;margin:0 auto}
+
+  .top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:44px;padding-bottom:24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:16px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand img{width:40px;height:40px}
+  .brand h1{font-size:22px;font-weight:700}
+  .brand small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .tip{background:#0b0c1a;color:#fff;border-radius:100px;padding:10px 18px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+  .tip::before{content:'';width:8px;height:8px;background:#34d399;border-radius:50%;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .section{margin-bottom:64px}
+  .section-head{margin-bottom:26px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .section-head > div{max-width:700px}
+  .eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);background:rgba(252,173,0,.12);padding:5px 12px;border-radius:100px;margin-bottom:10px}
+  .section-head h2{font-size:28px;font-weight:700;letter-spacing:-.6px}
+  .section-head p{color:var(--muted);margin-top:6px;font-size:14.5px;line-height:1.55}
+
+  /* ESCENA con fondo decorativo */
+  .scene{border-radius:24px;padding:48px 40px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .scene.warm{background:linear-gradient(135deg,#fdf4e6 0%,#fde8d4 100%)}
+  .scene.cyan{background:linear-gradient(135deg,#e0f2f8 0%,#c7e6f0 100%)}
+  .scene.dark{background:linear-gradient(135deg,#0b0c1a 0%,#1a1d35 100%)}
+  .scene.brand{background:var(--grad)}
+  .scene::before{content:'';position:absolute;top:-100px;right:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(252,173,0,.2),transparent 70%);pointer-events:none}
+  .scene.dark::before{background:radial-gradient(circle,rgba(252,173,0,.14),transparent 70%)}
+  .scene.brand::before{background:rgba(255,255,255,.12)}
+
+  /* LAPTOP */
+  .laptop{position:relative;width:100%;max-width:1000px}
+  .laptop .bezel{background:#0b0c1a;border-radius:16px 16px 4px 4px;padding:14px;box-shadow:0 40px 80px -20px rgba(0,0,0,.4),0 10px 30px -10px rgba(0,0,0,.3)}
+  .laptop .screen{aspect-ratio:16/10;background:#fff;border-radius:6px;overflow:hidden;position:relative}
+  .laptop .screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .laptop .base{height:18px;background:linear-gradient(180deg,#2a2d40 0%,#1a1d30 100%);border-radius:0 0 20px 20px;margin:0 -14px;position:relative}
+  .laptop .base::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:7px;background:#0b0c1a;border-radius:0 0 10px 10px}
+
+  /* TABLET */
+  .tablet{width:100%;max-width:620px;background:#0b0c1a;border-radius:32px;padding:16px;box-shadow:0 40px 80px -20px rgba(0,0,0,.4)}
+  .tablet .screen{aspect-ratio:4/3;background:#fff;border-radius:18px;overflow:hidden;position:relative}
+  .tablet .screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+
+  /* PHONE */
+  .phone{width:280px;height:580px;background:#0b0c1a;border-radius:42px;padding:10px;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);position:relative}
+  .phone .screen{width:100%;height:100%;background:#fff;border-radius:32px;overflow:hidden;position:relative}
+  .phone .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:100px;height:22px;background:#0b0c1a;border-radius:100px;z-index:10}
+  .phone .screen img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+
+  .caption{display:flex;justify-content:space-between;align-items:flex-start;margin-top:16px;padding:0 4px;flex-wrap:wrap;gap:8px}
+  .caption h4{font-size:15px;font-weight:700;font-family:'Bricolage Grotesque',sans-serif}
+  .caption small{color:var(--muted);font-size:13px;margin-top:2px;display:block}
+  .chip{background:var(--card);border:1px solid var(--border);padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700;color:var(--muted)}
+
+  .grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr}}
+
+  /* INSTRUCTIONS */
+  .instructions{background:#0b0c1a;color:#fff;border-radius:20px;padding:32px;margin-top:56px}
+  .instructions h3{color:#fff;font-size:20px;margin-bottom:16px}
+  .instructions p{color:rgba(255,255,255,.75);line-height:1.55;font-size:14px;margin-bottom:12px}
+  .instructions code{background:rgba(252,173,0,.2);color:#fcad00;padding:2px 8px;border-radius:4px;font-size:13px;font-family:'SF Mono',Monaco,monospace}
+  .instructions strong{color:#fcad00}
+
+  @media print{
+    body{background:#fff;padding:20px}
+    .top,.tip,.instructions{display:none}
+    .section{page-break-inside:avoid;margin-bottom:40px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">
+      <img src="assets/isotipo.png" alt="">
+      <div>
+        <h1>Mockups del producto real</h1>
+        <small>Capturas directas de la plataforma · Laptop · Tablet · Móvil</small>
+      </div>
+    </div>
+    <div class="tip">Capturas 100% reales del producto</div>
+  </div>
+
+  <!-- MOCKUP 1 — LAPTOP · LOGIN -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Punto de entrada</span>
+        <h2>Login unificado con selector de rol</h2>
+        <p>Primer contacto del usuario con la plataforma. Cuatro tarjetas demo para probar cada rol sin registrarse. Abajo, el enlace discreto al Kit Comercial.</p>
+      </div>
+    </div>
+    <div class="scene warm">
+      <div class="laptop">
+        <div class="bezel">
+          <div class="screen">
+            <img src="assets/screenshot-login.png" alt="Login CESEA Formación">
+          </div>
+          <div class="base"></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Login · pantalla pública</h4><small>Vista inicial al entrar en la plataforma</small></div>
+      <span class="chip">Uso: hero para landing y banner email</span>
+    </div>
+  </div>
+
+  <!-- MOCKUP 2 — LAPTOP · ADMIN -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Administración</span>
+        <h2>Panel del superadmin — el centro de control</h2>
+        <p>KPIs operativos, solicitudes agrupadas por curso y accesos rápidos al día a día: nuevo curso, revisión, validación de horas, gestión de formadores.</p>
+      </div>
+    </div>
+    <div class="scene cyan">
+      <div class="laptop">
+        <div class="bezel">
+          <div class="screen">
+            <img src="assets/screenshot-admin.png" alt="Panel superadmin CESEA Formación">
+          </div>
+          <div class="base"></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Admin · Panel principal</h4><small>68 cursos · 8 formadores · 10 solicitudes · 4 horas por validar (datos demo)</small></div>
+      <span class="chip">Uso: adjuntar a propuestas y LinkedIn</span>
+    </div>
+  </div>
+
+  <!-- MOCKUP 3 — LAPTOP · ALUMNO -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Alumno</span>
+        <h2>Dashboard del alumno — el hilo del aprendizaje</h2>
+        <p>Saludo personalizado, progreso consolidado (en progreso, completados, diplomas, preinscripciones) y continuidad directa con el último curso iniciado.</p>
+      </div>
+    </div>
+    <div class="scene dark">
+      <div class="laptop">
+        <div class="bezel">
+          <div class="screen">
+            <img src="assets/screenshot-alumno.png" alt="Dashboard alumno CESEA Formación">
+          </div>
+          <div class="base"></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Alumno · Panel de inicio</h4><small>Continúa donde lo dejaste · ofertas destacadas · último diploma emitido</small></div>
+      <span class="chip">Uso: landing pages y carrusel LinkedIn</span>
+    </div>
+  </div>
+
+  <!-- MOCKUP 4 — LAPTOP · FORMADOR -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Formador</span>
+        <h2>Panel del formador — operación lista para impartir</h2>
+        <p>Formaciones aceptadas, en revisión, ofertas disponibles con tarjeta de propuesta y calendario mensual integrado. Todo accesible desde la cabecera.</p>
+      </div>
+    </div>
+    <div class="scene warm">
+      <div class="laptop">
+        <div class="bezel">
+          <div class="screen">
+            <img src="assets/screenshot-formador.png" alt="Panel formador CESEA Formación">
+          </div>
+          <div class="base"></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Formador · Panel de inicio</h4><small>3 formaciones aceptadas · 2 en revisión · 61 ofertas disponibles · 99 h impartidas</small></div>
+      <span class="chip">Uso: ilustrar diferenciación técnica</span>
+    </div>
+  </div>
+
+  <!-- TABLET + PHONE RESPONSIVE -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Responsive</span>
+        <h2>Una plataforma, todos los dispositivos</h2>
+        <p>El formador pasa lista desde el móvil. El alumno estudia desde la tablet. El admin trabaja desde el PC. Sin app nativa — un navegador y listo.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="scene cyan">
+        <div class="tablet">
+          <div class="screen">
+            <img src="assets/screenshot-tablet.png" alt="Vista tablet — admin">
+          </div>
+        </div>
+      </div>
+      <div class="scene brand" style="justify-content:center">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <img src="assets/screenshot-mobile.png" alt="Vista móvil — alumno">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Tablet + móvil</h4><small>Misma plataforma, UX adaptada · sin app nativa</small></div>
+      <span class="chip">Uso: carrusel Instagram + Stories</span>
+    </div>
+  </div>
+
+  <!-- BANNER HERO -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Hero banner</span>
+        <h2>Cabecera para email y LinkedIn</h2>
+        <p>Mockup limpio sobre fondo corporativo, listo para captura como imagen de cabecera (1200 × 630 px aproximado).</p>
+      </div>
+    </div>
+    <div class="scene brand" style="padding:72px 56px">
+      <div style="max-width:1200px;width:100%;display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center">
+        <div>
+          <div style="display:inline-block;background:rgba(255,255,255,.22);color:#fff;padding:7px 16px;border-radius:100px;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:22px;backdrop-filter:blur(10px)">Plataforma all-in-one</div>
+          <h2 style="font-size:52px;font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1;margin-bottom:22px;font-family:'Bricolage Grotesque',sans-serif">La formación<br>de tu empresa,<br>por fin en orden.</h2>
+          <p style="font-size:17px;color:rgba(255,255,255,.95);line-height:1.55;max-width:430px">Tres roles, 15 módulos, un único entorno. Configurable para tu sector sin tocar código.</p>
+        </div>
+        <div class="laptop" style="transform:scale(.95);transform-origin:center right">
+          <div class="bezel">
+            <div class="screen">
+              <img src="assets/screenshot-admin.png" alt="Panel admin">
+            </div>
+            <div class="base"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div><h4>Banner principal</h4><small>Proporciones 16:9 · ideal cabecera email o hero web</small></div>
+      <span class="chip">Uso: hero LinkedIn + cabecera emails</span>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS -->
+  <div class="instructions">
+    <h3>Cómo usar estos mockups para material comercial</h3>
+    <p><strong>Cómo se han generado:</strong> capturas directas del producto desplegado vía Chrome headless al puerto 8765 (<code>_screenshot.mjs</code> en la raíz). Cada imagen es una sesión real con datos demo precargados — no son renders ni simulaciones.</p>
+    <p><strong>Para capturar PNG de este mockup:</strong> abre este archivo en Chrome, clic derecho → <code>Capturar captura de página completa</code>. O usa la extensión <code>GoFullPage</code>.</p>
+    <p><strong>Para capturar una sección concreta:</strong> clic derecho sobre el mockup → <code>Inspeccionar</code> → selecciona el <code>&lt;div class="scene"&gt;</code> → clic derecho en el panel → <code>Capture node screenshot</code>.</p>
+    <p><strong>Para regenerar las capturas:</strong> ejecuta <code>python -m http.server 8765</code> en la raíz del proyecto y luego <code>node _screenshot.mjs</code>. Se regenerarán automáticamente las 6 capturas.</p>
+    <p><strong>Exportar a PDF (para adjuntar a propuestas):</strong> <code>Ctrl+P</code> → <em>Guardar como PDF</em>. Elige A4 o Letter horizontal.</p>
+  </div>
+
+</div>
+</body>
+</html>

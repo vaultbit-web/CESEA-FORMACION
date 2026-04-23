@@ -298,6 +298,33 @@ function AuthScreens() {
         React.createElement('div', { style: { textAlign: 'center', fontFamily: 'Lato', fontSize: 10, color: COLORS.textLight, marginTop: 10 } },
           C.legalName || 'WISHIT CSA SUPPLY SL', ' · CIF ', C.cif || 'B06842256', ' · ', C.copyright || '© 2026 CSA Formación',
         ),
+
+        // ── Footer discreto: acceso al Kit Comercial (para vender la plataforma a otras empresas) ──
+        // Sólo visible en el login; enlace estático a la carpeta RECURSOS PARA MARKETING servida
+        // como static assets junto al index.html (funciona tanto en file:// local como en Vercel).
+        React.createElement('div', {
+          style: {
+            marginTop: 18, paddingTop: 14, borderTop: '1px dashed #e5e7eb',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10,
+            flexWrap: 'wrap', fontFamily: 'Lato', fontSize: 11,
+          },
+        },
+          React.createElement('span', { style: { color: COLORS.textLight, letterSpacing: 0.3 } }, '¿Tu empresa necesita una plataforma como esta?'),
+          React.createElement('a', {
+            href: 'RECURSOS%20PARA%20MARKETING/INDEX.html',
+            target: '_blank', rel: 'noopener noreferrer',
+            style: {
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '5px 12px', borderRadius: 100,
+              background: 'linear-gradient(135deg, #fcad00 0%, #f47809 100%)',
+              color: '#fff', textDecoration: 'none', fontWeight: 800,
+              fontSize: 11, letterSpacing: 0.3,
+              boxShadow: '0 4px 14px -4px rgba(244,120,9,0.55)',
+            },
+            onMouseEnter: e => { e.currentTarget.style.transform = 'translateY(-1px)'; },
+            onMouseLeave: e => { e.currentTarget.style.transform = 'translateY(0)'; },
+          }, 'Descubre el Kit Comercial →'),
+        ),
       ),
     ),
 
