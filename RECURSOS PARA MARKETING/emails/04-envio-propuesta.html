@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Email · Envío de propuesta</title>
+<link rel="stylesheet" href="_email-base.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="preview-wrap">
+
+  <div class="meta">
+    <span class="chip">Plantilla 4 de 4</span>
+    <h1>Envío de propuesta (post-demo)</h1>
+    <p><strong>Asunto sugerido:</strong> <code>Propuesta plataforma de formación · {{EMPRESA}}</code></p>
+    <p><strong>Objetivo:</strong> cerrar. Precio claro, alcance claro, fecha límite clara.</p>
+    <p><strong>Placeholders:</strong> <code>{{NOMBRE}}</code>, <code>{{EMPRESA}}</code>, <code>{{ALUMNOS_ESTIMADOS}}</code>, <code>{{PLAN}}</code>, <code>{{PRECIO_MES}}</code>, <code>{{SETUP}}</code>, <code>{{FECHA_CIERRE}}</code>, <code>{{TU_NOMBRE}}</code>, <code>{{TU_ROL}}</code>.</p>
+  </div>
+
+  <!-- ══════════ EMAIL HTML ══════════ -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:18px;border:1px solid #e5e7eb;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#0b0c1a;box-shadow:0 20px 60px -30px rgba(0,0,0,.18)">
+
+    <!-- HEADER -->
+    <tr><td style="background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);padding:0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td style="padding:28px 32px">
+          <table role="presentation" width="100%"><tr>
+            <td style="color:#fff;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.3px">Plataforma de formación</td>
+            <td align="right" style="color:rgba(255,255,255,.92);font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase">All-in-one · 3 roles</td>
+          </tr></table>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <!-- BODY -->
+    <tr><td style="padding:36px 32px 0">
+      <p style="margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#f47809">Propuesta · {{EMPRESA}}</p>
+      <h2 style="margin:0 0 18px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.15;color:#0b0c1a">Gracias por la llamada, {{NOMBRE}}.</h2>
+      <p style="margin:0 0 22px;font-size:15.5px;line-height:1.62;color:#1f2937">Como comentamos, te dejo la propuesta cerrada. Pensada para tu volumen actual (~{{ALUMNOS_ESTIMADOS}} alumnos activos) y ampliable sin cambiar de plan si creces.</p>
+    </td></tr>
+
+    <!-- PLAN BLOCK -->
+    <tr><td style="padding:0 32px 8px">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#fff 0%,#fff5e6 100%);border:2px solid #f47809;border-radius:16px">
+        <tr><td style="padding:24px 28px">
+          <p style="margin:0 0 6px;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#f47809">Plan recomendado</p>
+          <p style="margin:0 0 10px;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;color:#0b0c1a">{{PLAN}}</p>
+          <p style="margin:0;font-family:'Bricolage Grotesque','Segoe UI',sans-serif;font-size:36px;font-weight:800;letter-spacing:-1px;color:#0b0c1a;line-height:1">{{PRECIO_MES}}€ <span style="font-size:14px;color:#6b7280;font-weight:600">/ mes</span></p>
+          <p style="margin:8px 0 0;font-size:13px;color:#6b7280">+ {{SETUP}}€ de implementación única (opcional)</p>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- INCLUDED LIST -->
+    <tr><td style="padding:28px 32px 0">
+      <p style="margin:0 0 14px;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280">Incluido en la suscripción</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tbody>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>Acceso para alumnos, formadores y administración</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>15 módulos operativos (catálogo, asistencia, bitácora, CSV, expedientes…)</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>Personalización visual (logo, colores corporativos)</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>Actualizaciones del producto sin coste adicional</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>Soporte por email en horario laboral</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#f47809;font-weight:800">✓</span>Hosting, backups y seguridad gestionados</td></tr>
+      </tbody></table>
+    </td></tr>
+
+    <!-- SETUP -->
+    <tr><td style="padding:24px 32px 0">
+      <p style="margin:0 0 14px;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280">Implementación (pago único opcional)</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tbody>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#35a9cd;font-weight:800">→</span>Configuración inicial (áreas, tipologías, valor-listas)</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#35a9cd;font-weight:800">→</span>Migración del catálogo actual vía CSV</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#35a9cd;font-weight:800">→</span>2 sesiones de formación al equipo administrativo</td></tr>
+        <tr><td style="padding:7px 0 7px 24px;font-size:14.5px;color:#0b0c1a;line-height:1.55;position:relative"><span style="position:absolute;left:0;color:#35a9cd;font-weight:800">→</span>Acompañamiento durante los primeros 30 días</td></tr>
+      </tbody></table>
+    </td></tr>
+
+    <!-- TIMELINE -->
+    <tr><td style="padding:24px 32px 0">
+      <p style="margin:0 0 14px;font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#6b7280">Plan de implantación · 6 semanas hasta go-live</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tbody>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #f1f1f1;font-size:14px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:110px">Semana 1–2</strong> Kick-off · personalización · configuración</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #f1f1f1;font-size:14px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:110px">Semana 3</strong> Migración del catálogo y formadores</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #f1f1f1;font-size:14px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:110px">Semana 4</strong> Piloto con 1–2 cursos reales</td></tr>
+        <tr><td style="padding:10px 0;font-size:14px;color:#0b0c1a;line-height:1.5"><strong style="color:#f47809;display:inline-block;min-width:110px">Semana 5–6</strong> Go-live 100% + acompañamiento</td></tr>
+      </tbody></table>
+    </td></tr>
+
+    <tr><td style="padding:26px 32px 8px">
+      <p style="margin:0 0 22px;font-size:15.5px;line-height:1.62;color:#1f2937">Esta propuesta es válida hasta el <strong>{{FECHA_CIERRE}}</strong>. Si necesitas ajustar volumen, integración con vuestro sistema actual o alguna personalización extra, respóndeme y lo adaptamos.</p>
+    </td></tr>
+
+    <!-- CTA -->
+    <tr><td align="left" style="padding:0 32px 8px">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td style="border-radius:100px;background:linear-gradient(135deg,#fcad00 0%,#f47809 100%);box-shadow:0 10px 30px -10px rgba(244,120,9,.55)">
+          <a href="mailto:direccion@csadental.com?subject=Acepto%20propuesta" style="display:inline-block;padding:14px 30px;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Aceptar propuesta →</a>
+        </td>
+        <td style="padding-left:14px">
+          <a href="mailto:direccion@csadental.com?subject=Dudas%20propuesta" style="font-size:13px;font-weight:700;color:#6b7280;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Tengo dudas, llámame</a>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <tr><td style="padding:28px 32px 32px">
+      <p style="margin:0;font-size:14.5px;line-height:1.55;color:#4b5563">Gracias de nuevo,<br><strong style="color:#0b0c1a">{{TU_NOMBRE}}</strong><br><span style="color:#6b7280;font-size:13px">{{TU_ROL}}</span></p>
+    </td></tr>
+
+    <!-- FOOTER -->
+    <tr><td style="padding:18px 32px;background:#f4f5f9;border-top:1px solid #e5e7eb;font-size:11px;line-height:1.55;color:#9ca3af;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      Plataforma basada en CESEA Formación · Adaptable a cualquier sector<br>
+      IVA no incluido · Facturación mensual · Sin permanencia más allá del periodo abonado
+    </td></tr>
+
+  </table>
+
+  <span class="label">Versión texto plano</span>
+  <textarea readonly>Asunto: Propuesta plataforma de formación · {{EMPRESA}}
+
+Hola {{NOMBRE}},
+
+Gracias por la llamada. Como comentamos, te dejo la propuesta cerrada. Pensada para tu volumen actual (~{{ALUMNOS_ESTIMADOS}} alumnos activos) y ampliable sin cambiar de plan si creces.
+
+PLAN RECOMENDADO
+{{PLAN}} · {{PRECIO_MES}}€ / mes
++ {{SETUP}}€ de implementación única (opcional)
+
+INCLUIDO EN LA SUSCRIPCIÓN
+✓ Acceso para alumnos, formadores y administración
+✓ 15 módulos operativos (catálogo, asistencia, bitácora, CSV, expedientes…)
+✓ Personalización visual (logo, colores corporativos)
+✓ Actualizaciones del producto sin coste adicional
+✓ Soporte por email en horario laboral
+✓ Hosting, backups y seguridad gestionados
+
+IMPLEMENTACIÓN (pago único opcional)
+→ Configuración inicial (áreas, tipologías, valor-listas)
+→ Migración del catálogo actual vía CSV
+→ 2 sesiones de formación al equipo administrativo
+→ Acompañamiento durante los primeros 30 días
+
+PLAN DE IMPLANTACIÓN (6 semanas)
+Semana 1–2 · Kick-off, personalización, configuración
+Semana 3   · Migración del catálogo y formadores
+Semana 4   · Piloto con 1–2 cursos reales
+Semana 5–6 · Go-live 100% + acompañamiento
+
+Esta propuesta es válida hasta el {{FECHA_CIERRE}}. Si necesitas ajustar volumen, integración o alguna personalización extra, respóndeme y lo adaptamos.
+
+Gracias de nuevo,
+{{TU_NOMBRE}}
+{{TU_ROL}}
+
+IVA no incluido · Facturación mensual · Sin permanencia
+</textarea>
+
+</div>
+</body>
+</html>
