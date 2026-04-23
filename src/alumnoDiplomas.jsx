@@ -345,4 +345,44 @@ function DiplomaScaleFit() {
   return null;
 }
 
-window.AlumnoDiplomasView = AlumnoDiplomasView;
+// FILEMAKER: función global para descargar un diploma desde cualquier vista.
+//   Equivale a llamar al script "Descargar_Diploma_PDF" pasando id_diploma.
+//   Se monta un contenedor off-screen con el DiplomaRenderer, se captura
+//   con html2canvas y se exporta a PDF con jsPDF.
+async function downloadDiplomaPDF(diploma, user, onToast) {
+  if (!diploma) { onToast && onToast('Diploma no disponible', 'error'); return; }
+  const host = document.createElement('div');
+  host.style.position = 'fixed';
+  host.style.left = '-9999px';
+  host.style.top = '0';
+  host.style.width = DIPLOMA_WIDTH + 'px';
+  host.style.height = DIPLOMA_HEIGHT + 'px';
+  document.body.appendChild(host);
+  try {
+    const root = ReactDOM.createRoot(host);
+    await new Promise(res => {
+      root.render(React.createElement(DiplomaRenderer, { diploma, user, innerRef: { current: host.firstChild } }));
+      setTimeout(res, 80);
+    });
+    await waitForNunito();
+    await waitForImage(DIPLOMA_TEMPLATE_SRC);
+    const node = host.firstChild;
+    const canvas = await window.html2canvas(node, { scale: 2, useCORS: true, backgroundColor: null });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) throw new Error('jsPDF no disponible');
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [DIPLOMA_WIDTH, DIPLOMA_HEIGHT] });
+    pdf.addImage(imgData, 'PNG', 0, 0, DIPLOMA_WIDTH, DIPLOMA_HEIGHT);
+    pdf.save('diploma-' + diploma.code + '.pdf');
+    onToast && onToast('Diploma descargado');
+    root.unmount();
+  } catch (err) {
+    console.error(err);
+    onToast && onToast('No se pudo generar el PDF: ' + (err.message || 'error'), 'error');
+  } finally {
+    setTimeout(() => document.body.removeChild(host), 200);
+  }
+}
+
+window.AlumnoDiplomasView  = AlumnoDiplomasView;
+window.downloadDiplomaPDF  = downloadDiplomaPDF;

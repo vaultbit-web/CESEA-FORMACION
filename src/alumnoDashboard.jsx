@@ -56,7 +56,7 @@ function AlumnoDashboardView() {
         }, greeting + ', ' + (user.name || '').split(' ')[0]),
         React.createElement('h1', {
           style: { fontFamily: 'Bricolage Grotesque', fontSize: 30, fontWeight: 800, letterSpacing: -0.6, marginBottom: 10 },
-        }, 'Tienes ', inProgress.length, ' curso' + (inProgress.length === 1 ? '' : 's') + ' en marcha.'),
+        }, 'Estás realizando ', inProgress.length, ' curso' + (inProgress.length === 1 ? '' : 's') + '.'),
         React.createElement('div', {
           style: { display: 'flex', gap: 18, flexWrap: 'wrap', fontFamily: 'Lato', fontSize: 13, color: 'rgba(255,255,255,0.92)' },
         },
@@ -72,10 +72,10 @@ function AlumnoDashboardView() {
       style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 22 },
     },
       [
-        { label: 'En progreso',   value: inProgress.length,  go: 'mis-cursos',  color: COLORS.orange },
-        { label: 'Completados',   value: completed.length,   go: 'mis-cursos',  color: '#16a34a' },
-        { label: 'Diplomas',      value: diplomas.length,    go: 'diplomas',    color: COLORS.cyan },
-        { label: 'Postulaciones', value: applications.length,go: 'empleo',      color: COLORS.pink },
+        { label: 'En progreso',     value: inProgress.length,  go: 'mis-cursos',  color: COLORS.orange },
+        { label: 'Completados',     value: completed.length,   go: 'mis-cursos',  color: '#16a34a' },
+        { label: 'Diplomas',        value: diplomas.length,    go: 'mis-cursos',  color: COLORS.cyan },
+        { label: 'Preinscripciones',value: applications.length,go: 'empleo',      color: COLORS.pink },
       ].map(k =>
         React.createElement('div', {
           key: k.label,
@@ -188,7 +188,7 @@ function AlumnoDashboardView() {
         featuredJob && React.createElement('div', {
           style: { background: theme.surface, borderRadius: 14, border: `1px solid ${theme.border}`, padding: 20, boxShadow: theme.cardShadow },
         },
-          React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 10, color: COLORS.pink, fontWeight: 700, letterSpacing: 1.3, textTransform: 'uppercase', marginBottom: 8 } }, '★ Oferta destacada · ', user.sector),
+          React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 10, color: COLORS.pink, fontWeight: 700, letterSpacing: 1.3, textTransform: 'uppercase', marginBottom: 8 } }, '★ Oferta destacada'),
           React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 15, fontWeight: 800, color: theme.text, marginBottom: 4 } }, featuredJob.title),
           React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: theme.textLight, marginBottom: 8 } }, featuredJob.company, ' · ', featuredJob.location),
           React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: theme.text, marginBottom: 14 } }, featuredJob.salary),

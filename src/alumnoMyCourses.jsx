@@ -10,21 +10,33 @@
 
 function AlumnoMyCoursesView() {
   const {
-    courses, enrollments, diplomas, theme,
+    courses, enrollments, diplomas, user, theme, showToast,
     setDetailCourseId, setCurrentView,
   } = React.useContext(AppContext);
   const [tab, setTab] = React.useState('en_progreso');
 
+  // FILEMAKER: Tabs simplificadas — "Certificados" se ha fusionado dentro de
+  //   "Completados" (cada curso completado expone el botón de descarga del diploma
+  //   asociado mediante el FK Inscripciones_Alumno → Diplomas).
   const tabs = [
     { id: 'en_progreso', label: 'En progreso', filter: e => e.status === 'en_progreso' || e.status === 'inscrito' },
     { id: 'completado',  label: 'Completados', filter: e => e.status === 'completado' },
-    { id: 'diplomas',    label: 'Certificados', filter: null },
   ];
   const activeTab = tabs.find(t => t.id === tab);
   const items = activeTab.filter ? enrollments.filter(activeTab.filter) : [];
 
-  const getCourse = id => courses.find(c => c.id === id);
+  const getCourse  = id => courses.find(c => c.id === id);
+  const getDiploma = enrollmentId => diplomas.find(d => d.enrollmentId === enrollmentId);
   const openCourse = (id) => { setDetailCourseId(id); setCurrentView('detalle-curso'); };
+
+  const downloadDiploma = (diploma) => {
+    if (!diploma) { showToast && showToast('Diploma en proceso', 'info'); return; }
+    if (typeof window.downloadDiplomaPDF === 'function') {
+      window.downloadDiplomaPDF(diploma, user, showToast);
+    } else {
+      setCurrentView('diplomas');
+    }
+  };
 
   return React.createElement('div', null,
     React.createElement('div', { style: { marginBottom: 22 } },
@@ -38,7 +50,7 @@ function AlumnoMyCoursesView() {
       style: { display: 'flex', gap: 4, marginBottom: 18, background: theme.surface2 || '#fafbfc', padding: 5, borderRadius: 10, border: `1px solid ${theme.border}`, width: 'fit-content' },
     },
       tabs.map(t => {
-        const count = t.filter ? enrollments.filter(t.filter).length : diplomas.length;
+        const count = enrollments.filter(t.filter).length;
         return React.createElement('button', {
           key: t.id,
           onClick: () => setTab(t.id),
@@ -56,16 +68,7 @@ function AlumnoMyCoursesView() {
     ),
 
     // Content
-    tab === 'diplomas'
-      ? React.createElement('div', null,
-          React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 13, color: theme.textLight, marginBottom: 14 } },
-            'Consulta y descarga tus ', diplomas.length, ' diplomas en la sección dedicada.'),
-          React.createElement('button', {
-            onClick: () => setCurrentView('diplomas'),
-            style: { padding: '12px 22px', borderRadius: 10, background: COLORS.gradient, color: '#fff', border: 'none', fontFamily: 'Bricolage Grotesque', fontWeight: 700, cursor: 'pointer' },
-          }, 'Ir a diplomas →'),
-        )
-      : items.length === 0
+    items.length === 0
         ? React.createElement(EmptyState, {
             theme, icon: '◌',
             title: tab === 'en_progreso' ? 'No tienes cursos activos' : 'Aún no has completado ningún curso',
@@ -106,23 +109,39 @@ function AlumnoMyCoursesView() {
                   React.createElement(Progress, { value: e.progress || 0, color: isDone ? '#16a34a' : undefined }),
                 ),
                 React.createElement('div', {
-                  style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'Lato', fontSize: 11, color: theme.textLight, paddingTop: 6 },
+                  style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, fontFamily: 'Lato', fontSize: 11, color: theme.textLight, paddingTop: 6 },
                 },
-                  React.createElement('span', null,
+                  React.createElement('span', { style: { flex: 1, minWidth: 0 } },
                     isDone ? ('Completado el ' + (e.completedAt || '—'))
                            : ('Última actividad: ' + (e.lastAccess || 'sin registro')),
                   ),
-                  React.createElement('button', {
-                    onClick: () => openCourse(c.id),
-                    style: {
-                      padding: '8px 14px', borderRadius: 7,
-                      background: isDone ? (theme.surface2 || '#fafbfc') : COLORS.orange,
-                      color: isDone ? theme.text : '#fff',
-                      border: isDone ? `1px solid ${theme.border}` : 'none',
-                      fontFamily: 'Bricolage Grotesque', fontSize: 11, fontWeight: 700,
-                      cursor: 'pointer',
-                    },
-                  }, isDone ? 'Revisar' : 'Continuar →'),
+                  React.createElement('div', { style: { display: 'flex', gap: 6, flexShrink: 0 } },
+                    // FILEMAKER: al completar, Script "Generar_Diploma" crea el registro
+                    //   en tabla Diplomas. Si aún no existe, el botón queda deshabilitado.
+                    isDone && React.createElement('button', {
+                      onClick: () => downloadDiploma(getDiploma(e.id)),
+                      disabled: !getDiploma(e.id),
+                      title: getDiploma(e.id) ? 'Descargar diploma en PDF' : 'Diploma en proceso',
+                      style: {
+                        padding: '8px 12px', borderRadius: 7,
+                        background: getDiploma(e.id) ? COLORS.gradient : '#e4e7ef',
+                        color: getDiploma(e.id) ? '#fff' : theme.textLight,
+                        border: 'none', fontFamily: 'Bricolage Grotesque', fontSize: 11, fontWeight: 700,
+                        cursor: getDiploma(e.id) ? 'pointer' : 'not-allowed',
+                      },
+                    }, '↓ Diploma'),
+                    React.createElement('button', {
+                      onClick: () => openCourse(c.id),
+                      style: {
+                        padding: '8px 14px', borderRadius: 7,
+                        background: isDone ? (theme.surface2 || '#fafbfc') : COLORS.orange,
+                        color: isDone ? theme.text : '#fff',
+                        border: isDone ? `1px solid ${theme.border}` : 'none',
+                        fontFamily: 'Bricolage Grotesque', fontSize: 11, fontWeight: 700,
+                        cursor: 'pointer',
+                      },
+                    }, isDone ? 'Revisar' : 'Continuar →'),
+                  ),
                 ),
               );
             }),

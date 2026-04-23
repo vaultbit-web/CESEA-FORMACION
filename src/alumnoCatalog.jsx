@@ -65,6 +65,34 @@ function AlumnoCatalogView() {
     'Área de autocuidados':       COLORS.fuchsia,
   };
 
+  // FILEMAKER: Portal "Cursos_Relacionados" — filtra cursos cuyo area
+  //   pertenezca al conjunto de áreas ya cursadas por el alumno, excluyendo
+  //   los que ya tiene inscritos. Limit 4, ordenado por rating desc.
+  const relatedCourses = React.useMemo(() => {
+    const userAreas = new Set(
+      enrollments
+        .map(en => courses.find(c => c.id === en.courseId)?.area)
+        .filter(Boolean)
+    );
+    const pool = courses.filter(c => !isEnrolled(c.id));
+    if (userAreas.size === 0) {
+      return [...pool].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
+    }
+    return pool.filter(c => userAreas.has(c.area))
+               .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+               .slice(0, 4);
+  }, [courses, enrollments]);
+
+  // Contador por área para los chips (cursos disponibles no inscritos en esa área)
+  const areaCounts = React.useMemo(() => {
+    const counts = {};
+    courses.forEach(c => {
+      if (isEnrolled(c.id)) return;
+      counts[c.area] = (counts[c.area] || 0) + 1;
+    });
+    return counts;
+  }, [courses, enrollments]);
+
   const openCourse = (id) => { setDetailCourseId(id); setCurrentView('detalle-curso'); };
 
   return React.createElement('div', null,
@@ -79,7 +107,76 @@ function AlumnoCatalogView() {
       React.createElement('p', { style: { fontFamily: 'Lato', fontSize: 13, color: theme.textLight } }, courses.length, ' cursos disponibles. Filtra, busca y encuentra la próxima formación que impulse tu carrera.'),
     ),
 
-    // ── Barra de búsqueda + filtros ──
+    // ── Cursos relacionados ──
+    relatedCourses.length > 0 && React.createElement('div', { style: { marginBottom: 22 } },
+      React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 } },
+        React.createElement('div', null,
+          React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 11, color: COLORS.orange, fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 2 } }, 'Para ti'),
+          React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 18, fontWeight: 800, color: theme.text } }, 'Relacionados con tu formación'),
+        ),
+        React.createElement('a', {
+          href: 'https://csaformacion.com/formacion/', target: '_blank', rel: 'noopener noreferrer',
+          style: { fontFamily: 'Bricolage Grotesque', fontSize: 12, fontWeight: 700, color: COLORS.orange, textDecoration: 'none' },
+        }, 'Ver catálogo completo →'),
+      ),
+      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 10 } },
+        relatedCourses.map(c => React.createElement('div', {
+          key: c.id,
+          onClick: () => openCourse(c.id),
+          style: {
+            background: theme.surface, border: `1px solid ${theme.border}`,
+            borderRadius: 10, padding: 12, cursor: 'pointer',
+            boxShadow: theme.cardShadow, transition: 'transform 0.18s',
+          },
+          onMouseEnter: e => e.currentTarget.style.transform = 'translateY(-2px)',
+          onMouseLeave: e => e.currentTarget.style.transform = 'translateY(0)',
+        },
+          React.createElement('div', { style: { height: 56, borderRadius: 7, background: `linear-gradient(135deg, ${areaAccent[c.area] || COLORS.orange}, ${COLORS.pink})`, marginBottom: 8, display: 'flex', alignItems: 'flex-end', padding: 6 } },
+            React.createElement('span', { style: { fontFamily: 'Lato', fontSize: 9, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 1 } }, c.area),
+          ),
+          React.createElement('div', { style: { fontFamily: 'Bricolage Grotesque', fontSize: 12, fontWeight: 800, color: theme.text, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 30 } }, c.title),
+          React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 10, color: theme.textLight, marginTop: 4 } }, c.hours, ' h · ', c.price, ' €'),
+        )),
+      ),
+    ),
+
+    // ── Chips de áreas con contador ──
+    React.createElement('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 } },
+      areas.filter(a => a !== 'all').map(a => {
+        const count = areaCounts[a] || 0;
+        const active = area === a;
+        const dim = count === 0;
+        return React.createElement('button', {
+          key: a,
+          onClick: () => setArea(active ? 'all' : a),
+          style: {
+            padding: '8px 14px', borderRadius: 999,
+            border: `1px solid ${active ? (areaAccent[a] || COLORS.orange) : theme.border}`,
+            background: active ? `${areaAccent[a] || COLORS.orange}12` : theme.surface,
+            color: active ? (areaAccent[a] || COLORS.orange) : (dim ? theme.textLight : theme.text),
+            fontFamily: 'Lato', fontSize: 12, fontWeight: active ? 800 : 600,
+            cursor: 'pointer', opacity: dim ? 0.55 : 1,
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+          },
+        },
+          a,
+          React.createElement('span', {
+            style: {
+              padding: '1px 8px', borderRadius: 999,
+              background: active ? (areaAccent[a] || COLORS.orange) : theme.surface2 || '#f0f1f5',
+              color: active ? '#fff' : theme.textLight,
+              fontSize: 10, fontWeight: 800, minWidth: 18, textAlign: 'center',
+            },
+          }, count),
+        );
+      }),
+      area !== 'all' && React.createElement('button', {
+        onClick: () => setArea('all'),
+        style: { padding: '8px 14px', borderRadius: 999, border: `1px solid ${theme.border}`, background: 'transparent', color: theme.textLight, fontFamily: 'Lato', fontSize: 12, fontWeight: 600, cursor: 'pointer' },
+      }, 'Limpiar área'),
+    ),
+
+    // ── Barra de búsqueda + filtros (sin select de área, reemplazado por chips) ──
     React.createElement('div', {
       style: {
         background: theme.surface, border: `1px solid ${theme.border}`,
@@ -93,12 +190,6 @@ function AlumnoCatalogView() {
         placeholder: '🔍 Busca por título, categoría, formador…',
         style: { padding: '11px 14px', borderRadius: 9, border: `1px solid ${theme.border}`, background: theme.surface2 || '#fafbfc', fontSize: 13, fontFamily: 'Lato', outline: 'none', color: theme.text },
       }),
-      React.createElement('select', {
-        value: area, onChange: e => setArea(e.target.value),
-        style: { padding: '11px 12px', borderRadius: 9, border: `1px solid ${theme.border}`, background: theme.surface2 || '#fafbfc', fontSize: 13, fontFamily: 'Lato', cursor: 'pointer', color: theme.text },
-      },
-        areas.map(a => React.createElement('option', { key: a, value: a }, a === 'all' ? 'Todas las áreas' : a)),
-      ),
       React.createElement('select', {
         value: modality, onChange: e => setModality(e.target.value),
         style: { padding: '11px 12px', borderRadius: 9, border: `1px solid ${theme.border}`, background: theme.surface2 || '#fafbfc', fontSize: 13, fontFamily: 'Lato', cursor: 'pointer', color: theme.text },

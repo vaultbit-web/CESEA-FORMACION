@@ -246,15 +246,8 @@ function AuthScreens() {
             React.createElement('label', { style: { display: 'block', fontSize: 11, fontWeight: 700, color: COLORS.text, marginBottom: 5 } }, 'Repetir contraseña'),
             React.createElement('input', { type: 'password', value: pass2, onChange: e => setPass2(e.target.value), placeholder: '••••••••', style: field }),
           ),
-          isRegister && React.createElement('div', { style: { marginBottom: 12 } },
-            React.createElement('label', { style: { display: 'block', fontSize: 11, fontWeight: 700, color: COLORS.text, marginBottom: 5 } }, 'Tu sector profesional'),
-            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 } },
-              ['dental', 'sanidad'].map(s => React.createElement('button', {
-                key: s, type: 'button', onClick: () => setSector(s),
-                style: { padding: '10px 14px', borderRadius: 9, border: sector === s ? `2px solid ${COLORS.orange}` : '1px solid #e4e7ef', background: sector === s ? `${COLORS.orange}0c` : '#fff', color: sector === s ? COLORS.orange : COLORS.text, fontFamily: 'Lato', fontSize: 12, fontWeight: 700, cursor: 'pointer', textTransform: 'capitalize' },
-              }, s)),
-            ),
-          ),
+          // FILEMAKER: el campo Alumnos::sector se asigna internamente
+          //   (por email corporativo o política del cliente). No se expone en el formulario.
           isRegister && React.createElement('label', {
             style: { display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, color: COLORS.textLight, margin: '4px 0 12px', cursor: 'pointer' },
           },
