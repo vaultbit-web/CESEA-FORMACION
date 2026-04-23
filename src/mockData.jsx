@@ -695,7 +695,8 @@ function AppProvider({ children }) {
   const [favorites, setFavorites]             = React.useState([2, 9, 14]);
   const [checkoutCourse, setCheckoutCourse]   = React.useState(null);
   const [detailCourseId, setDetailCourseId]   = React.useState(null);
-  const [onboardingDone, setOnboardingDone]   = React.useState(false);
+  // Onboarding del alumno arranca cerrado para no tapar las vistas al hacer login
+  const [onboardingDone, setOnboardingDone]   = React.useState(true);
   const [cookiesAccepted, setCookiesAccepted] = React.useState(false);
 
   // ── Auth ────────────────────────────────────────────────────────────────────

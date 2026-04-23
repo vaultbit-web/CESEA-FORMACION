@@ -93,6 +93,22 @@
   <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
+  <!-- Banner de ayuda si se abre con file:// (los scripts .jsx no cargan por CORS) -->
+  <script>
+    if (location.protocol === 'file:') {
+      document.addEventListener('DOMContentLoaded', function(){
+        var b = document.createElement('div');
+        b.style.cssText = 'position:fixed;inset:0;background:#0f1020;color:#fff;z-index:99999;padding:40px;font-family:Lato,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;';
+        b.innerHTML = '<h1 style="font-family:Bricolage Grotesque,sans-serif;font-size:28px;color:#fcad00;margin-bottom:16px">⚠ Abre la app vía servidor local</h1>'+
+          '<p style="font-size:15px;max-width:540px;line-height:1.6;margin-bottom:20px">Has abierto el archivo con <code style="background:#1d1f38;padding:2px 6px;border-radius:4px">file://</code>. Los navegadores bloquean la carga de los <code style="background:#1d1f38;padding:2px 6px;border-radius:4px">.jsx</code> en ese modo. La app se queda cargando indefinidamente.</p>'+
+          '<p style="font-size:14px;color:#9ea3bd;margin-bottom:16px">Arranca un servidor local desde esta carpeta:</p>'+
+          '<pre style="background:#1d1f38;padding:14px 18px;border-radius:10px;font-size:13px;color:#35a9cd;margin-bottom:20px">python -m http.server 8765</pre>'+
+          '<p>y abre <a href="http://localhost:8765/index.html" style="color:#fcad00;font-weight:700">http://localhost:8765/index.html</a></p>';
+        document.body.appendChild(b);
+      });
+    }
+  </script>
+
   <div id="loader">
     <div style="text-align:center">
       <div style="display:flex;margin-bottom:14px">
