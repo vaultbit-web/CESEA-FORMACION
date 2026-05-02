@@ -1,0 +1,317 @@
+[
+  {
+    "idExterno": 70,
+    "name": "Maria Dolores Millán Vico",
+    "cif": "45464225X",
+    "nColegiado": "Asociado 2636",
+    "email": "mariamillanvi@gmail.com",
+    "phone": "637312148",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 92,
+    "name": "Aurora Núñez Ortuño",
+    "cif": "18434436M",
+    "nColegiado": "Asociado 103923",
+    "email": "aurora.nu.or@gmail.com",
+    "phone": "653373657",
+    "poblacion": "Zaragoza"
+  },
+  {
+    "idExterno": 130,
+    "name": "Pere Lluís Serrano Ciuraneta",
+    "cif": "35080588E",
+    "nColegiado": "007",
+    "email": "pserrano@tinet.org",
+    "phone": "629375773",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 147,
+    "name": "Moisés Martínez Berrio",
+    "cif": "38123380Y",
+    "nColegiado": null,
+    "email": "moibiopolis@gmail.com",
+    "phone": "664360731",
+    "poblacion": "Vacarisses"
+  },
+  {
+    "idExterno": 165,
+    "name": "José Luis Buenache Catalán",
+    "cif": "46707106V",
+    "nColegiado": null,
+    "email": "jbuenache@gmail.com",
+    "phone": "649853215",
+    "poblacion": "Manresa"
+  },
+  {
+    "idExterno": 166,
+    "name": "Sònia Díaz Casado",
+    "cif": "39358623B",
+    "nColegiado": null,
+    "email": "soniadiazc@gmail.com",
+    "phone": "647708804",
+    "poblacion": "Manresa"
+  },
+  {
+    "idExterno": 167,
+    "name": "Cristina Ruiz Martínez",
+    "cif": "39730136M",
+    "nColegiado": null,
+    "email": "crisbiopolis@gmail.com",
+    "phone": "690215144",
+    "poblacion": "Vacarisses"
+  },
+  {
+    "idExterno": 168,
+    "name": "Mariona Homs Alsina",
+    "cif": "39371933G",
+    "nColegiado": null,
+    "email": "marionahoms@gmail.com",
+    "phone": "616923140",
+    "poblacion": "Manresa"
+  },
+  {
+    "idExterno": 177,
+    "name": "Maria Elena Lucerón Díaz-Ropero",
+    "cif": "03890589R",
+    "nColegiado": "45006856",
+    "email": "elena_ldr@yahoo.es",
+    "phone": "639890401",
+    "poblacion": "Toledo"
+  },
+  {
+    "idExterno": 190,
+    "name": "Jose Ignacio Gil De Sola Díaz",
+    "cif": "50757616C",
+    "nColegiado": null,
+    "email": "nacho@alimentariaasesores.com",
+    "phone": "657908605",
+    "poblacion": "Moralzarzal"
+  },
+  {
+    "idExterno": 191,
+    "name": "Isabel Álvarez Gómez",
+    "cif": "53042001E",
+    "nColegiado": "SW0056728",
+    "email": "isabel.socialworker@gmail.com",
+    "phone": "692870576",
+    "poblacion": "County Kilkenny"
+  },
+  {
+    "idExterno": 198,
+    "name": "Maria Carmen (Marieta) Montoya Tolon",
+    "cif": "05671621M",
+    "nColegiado": null,
+    "email": "marietamontoya@farmadosis.com",
+    "phone": "687587993",
+    "poblacion": "Madrid"
+  },
+  {
+    "idExterno": 199,
+    "name": "Begoña García Gallegos",
+    "cif": "52401817C",
+    "nColegiado": null,
+    "email": "begoemociones@gmail.com",
+    "phone": "686931528",
+    "poblacion": "Santa Coloma de Gramenet"
+  },
+  {
+    "idExterno": 204,
+    "name": "Miguel Ángel Calvo Rubio",
+    "cif": "72887655B",
+    "nColegiado": null,
+    "email": "info@ser-social.es",
+    "phone": "667864309",
+    "poblacion": "Zaragoza"
+  },
+  {
+    "idExterno": 205,
+    "name": "Danny Hawthorn",
+    "cif": null,
+    "nColegiado": null,
+    "email": "danny.hawthorn@campofriofg.com",
+    "phone": "670280080",
+    "poblacion": "Madrid"
+  },
+  {
+    "idExterno": 207,
+    "name": "Armand García Roy",
+    "cif": null,
+    "nColegiado": null,
+    "email": "mbtformacion@gmail.com",
+    "phone": "690050484",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 208,
+    "name": "Pedro Martínez Durán",
+    "cif": "28800659J",
+    "nColegiado": null,
+    "email": "prevencionbcn@gmail.com",
+    "phone": "656281695",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 209,
+    "name": "Gabriel Liesa Vivancos",
+    "cif": "46346190V",
+    "nColegiado": null,
+    "email": "fisagib@hotmail.com",
+    "phone": "663853900",
+    "poblacion": "Santa Eulàlia Ronçana"
+  },
+  {
+    "idExterno": 215,
+    "name": "Francisco José González Dopico",
+    "cif": "32675079Z",
+    "nColegiado": null,
+    "email": "frangdopico.prof@hotmail.com",
+    "phone": "609710395",
+    "poblacion": "Palleja"
+  },
+  {
+    "idExterno": 216,
+    "name": "Sergi Nogués Orte",
+    "cif": "46341476H",
+    "nColegiado": null,
+    "email": "sergings@gmail.com",
+    "phone": "646044218",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 218,
+    "name": "Alberto Simoncini",
+    "cif": "X7698601H",
+    "nColegiado": null,
+    "email": "ahora@albertosimoncini.com",
+    "phone": "600467524",
+    "poblacion": "Barcelona"
+  },
+  {
+    "idExterno": 222,
+    "name": "Andreu Ferrer Franquesa",
+    "cif": "39365912D",
+    "nColegiado": null,
+    "email": "tobages@hotmail.com",
+    "phone": "607662728",
+    "poblacion": "Manresa"
+  },
+  {
+    "idExterno": 227,
+    "name": "Natalia Cruz Carreño",
+    "cif": "34751108V",
+    "nColegiado": null,
+    "email": "50natcruz@gmail.com",
+    "phone": "653996349",
+    "poblacion": "Sabadell"
+  },
+  {
+    "idExterno": 228,
+    "name": "Albert Masip Forns",
+    "cif": "40997395X",
+    "nColegiado": null,
+    "email": "a.masip5@gmail.com",
+    "phone": "660046938",
+    "poblacion": "Barberà del Vallès"
+  },
+  {
+    "idExterno": 233,
+    "name": "Ana Villaseca García",
+    "cif": "03112375S",
+    "nColegiado": null,
+    "email": "formacion@anavillaseca.com",
+    "phone": "637503653",
+    "poblacion": "Hoyo de Manzanares"
+  },
+  {
+    "idExterno": 235,
+    "name": "Carla Vargas Castro",
+    "cif": "Y2121795J",
+    "nColegiado": null,
+    "email": "castrogiomara21@gmail.com",
+    "phone": "669653474",
+    "poblacion": "Hospitalet de Llobrega"
+  },
+  {
+    "idExterno": 236,
+    "name": "Raquel Cavas Sánchez",
+    "cif": null,
+    "nColegiado": null,
+    "email": "raquel.cavas@hotmail.com",
+    "phone": "629786132",
+    "poblacion": "Murcia"
+  },
+  {
+    "idExterno": 237,
+    "name": "Gemma Martin Naranjo",
+    "cif": "02629876X",
+    "nColegiado": null,
+    "email": "gemma@bygemmanaranjo.com",
+    "phone": "647848424",
+    "poblacion": "Málaga"
+  },
+  {
+    "idExterno": 265,
+    "name": "Sara María Souibrat Torregrosa",
+    "cif": "48825791B",
+    "nColegiado": "MAD00513",
+    "email": "sarasoul36@gmail.com",
+    "phone": "697972538",
+    "poblacion": "Madrid"
+  },
+  {
+    "name": "Sonia Ibañez González",
+    "poblacion": "Barcelona",
+    "idExterno": -1,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  },
+  {
+    "name": "Jaume Aspa Pareras",
+    "poblacion": "La Garriga",
+    "idExterno": -2,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  },
+  {
+    "name": "Alicia Casamayor Guallar",
+    "poblacion": "Zaragoza",
+    "idExterno": -3,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  },
+  {
+    "name": "Joan Simon Oriola",
+    "poblacion": "Manresa",
+    "idExterno": -4,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  },
+  {
+    "name": "Neus Pociello Cayuela",
+    "poblacion": "Barcelona",
+    "idExterno": -5,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  },
+  {
+    "name": "Agatha Suay Almeda",
+    "poblacion": "",
+    "idExterno": -6,
+    "cif": null,
+    "nColegiado": null,
+    "email": "",
+    "phone": ""
+  }
+]

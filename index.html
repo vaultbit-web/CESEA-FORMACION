@@ -123,9 +123,39 @@
   <div id="root"></div>
 
   <!-- Orden importa: data → widgets → auth → vistas por rol → layouts → admin → app -->
+
+  <!-- ─── Supabase client ─────────────────────────────────────────────────────
+       Si las variables window.SUPABASE_URL y window.SUPABASE_ANON están
+       definidas, la app conecta a Supabase. Si no, usa los mocks de
+       dataReal.jsx + mockData.jsx (modo offline / demo).
+
+       FILEMAKER: en producción FM Server reemplaza esto con un fetch al Data
+       API; el cliente JS solo se usa cuando la app vive en navegador puro.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script>
+    // ⬇ ESTAS DOS VARIABLES SE RELLENAN CON LOS DATOS DEL SUPABASE EN DOKPLOY ⬇
+    window.SUPABASE_URL  = 'http://cesea-formacion-supabase-9ccf70-89-116-38-126.traefik.me';
+    window.SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3Nzc3NTE4MDksImV4cCI6MTg5MzQ1NjAwMCwicm9sZSI6ImFub24iLCJpc3MiOiJzdXBhYmFzZSJ9.HOBJ6yk6k-qxj9JwC69l45SCi1CkoNPy2PD5U4sT7c0';
+
+    if (window.SUPABASE_URL && window.SUPABASE_ANON && window.supabase?.createClient) {
+      window.supabaseClient = window.supabase.createClient(
+        window.SUPABASE_URL, window.SUPABASE_ANON,
+        { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'cesea.session' } }
+      );
+      console.info('[supabase] Conectado a:', window.SUPABASE_URL);
+    } else {
+      console.info('[supabase] No configurado — modo demo con mocks.');
+    }
+  </script>
+
   <!-- FILEMAKER: dataReal contiene los datos importados de los Excels (formadores + cursos).
-       En FileMaker se sustituye por una llamada al Data API antes de inicializar el AppContext. -->
+       En modo Supabase se ignora; en modo demo es la fuente de datos. -->
   <script type="text/babel" src="src/dataReal.jsx"></script>
+  <!-- FILEMAKER: api.jsx es el service layer único. Si window.supabaseClient
+       no existe (modo demo), api.jsx se vuelve null y mockData.jsx usa los
+       useState locales. -->
+  <script type="text/babel" src="src/api.jsx"></script>
   <script type="text/babel" src="src/mockData.jsx"></script>
   <script type="text/babel" src="src/attendanceBus.jsx"></script>
   <script type="text/babel" src="src/widgets.jsx"></script>
