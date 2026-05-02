@@ -388,9 +388,11 @@ function AdminCoursesView() {
   const csvInputRef = React.useRef(null);
 
   const areas = ['all', ...Array.from(new Set(courses.map(c => c.area)))];
+  // FILEMAKER: el filtro busca por título, subtítulo Y código interno
+  //   (Cursos::codigo_interno). Equivale a un Find sobre 3 campos.
   const filtered = courses.filter(c =>
     (areaFilter === 'all' || c.area === areaFilter) &&
-    (!filter || (c.title + ' ' + c.subtitle).toLowerCase().includes(filter.toLowerCase()))
+    (!filter || (c.title + ' ' + (c.subtitle || '') + ' ' + (c.codigoInterno || '')).toLowerCase().includes(filter.toLowerCase()))
   );
 
   // FILEMAKER: utilidades CSV (equivalen a Import Records / Export Records).
@@ -543,7 +545,7 @@ function AdminCoursesView() {
     // Filters
     React.createElement('div', { style: { display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' } },
       React.createElement('input', {
-        placeholder: 'Buscar por título o descripción…',
+        placeholder: 'Buscar por código, título o descripción…',
         value: filter, onChange: e => setFilter(e.target.value),
         style: { flex: 1, minWidth: 240, padding: '10px 14px', borderRadius: 10, border: '1px solid #e4e7ef', fontSize: 13, fontFamily: 'Lato', outline: 'none' }
       }),
@@ -575,7 +577,14 @@ function AdminCoursesView() {
               style: { borderBottom: '1px solid #f4f5f9' }
             },
               React.createElement('td', { style: { padding: '14px 16px' } },
-                React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 13, fontWeight: 700, color: COLORS.dark, maxWidth: 360 } }, c.title),
+                React.createElement('div', { style: { display: 'flex', alignItems: 'baseline', gap: 8, maxWidth: 420 } },
+                  // FILEMAKER: chip con Cursos::codigo_interno — visible en el listado
+                  //   del superadmin. Click sobre la fila edita el curso.
+                  c.codigoInterno && React.createElement('span', {
+                    style: { fontFamily: 'Lato', fontSize: 10, fontWeight: 800, color: COLORS.orange, background: `${COLORS.orange}12`, padding: '3px 8px', borderRadius: 6, letterSpacing: 0.5, whiteSpace: 'nowrap' },
+                  }, c.codigoInterno),
+                  React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 13, fontWeight: 700, color: COLORS.dark, maxWidth: 360, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, c.title),
+                ),
                 React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 11, color: COLORS.textLight, marginTop: 2, maxWidth: 360, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, c.category),
               ),
               React.createElement('td', { style: { padding: '14px 16px', fontFamily: 'Lato', fontSize: 12, color: COLORS.text } }, c.area),
@@ -675,15 +684,19 @@ function AdminCoursesView() {
 //   scripts "Guardar_Curso" (New o Commit Record).
 function CourseEditorModal({ course, onClose, onSave }) {
   const [form, setForm] = React.useState({
-    title:    course?.title    || '',
-    subtitle: course?.subtitle || '',
-    area:     course?.area     || 'Área técnica',
-    category: course?.category || '',
-    modality: course?.modality || 'Online',
-    hours:    course?.hours    || 8,
-    time:     course?.time     || '10:00 - 15:00',
-    location: course?.location || 'Plataforma Zoom',
-    dates:    course?.dates    || '1 enero 2026',
+    codigoInterno:    course?.codigoInterno    || '',
+    title:            course?.title            || '',
+    subtitle:         course?.subtitle         || '',
+    area:             course?.area             || 'Área técnica',
+    category:         course?.category         || '',
+    modality:         course?.modality         || 'Online',
+    hours:            course?.hours            || 8,
+    numImparticiones: course?.numImparticiones || 1,
+    time:             course?.time             || '10:00 - 15:00',
+    location:         course?.location         || 'Plataforma Zoom',
+    dates:            course?.dates            || '',
+    objetivos:        course?.objetivos        || '',
+    contenidos:       course?.contenidos       || '',
   });
   const field = { width: '100%', padding: '10px 14px', borderRadius: 10, border: '1.5px solid #e4e7ef', fontSize: 13, fontFamily: 'Lato', outline: 'none', boxSizing: 'border-box', background: '#fff' };
   const label = { display: 'block', fontSize: 10, fontWeight: 700, color: COLORS.textLight, fontFamily: 'Lato', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 };
@@ -709,9 +722,23 @@ function CourseEditorModal({ course, onClose, onSave }) {
       React.createElement('div', { style: { fontFamily: 'Lato', fontSize: 12, color: COLORS.textLight, marginBottom: 20 } }, 'Los cambios se publican inmediatamente en el catálogo visible para los formadores.'),
 
       React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr', gap: 14 } },
-        React.createElement('div', null,
-          React.createElement('label', { style: label }, 'Título del curso'),
-          React.createElement('input', { style: field, value: form.title, onChange: e => setForm({ ...form, title: e.target.value }) }),
+        // ── Código interno: identificador único del curso (OT/presupuesto) ────
+        // FILEMAKER: Cursos::codigo_interno (Text, único + indexado).
+        //   Se exporta a la OT y al presupuesto del cliente.
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '160px 1fr', gap: 14 } },
+          React.createElement('div', null,
+            React.createElement('label', { style: label }, 'Código interno *'),
+            React.createElement('input', {
+              style: field, required: true,
+              placeholder: 'Ej. 1101',
+              value: form.codigoInterno,
+              onChange: e => setForm({ ...form, codigoInterno: e.target.value.trim() }),
+            }),
+          ),
+          React.createElement('div', null,
+            React.createElement('label', { style: label }, 'Título del curso *'),
+            React.createElement('input', { style: field, value: form.title, onChange: e => setForm({ ...form, title: e.target.value }) }),
+          ),
         ),
         React.createElement('div', null,
           React.createElement('label', { style: label }, 'Descripción / subtítulo'),
@@ -729,7 +756,7 @@ function CourseEditorModal({ course, onClose, onSave }) {
             React.createElement('input', { style: field, value: form.category, onChange: e => setForm({ ...form, category: e.target.value }) }),
           ),
         ),
-        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 } },
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 14 } },
           React.createElement('div', null,
             React.createElement('label', { style: label }, 'Modalidad'),
             React.createElement('select', { style: field, value: form.modality, onChange: e => setForm({ ...form, modality: e.target.value }) },
@@ -739,6 +766,12 @@ function CourseEditorModal({ course, onClose, onSave }) {
           React.createElement('div', null,
             React.createElement('label', { style: label }, 'Horas'),
             React.createElement('input', { type: 'number', min: 1, style: field, value: form.hours, onChange: e => setForm({ ...form, hours: parseInt(e.target.value, 10) || 0 }) }),
+          ),
+          // FILEMAKER: Cursos::num_imparticiones — el formador NO puede modificarlo
+          //   desde su portal; solo lo lee. Aquí lo edita el superadmin.
+          React.createElement('div', null,
+            React.createElement('label', { style: label }, 'Nº imparticiones'),
+            React.createElement('input', { type: 'number', min: 1, max: 30, style: field, value: form.numImparticiones, onChange: e => setForm({ ...form, numImparticiones: parseInt(e.target.value, 10) || 1 }) }),
           ),
           React.createElement('div', null,
             React.createElement('label', { style: label }, 'Horario'),
@@ -751,9 +784,19 @@ function CourseEditorModal({ course, onClose, onSave }) {
             React.createElement('input', { style: field, value: form.location, onChange: e => setForm({ ...form, location: e.target.value }) }),
           ),
           React.createElement('div', null,
-            React.createElement('label', { style: label }, 'Fechas'),
-            React.createElement('input', { style: field, value: form.dates, onChange: e => setForm({ ...form, dates: e.target.value }) }),
+            React.createElement('label', { style: label }, 'Fechas (texto libre o vacío hasta planificar)'),
+            React.createElement('input', { style: field, placeholder: 'Ej. 1, 8, 15 Junio 2026', value: form.dates, onChange: e => setForm({ ...form, dates: e.target.value }) }),
           ),
+        ),
+        // ── Objetivos y Contenidos: visibles en superadmin y formador, no en alumno ──
+        // FILEMAKER: Cursos::objetivos y Cursos::contenidos (campos Text largos).
+        React.createElement('div', null,
+          React.createElement('label', { style: label }, 'Objetivos'),
+          React.createElement('textarea', { style: { ...field, minHeight: 90, resize: 'vertical', fontFamily: 'Lato' }, value: form.objetivos, onChange: e => setForm({ ...form, objetivos: e.target.value }) }),
+        ),
+        React.createElement('div', null,
+          React.createElement('label', { style: label }, 'Contenidos'),
+          React.createElement('textarea', { style: { ...field, minHeight: 110, resize: 'vertical', fontFamily: 'Lato' }, value: form.contenidos, onChange: e => setForm({ ...form, contenidos: e.target.value }) }),
         ),
       ),
 
@@ -763,7 +806,11 @@ function CourseEditorModal({ course, onClose, onSave }) {
           style: { padding: '10px 18px', borderRadius: 9, border: '1px solid #e4e7ef', background: '#fff', color: COLORS.text, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Lato' }
         }, 'Cancelar'),
         React.createElement('button', {
-          onClick: () => { if (!form.title.trim()) return alert('El título es obligatorio.'); onSave(form); },
+          onClick: () => {
+            if (!form.codigoInterno.trim()) return alert('El código interno es obligatorio.');
+            if (!form.title.trim())          return alert('El título es obligatorio.');
+            onSave(form);
+          },
           style: { padding: '10px 20px', borderRadius: 9, border: 'none', background: COLORS.gradient, color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', fontFamily: 'Bricolage Grotesque', boxShadow: '0 4px 14px rgba(244,120,9,0.28)' }
         }, course ? 'Guardar cambios' : 'Crear curso'),
       ),
