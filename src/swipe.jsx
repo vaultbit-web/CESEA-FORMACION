@@ -1,37 +1,58 @@
 // ─── Swipe Cards ──────────────────────────────────────────────────────────────
 const { motion, AnimatePresence, useMotionValue, useTransform } = window.Motion || {};
 
+// ─── Helper: validación de secuencia de fechas ───────────────────────────────
+// FILEMAKER: equivale al script "Validar_Fechas_Propuesta" — script trigger
+//   OnObjectSave en Solicitudes::fecha_fin y Solicitudes::sesiones_json.
+//   Devuelve { ok, error } y bloquea el Commit Record si ok=false.
+function validateScheduleSequence(startDate, endDate, sessions) {
+  if (!startDate)            return { ok: false, error: 'Indica una fecha de inicio.' };
+  if (!endDate)              return { ok: false, error: 'Indica una fecha de fin.' };
+  if (endDate < startDate)   return { ok: false, error: 'La fecha de fin no puede ser anterior a la de inicio.' };
+  for (let i = 0; i < (sessions || []).length; i++) {
+    const s = sessions[i];
+    if (s.day && s.day < startDate) return { ok: false, error: `La sesión ${i + 1} es anterior a la fecha de inicio.` };
+    if (s.day && s.day > endDate)   return { ok: false, error: `La sesión ${i + 1} es posterior a la fecha de fin.` };
+    if (i > 0 && s.day && sessions[i - 1].day && s.day < sessions[i - 1].day) {
+      return { ok: false, error: `La sesión ${i + 1} no puede ser anterior a la sesión ${i}.` };
+    }
+  }
+  return { ok: true, error: '' };
+}
+window.validateScheduleSequence = validateScheduleSequence;
+
 // ─── Modal: Proponer fechas al solicitar plaza ───────────────────────────────
 // FILEMAKER: Layout modal "Propuesta_Plaza_Formador". Genera un registro en
-//   Solicitudes con type="new" y el JSON de fechas propuestas.
+//   Solicitudes con type="new" y el JSON de fechas propuestas. El nº de días
+//   (numImparticiones) lo fija el superadmin en Cursos::num_imparticiones —
+//   el formador NO puede cambiarlo desde aquí, solo elige fechas/horas.
 function ProposeDatesModal({ course, open, onClose, onSubmit }) {
   const { courses, calendarEvents } = React.useContext(AppContext);
   const initStart = course?.startDate || '';
   const initEnd   = course?.endDate   || course?.startDate || '';
+  // El superadmin ha definido cuántas sesiones tiene este curso.
+  const numImparticiones = Math.max(1, parseInt(course?.numImparticiones, 10) || 1);
   const [startDate, setStartDate] = React.useState(initStart);
   const [endDate,   setEndDate]   = React.useState(initEnd);
-  const [numDays,   setNumDays]   = React.useState(1);
-  const [sessions,  setSessions]  = React.useState([{ day: initStart, from: '09:00', to: '14:00' }]);
+  const [sessions,  setSessions]  = React.useState(
+    Array.from({ length: numImparticiones }, () => ({ day: initStart, from: '09:00', to: '14:00' }))
+  );
   const [note,      setNote]      = React.useState('');
+  const [validationError, setValidationError] = React.useState('');
 
   React.useEffect(() => {
     if (!open) return;
     setStartDate(initStart);
     setEndDate(initEnd);
-    setNumDays(1);
-    setSessions([{ day: initStart, from: '09:00', to: '14:00' }]);
+    setSessions(Array.from({ length: numImparticiones }, () => ({ day: initStart, from: '09:00', to: '14:00' })));
     setNote('');
+    setValidationError('');
   }, [open, course]);
 
-  // Redimensiona la lista de sesiones al cambiar el nº de días
+  // Auto-sugerencia: si la fecha fin es anterior a la inicio, igualarla a la de inicio.
   React.useEffect(() => {
-    setSessions(prev => {
-      const copy = [...prev];
-      while (copy.length < numDays) copy.push({ day: startDate, from: '09:00', to: '14:00' });
-      while (copy.length > numDays) copy.pop();
-      return copy;
-    });
-  }, [numDays, startDate]);
+    if (startDate && (!endDate || endDate < startDate)) setEndDate(startDate);
+  }, [startDate]);
 
   const isPresencial = course && course.modality !== 'Online';
 
@@ -83,28 +104,45 @@ function ProposeDatesModal({ course, open, onClose, onSubmit }) {
         ),
         React.createElement('div', null,
           React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Fecha fin'),
-          React.createElement('input', { type: 'date', style: inp, value: endDate, onChange: e => setEndDate(e.target.value) }),
+          // FILEMAKER: el atributo min impone fecha_fin >= fecha_inicio a nivel UI;
+          //   en FM se replica con un script trigger OnObjectValidate.
+          React.createElement('input', { type: 'date', style: inp, min: startDate || undefined, value: endDate, onChange: e => setEndDate(e.target.value) }),
         ),
       ),
 
-      isPresencial && React.createElement('div', { style: { marginBottom: 14 } },
-        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Nº de días de impartición'),
-        React.createElement('select', { style: { ...inp, cursor: 'pointer' }, value: numDays, onChange: e => setNumDays(parseInt(e.target.value, 10) || 1) },
-          ...[1,2,3,4,5,6,7,8,9,10].map(n => React.createElement('option', { key: n, value: n }, n + (n === 1 ? ' día' : ' días'))),
-        ),
+      // FILEMAKER: el nº de imparticiones lo fija el superadmin en
+      //   Cursos::num_imparticiones; aquí se muestra como info read-only.
+      isPresencial && React.createElement('div', {
+        style: { marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: `${COLORS.cyan}10`, border: `1px solid ${COLORS.cyan}30`, fontFamily: 'Lato', fontSize: 12, color: COLORS.text },
+      },
+        React.createElement('b', { style: { color: COLORS.cyan } }, 'Sesiones predefinidas: ', String(numImparticiones), numImparticiones === 1 ? ' día' : ' días'),
+        React.createElement('span', { style: { color: COLORS.textLight, marginLeft: 6 } }, '· definido por el superadministrador'),
       ),
 
       isPresencial && React.createElement('div', { style: { marginBottom: 14 } },
         React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 6 } }, 'Horarios por día'),
-        ...sessions.map((s, idx) => React.createElement('div', {
-          key: idx,
-          style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 8, marginBottom: 6 }
-        },
-          React.createElement('input', { type: 'date', style: inp, value: s.day, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, day: e.target.value } : ss)) }),
-          React.createElement('input', { type: 'time', style: inp, value: s.from, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, from: e.target.value } : ss)) }),
-          React.createElement('input', { type: 'time', style: inp, value: s.to,   onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, to: e.target.value } : ss)) }),
-        )),
+        ...sessions.map((s, idx) => {
+          // Cada sesión >0 no puede ser anterior a la previa.
+          const minForThis = idx === 0 ? (startDate || undefined) : (sessions[idx - 1].day || startDate || undefined);
+          return React.createElement('div', {
+            key: idx,
+            style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 8, marginBottom: 6 }
+          },
+            React.createElement('input', {
+              type: 'date', style: inp,
+              min: minForThis, max: endDate || undefined,
+              value: s.day,
+              onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, day: e.target.value } : ss)),
+            }),
+            React.createElement('input', { type: 'time', style: inp, value: s.from, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, from: e.target.value } : ss)) }),
+            React.createElement('input', { type: 'time', style: inp, value: s.to,   onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, to: e.target.value } : ss)) }),
+          );
+        }),
       ),
+
+      validationError && React.createElement('div', {
+        style: { marginBottom: 12, padding: '10px 12px', borderRadius: 10, background: `${COLORS.red}12`, border: `1px solid ${COLORS.red}40`, fontFamily: 'Lato', fontSize: 12, color: COLORS.red, fontWeight: 700 },
+      }, '⚠ ', validationError),
 
       React.createElement('div', { style: { marginBottom: 16 } },
         React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Mensaje al superadmin (opcional)'),
@@ -117,11 +155,12 @@ function ProposeDatesModal({ course, open, onClose, onSubmit }) {
           style: { padding: '10px 18px', borderRadius: 9, border: '1px solid #e4e7ef', background: '#fff', color: COLORS.text, fontFamily: 'Lato', fontSize: 13, fontWeight: 700, cursor: 'pointer' },
         }, 'Cancelar'),
         React.createElement('button', {
-          onClick: () => onSubmit({
-            dates: buildDatesString(),
-            schedule: sessions,
-            note,
-          }),
+          onClick: () => {
+            const v = validateScheduleSequence(startDate, endDate, sessions);
+            if (!v.ok) { setValidationError(v.error); return; }
+            setValidationError('');
+            onSubmit({ dates: buildDatesString(), schedule: sessions, note });
+          },
           style: { padding: '10px 20px', borderRadius: 9, border: 'none', background: COLORS.gradient, color: '#fff', fontFamily: 'Bricolage Grotesque', fontSize: 13, fontWeight: 800, cursor: 'pointer', letterSpacing: 0.3 },
         }, 'Enviar propuesta →'),
       ),
@@ -199,8 +238,12 @@ function SwipeCard({ course, onSwipeRight, onSwipeLeft, zIdx }) {
       // Content
       React.createElement('div', { style: { position: 'relative', zIndex: 1 } },
 
-        // Area breadcrumb
-        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, textTransform: 'uppercase', letterSpacing: 0.8 } },
+        // Area breadcrumb + código interno (chip read-only)
+        // FILEMAKER: Cursos::codigo_interno mostrado como info, no editable.
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, textTransform: 'uppercase', letterSpacing: 0.8, flexWrap: 'wrap' } },
+          course.codigoInterno && React.createElement('span', {
+            style: { fontFamily: 'Lato', fontSize: 10, fontWeight: 800, color: areaColor, background: `${areaColor}15`, padding: '3px 8px', borderRadius: 5, letterSpacing: 0.6 },
+          }, course.codigoInterno),
           React.createElement('span', { style: { color: areaColor } }, course.area),
           React.createElement('span', { style: { opacity: 0.4 } }, '›'),
           React.createElement('span', null, course.category),
@@ -406,11 +449,12 @@ function OfertasView() {
   ];
 
   // Filter pipeline
+  // FILEMAKER: Find sobre Cursos por (status, area, category, title, subtitle, codigo_interno).
   const filtered = courses.filter(c =>
        (status === 'all' || c.status   === status)
     && (area   === 'all' || c.area     === area)
     && (sub    === 'all' || c.category === sub)
-    && (!query || c.title.toLowerCase().includes(query.toLowerCase()) || c.subtitle?.toLowerCase().includes(query.toLowerCase()))
+    && (!query || c.title.toLowerCase().includes(query.toLowerCase()) || c.subtitle?.toLowerCase().includes(query.toLowerCase()) || (c.codigoInterno || '').toLowerCase().includes(query.toLowerCase()))
   );
 
   const areas = ['all', ...Array.from(new Set(courses.map(c => c.area)))];
@@ -569,6 +613,11 @@ function CourseRow({ course: c, areaColor, statusConf: st, dense, onCloseComplia
     React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 } },
       React.createElement('div', { style: { flex: 1, minWidth: 0 } },
         React.createElement('div', { style: { display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap', alignItems: 'center' } },
+          // FILEMAKER: chip Cursos::codigo_interno (visible en lista del formador,
+          //   no editable). Útil para identificar el curso en conversaciones internas.
+          c.codigoInterno && React.createElement('span', {
+            style: { padding: '2px 8px', borderRadius: 4, background: `${areaColor}18`, color: areaColor, fontSize: 10, fontWeight: 800, fontFamily: 'Lato', letterSpacing: 0.6, whiteSpace: 'nowrap' },
+          }, c.codigoInterno),
           React.createElement('span', { style: { padding: '2px 8px', borderRadius: 4, background: `${areaColor}10`, color: areaColor, fontSize: 10, fontWeight: 700, fontFamily: 'Lato', textTransform: 'uppercase', letterSpacing: 0.6 } }, c.category),
           React.createElement('span', { style: { padding: '2px 8px', borderRadius: 4, background: '#f4f5f9', color: COLORS.textLight, fontSize: 10, fontWeight: 600, fontFamily: 'Lato', textTransform: 'uppercase', letterSpacing: 0.6 } }, c.modality),
         ),

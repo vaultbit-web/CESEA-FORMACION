@@ -123,6 +123,9 @@
   <div id="root"></div>
 
   <!-- Orden importa: data → widgets → auth → vistas por rol → layouts → admin → app -->
+  <!-- FILEMAKER: dataReal contiene los datos importados de los Excels (formadores + cursos).
+       En FileMaker se sustituye por una llamada al Data API antes de inicializar el AppContext. -->
+  <script type="text/babel" src="src/dataReal.jsx"></script>
   <script type="text/babel" src="src/mockData.jsx"></script>
   <script type="text/babel" src="src/attendanceBus.jsx"></script>
   <script type="text/babel" src="src/widgets.jsx"></script>

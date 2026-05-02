@@ -141,28 +141,41 @@ function AddProposalModal({ open, onClose }) {
   const [hours,     setHours]     = React.useState(8);
   const [startDate, setStartDate] = React.useState('');
   const [endDate,   setEndDate]   = React.useState('');
+  // FILEMAKER: campo Solicitudes::duracion_modo ∈ {single, multi}.
+  //   "single" usa una única fila de horario; "multi" abre el dropdown 2-10.
+  const [durationMode, setDurationMode] = React.useState('single'); // 'single' | 'multi'
   const [numDays,   setNumDays]   = React.useState(1);
   const [sessions,  setSessions]  = React.useState([{ day: '', from: '09:00', to: '14:00' }]);
   const [objectives, setObjectives] = React.useState('');
   const [contents,   setContents]   = React.useState('');
+  const [validationError, setValidationError] = React.useState('');
 
+  // Auto-sugerencia de fecha fin: si está vacía o anterior, igualar a la de inicio.
   React.useEffect(() => {
+    if (startDate && (!endDate || endDate < startDate)) setEndDate(startDate);
+  }, [startDate]);
+
+  // Redimensiona la lista de sesiones según durationMode + numDays.
+  React.useEffect(() => {
+    const target = durationMode === 'single' ? 1 : numDays;
     setSessions(prev => {
       const copy = [...prev];
-      while (copy.length < numDays) copy.push({ day: startDate, from: '09:00', to: '14:00' });
-      while (copy.length > numDays) copy.pop();
+      while (copy.length < target) copy.push({ day: startDate, from: '09:00', to: '14:00' });
+      while (copy.length > target) copy.pop();
       return copy;
     });
-  }, [numDays, startDate]);
+  }, [durationMode, numDays, startDate]);
 
   React.useEffect(() => {
     if (!open) return;
     setMode('catalog');
     setCourseId(''); setCustomTitle(''); setTipologia('');
     setModality('Presencial'); setHours(8);
-    setStartDate(''); setEndDate(''); setNumDays(1);
+    setStartDate(''); setEndDate('');
+    setDurationMode('single'); setNumDays(1);
     setSessions([{ day: '', from: '09:00', to: '14:00' }]);
     setObjectives(''); setContents('');
+    setValidationError('');
   }, [open]);
 
   if (!open) return null;
@@ -184,6 +197,13 @@ function AddProposalModal({ open, onClose }) {
       ? (courses.find(c => String(c.id) === String(courseId))?.title || '')
       : customTitle.trim();
     if (!title || !tipologia) return;
+    // FILEMAKER: equivalente al script "Validar_Fechas_Propuesta" antes de Commit.
+    const validate = window.validateScheduleSequence;
+    if (typeof validate === 'function') {
+      const v = validate(startDate, endDate, sessions);
+      if (!v.ok) { setValidationError(v.error); return; }
+    }
+    setValidationError('');
     createProposal({
       title, tipologia, modality, hours: parseInt(hours, 10) || 0,
       dates: buildDatesString(),
@@ -253,34 +273,72 @@ function AddProposalModal({ open, onClose }) {
         ),
       ),
 
-      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 } },
+      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 } },
         React.createElement('div', null,
           React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Fecha inicio'),
           React.createElement('input', { type: 'date', style: inp, value: startDate, onChange: e => setStartDate(e.target.value) }),
         ),
         React.createElement('div', null,
           React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Fecha fin'),
-          React.createElement('input', { type: 'date', style: inp, value: endDate, onChange: e => setEndDate(e.target.value) }),
+          // FILEMAKER: min={startDate} replica el script trigger OnObjectValidate
+          //   sobre Solicitudes::fecha_fin → exige fecha_fin >= fecha_inicio.
+          React.createElement('input', { type: 'date', style: inp, min: startDate || undefined, value: endDate, onChange: e => setEndDate(e.target.value) }),
         ),
-        modality !== 'Online' && React.createElement('div', null,
-          React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Días de impartición'),
-          React.createElement('select', { style: { ...inp, cursor: 'pointer' }, value: numDays, onChange: e => setNumDays(parseInt(e.target.value, 10) || 1) },
-            ...[1,2,3,4,5,6,7,8,9,10].map(n => React.createElement('option', { key: n, value: n }, n)),
-          ),
+      ),
+
+      // ── Tab duración: 1 día vs varios días (solo presencial / híbrido) ────
+      // FILEMAKER: Solicitudes::duracion_modo (Text) con value list ['single','multi'].
+      modality !== 'Online' && React.createElement('div', { style: { marginBottom: 12 } },
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 6 } }, 'Duración de la formación'),
+        React.createElement('div', { style: { display: 'flex', gap: 6 } },
+          ...[
+            { id: 'single', label: '1 día' },
+            { id: 'multi',  label: 'Más de un día' },
+          ].map(opt => React.createElement('button', {
+            key: opt.id, type: 'button',
+            onClick: () => setDurationMode(opt.id),
+            style: {
+              flex: 1, padding: '10px 14px', borderRadius: 8,
+              border: `1px solid ${durationMode === opt.id ? COLORS.orange : '#e4e7ef'}`,
+              background: durationMode === opt.id ? `${COLORS.orange}0d` : '#fff',
+              color: durationMode === opt.id ? COLORS.orange : COLORS.text,
+              fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Lato',
+            },
+          }, opt.label)),
+        ),
+      ),
+
+      modality !== 'Online' && durationMode === 'multi' && React.createElement('div', { style: { marginBottom: 14 } },
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Nº de días'),
+        React.createElement('select', { style: { ...inp, cursor: 'pointer' }, value: numDays, onChange: e => setNumDays(parseInt(e.target.value, 10) || 2) },
+          ...[2,3,4,5,6,7,8,9,10].map(n => React.createElement('option', { key: n, value: n }, n + ' días')),
         ),
       ),
 
       modality !== 'Online' && React.createElement('div', { style: { marginBottom: 14 } },
-        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 6 } }, 'Horarios por día (mañana corta a 14:00, tarde a partir de ese horario)'),
-        ...sessions.map((s, idx) => React.createElement('div', {
-          key: idx,
-          style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 8, marginBottom: 6 }
-        },
-          React.createElement('input', { type: 'date', style: inp, value: s.day, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, day: e.target.value } : ss)) }),
-          React.createElement('input', { type: 'time', style: inp, value: s.from, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, from: e.target.value } : ss)) }),
-          React.createElement('input', { type: 'time', style: inp, value: s.to,   onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, to: e.target.value } : ss)) }),
-        )),
+        React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 6 } }, durationMode === 'single' ? 'Horario del día' : 'Horarios por día (la fecha de cada sesión debe ser igual o posterior a la anterior)'),
+        ...sessions.map((s, idx) => {
+          // Cada sesión >0 no puede ser anterior a la previa (validado en cliente).
+          const minForThis = idx === 0 ? (startDate || undefined) : (sessions[idx - 1].day || startDate || undefined);
+          return React.createElement('div', {
+            key: idx,
+            style: { display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 8, marginBottom: 6 }
+          },
+            React.createElement('input', {
+              type: 'date', style: inp,
+              min: minForThis, max: endDate || undefined,
+              value: s.day,
+              onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, day: e.target.value } : ss)),
+            }),
+            React.createElement('input', { type: 'time', style: inp, value: s.from, onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, from: e.target.value } : ss)) }),
+            React.createElement('input', { type: 'time', style: inp, value: s.to,   onChange: e => setSessions(prev => prev.map((ss, i) => i === idx ? { ...ss, to: e.target.value } : ss)) }),
+          );
+        }),
       ),
+
+      validationError && React.createElement('div', {
+        style: { marginBottom: 12, padding: '10px 12px', borderRadius: 10, background: `${COLORS.red}12`, border: `1px solid ${COLORS.red}40`, fontFamily: 'Lato', fontSize: 12, color: COLORS.red, fontWeight: 700 },
+      }, '⚠ ', validationError),
 
       React.createElement('div', { style: { marginBottom: 12 } },
         React.createElement('label', { style: { fontFamily: 'Lato', fontSize: 11, fontWeight: 700, color: COLORS.textLight, display: 'block', marginBottom: 4 } }, 'Objetivos'),

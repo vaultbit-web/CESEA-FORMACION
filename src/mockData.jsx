@@ -152,145 +152,40 @@ const getTheme = (mode) => mode === 'dark' ? {
   cardShadow: '0 4px 18px rgba(15,16,32,0.06)',
 };
 
-// ─── Catálogo (sincronizado con csaformacion.com) ────────────────────────────
-const CATALOG = [
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'MOVILIZACIÓN SEGURA CON GRÚAS PARA EL TRASLADO DE PERSONAS',                     subtitle: 'Profesionales de atención directa en residencias, auxiliares, gerocultores, fisioterapeutas, terapeuta ocupacional, enfermeros.' },
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'PREVENCIÓN DE CAÍDAS EN PERSONAS MAYORES Y DEPENDIENTES',                        subtitle: 'Prevenir caídas es preservar vidas: conocimiento y acción para un envejecimiento seguro, saludable y activo.' },
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'MOVILIZACIONES SEGURAS',                                                          subtitle: 'Mover con respeto, cuidar con técnica: seguridad y dignidad en cada movilización.' },
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'MEDIDAS ALTERNATIVAS AL USO DE SUJECIONES',                                       subtitle: 'Más libertad, más dignidad: cuidar sin sujeciones es cuidar mejor.' },
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'INTERVENCIÓN ANTE LAS CAÍDAS DEL PACIENTE COMPLEJO',                              subtitle: 'Anticiparse a la caída es proteger la vida: prevención, valoración y acción a tiempo.' },
-  { area: 'Área técnica', sub: 'Movilizaciones',          title: 'INTERVENCIÓN ANTE LAS CAÍDAS DEL ADULTO MAYOR',                                   subtitle: 'Prevenir hoy para no lamentar mañana: seguridad y cuidado ante las caídas.' },
-  { area: 'Área técnica', sub: 'Atención médica y cuidados', title: 'MARCHA NORMAL Y MARCHA PATOLÓGICA DEL/LA NIÑO/A CON ALTERACIONES NEURO-MUSCULOESQUELÉTICAS', subtitle: 'De la evaluación de la marcha a la ortesis funcional: herramientas clave para mejorar la movilidad infantil.' },
-  { area: 'Área técnica', sub: 'Atención médica y cuidados', title: 'NEUROFISIOLOGÍA EN NIÑOS/AS CON TRASTORNOS NEURO-MÚSCULO ESQUELÉTICOS',        subtitle: 'Del cerebro al movimiento: aprende a intervenir con precisión en niños con trastornos neuromúsculo-esqueléticos.' },
-  { area: 'Área técnica', sub: 'Atención médica y cuidados', title: 'PODOLOGÍA — PROTEGER LA SALUD DESDE LA BASE',                                  subtitle: 'Detectar, prevenir y cuidar: la clave en el manejo del pie de riesgo.' },
-  { area: 'Área técnica', sub: 'Atención médica y cuidados', title: 'MÚSICA Y CONEXIÓN. LA MÚSICA COMO HERRAMIENTA TERAPÉUTICA EN EL CUIDADO',      subtitle: 'Eleva la calidad de tus cuidados integrando la musicoterapia como una herramienta clave para la salud emocional.' },
-  { area: 'Área técnica', sub: 'Atención médica y cuidados', title: 'ABORDAJE POSITIVO DE LOS TRASTORNOS DE CONDUCTA',                              subtitle: 'Transforma el desafío en oportunidad: herramientas prácticas para un abordaje humano, positivo y eficaz.' },
-  { area: 'Área técnica', sub: 'Acompañamiento',          title: 'SKIN CARE COMO PRÁCTICA DE AUTOCUIDADO Y AUTOPERCEPCIÓN SALUDABLE',                subtitle: 'Autocuidado consciente frente al espejo.' },
-  { area: 'Área técnica', sub: 'Acompañamiento',          title: 'SENTIR PARA CONECTAR: LA SENSOBIOGRAFÍA COMO PUENTE RELACIONAL',                  subtitle: 'Más allá de los cuidados, conecta con su esencia: transforma la atención en un diálogo de sentidos.' },
-  { area: 'Área técnica', sub: 'Ética',                   title: 'ATENCIÓN LGTBI+ Y NECESIDADES SEXUALES EN RESIDENCIAS DE PERSONAS MAYORES',       subtitle: 'Cuidar es respetar la historia de vida de cada persona.' },
-  { area: 'Área técnica', sub: 'Ética',                   title: 'HACIA UN MODELO DE ATENCIÓN LIBRE DE SUJECIONES',                                 subtitle: 'La verdadera seguridad no sujeta, acompaña.' },
-  { area: 'Área técnica', sub: 'Voluntariado',            title: 'COORDINACIÓN DE EQUIPOS DE VOLUNTARIADO',                                         subtitle: 'Coordinar el voluntariado es multiplicar el impacto: gestión, organización y corazón en acción.' },
-  { area: 'Área técnica', sub: 'Voluntariado',            title: 'VOLUNTARIADO Y DISCAPACIDAD',                                                     subtitle: 'Acompañar con respeto es transformar vidas: voluntariado inclusivo que hace la diferencia.' },
-  { area: 'Área técnica', sub: 'Voluntariado',            title: 'INTRODUCCIÓN AL VOLUNTARIADO',                                                    subtitle: 'Conocer tus derechos y deberes es el primer paso para transformar vidas a través del voluntariado.' },
-  { area: 'Área técnica', sub: 'Nutrición',               title: 'NUTRICIÓN',                                                                       subtitle: 'Alimentarse bien es cuidar mejor: nutrición segura y consciente para una vejez saludable.' },
-  { area: 'Área técnica', sub: 'Nutrición',               title: 'TÉCNICAS CULINARIAS',                                                             subtitle: 'Cocinar bien también es cuidar: técnica, sabor y nutrición al servicio de las personas.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'ARMONÍA EN LA GESTIÓN. LA MÚSICA COMO HERRAMIENTA PARA LA COHESIÓN Y EL LIDERAZGO DE EQUIPOS', subtitle: 'La música como herramienta para la cohesión de equipos.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'LA VOZ EN EL LIDERAZGO. REGULANDO LA VOZ Y LAS EMOCIONES PARA UNA GESTIÓN DE EQUIPOS EFECTIVA', subtitle: 'Tu voz no solo comunica: lidera, inspira y transforma.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'EL ROL DEL CEO: LIDERAZGO Y DESARROLLO PROFESIONAL',                         subtitle: 'Valores de integridad, comprensión y respeto en el liderazgo.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'ORGANIZACIONES SALUDABLES Y SOSTENIBLES',                                   subtitle: 'Mejora del clima, compromiso y productividad organizacional.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'EMPODERAMIENTO DE EQUIPOS',                                                 subtitle: 'El juego como herramienta para empoderar equipos.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'EFICACIA LABORAL. COMPETENCIAS TRANSVERSALES EN LAS ORGANIZACIONES',        subtitle: 'Aptitudes que mejoran el rendimiento y la eficacia laboral.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'LIDERAZGO INTERGENERACIONAL',                                               subtitle: 'Liderar con comprensión generacional transforma la diversidad.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'GESTIÓN DE CONFLICTOS',                                                     subtitle: 'Transformar retos en oportunidades de crecimiento.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'EQUIPO DE ALTO RENDIMIENTO',                                                subtitle: 'Convertir talento individual en éxito compartido.' },
-  { area: 'Competencias', sub: 'Liderazgo y Trabajo en equipo', title: 'COHESIÓN DE EQUIPOS Y LIDERAZGO COMPARTIDO',                                subtitle: 'Un equipo unido transforma retos en logros compartidos.' },
-  { area: 'Competencias', sub: 'Competencias Comunicativas',    title: 'INTERVENCIÓN CON FAMILIAS',                                                 subtitle: 'Comunicar con empatía construye puentes en las relaciones.' },
-  { area: 'Competencias', sub: 'Competencias Comunicativas',    title: 'HABILIDADES COMUNICATIVAS',                                                 subtitle: 'Comunicar bien es conectar mejor con comprensión.' },
-  { area: 'Competencias', sub: 'Competencias Comunicativas',    title: 'GESTIÓN EMOCIONAL Y COMUNICACIÓN DE MALAS NOTICIAS',                        subtitle: 'Comunicar con empatía incluso en los momentos difíciles.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'INTRODUCCIÓ A LA TERAPIA BREU — TBCS',                                 subtitle: 'Modelo de intervención transformador centrado en recursos y potencial.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'COMUNICACIÓN ASERTIVA PARA PROMOVER UNA CULTURA DEL DIÁLOGO SALUDABLE',subtitle: 'Crea un clima de respeto para una comunicación productiva y eficaz.' },
-  { area: 'ACP y Modelo de Atención', sub: 'Perspectiva de género',  title: 'VIOLENCIA MACHISTA',                                                   subtitle: 'Actuar contra la violencia machista protegiendo vidas.' },
-  { area: 'ACP y Modelo de Atención', sub: 'Perspectiva de género',  title: 'SALUD MENTAL CON PERSPECTIVA DE GÉNERO',                               subtitle: 'Garantizar justicia, comprensión y apoyo para todas las mujeres.' },
-  { area: 'ACP y Modelo de Atención', sub: 'Perspectiva de género',  title: 'PROMOCIÓN PARA LA IGUALDAD EFECTIVA ENTRE MUJERES Y HOMBRES',          subtitle: 'Transformar conocimiento en acción sin discriminación de género.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'VIOLÈNCIA MASCLISTA',                                                  subtitle: 'Actuar contra la violencia protegiendo vidas con justicia.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'IMPLEMENTACIÓN DE ACP',                                                subtitle: 'Poner a la persona en el centro transformando el cuidado en dignidad.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'SENSIBILIZACIÓN EN EL MODELO ACP',                                     subtitle: 'Colocar a la persona en el centro con respeto y bienestar.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'PREVENCIÓ, DETECCIÓ E INTERVENCIÓ EN CASOS DE MALTRACTAMENT A PERSONES GRANS', subtitle: 'Garantizar seguridad, dignidad y respeto para los mayores.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'PLAN DE ATENCIÓN Y VIDA',                                              subtitle: 'Planificar la vida poniendo verdaderamente a la persona en el centro.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'HUMANIZACIÓN EN ASISTENCIA SANITARIA',                                 subtitle: 'Transformar la atención en respeto, empatía y dignidad.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'HUMANIZACIÓN EN ASISTENCIA SOCIOSANITARIA PARA ADULTOS CON ENFERMEDAD MENTAL', subtitle: 'Reconocer el valor, la voz y el derecho a decidir en cada persona.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'FISIOTERAPEANDO CON EL JUEGO',                                         subtitle: 'Unir fisioterapia y juego en una rehabilitación motivadora.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'ENTORNOS SEGUROS Y PROTECTORES CON ADULTOS VULNERABLES',               subtitle: 'Proteger la dignidad construyendo entornos de confianza.' },
-  { area: 'ACP y Modelo de Atención', sub: 'ACP',                    title: 'BUENAS PRÁCTICAS ASISTENCIALES',                                       subtitle: 'Cuidar con profesionalidad, respeto y cercanía.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos', title: 'PREVENCIÓN DE PANDEMIAS Y EMERGENCIA EN ENTORNOS RESIDENCIALES',     subtitle: 'Formación avanzada en prevención de pandemias para cuidados residenciales.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'JOURNALING TERAPÉUTICO',                                        subtitle: 'Método de autocuidado mental mediante la escritura.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'DÉTOX — DESCONEXIÓN DIGITAL',                                   subtitle: 'Una forma de autocuidado digital sin pantallas.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'MOVE YOUR EMOTIONS. MOVIMIENTO CONSCIENTE Y TRANSFORMACIÓN EMOCIONAL', subtitle: 'El movimiento como herramienta profesional para transformar emociones.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'EXPRESIÓN CREATIVA EN SALUD. ARTE Y ARTETERAPIA EN EL CUIDADO INTEGRAL', subtitle: 'El arte como acompañamiento y transformación en el cuidado integral.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'DANZANDO EL BIENESTAR. MÚSICA Y MOVIMIENTO TERAPÉUTICO EN EL CUIDADO INTEGRAL', subtitle: 'Música y movimiento como herramientas de salud.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'LA INFLUENCIA DE LA MÚSICA EN EL BIENESTAR EMOCIONAL',           subtitle: 'La música como aliada para la salud mental y la reducción del estrés.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'RISOTERAPIA. EL PODER DE LA RISA EN EL BIENESTAR DIARIO',        subtitle: 'Estimulación del sistema nervioso mediante la risa.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'RESPIRA, VIVE EL ARTE DE ESTAR PRESENTE',                       subtitle: 'Práctica de mindfulness para cultivar la estabilidad mental.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos',    title: 'PREVENCIÓN CONTRA EL ACOSO LABORAL E IGUALDAD',                 subtitle: 'Prevención del acoso para garantizar respeto y bienestar laboral.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos',    title: 'PLAN DE DEMOCRATIZACIÓN EMPRESARIAL CONTRA EL ACOSO Y LA VIOLENCIA EN ESPAÑA', subtitle: 'Construcción de empresas seguras e inclusivas.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos',    title: 'MEDIDAS DE CONCILIACIÓN Y CORRESPONSABILIDAD EN LA EMPRESA',    subtitle: 'Equilibrio de vidas y responsabilidades empresariales.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos',    title: 'MEDIDAS DE ACTUACIÓN EN CASO DE EMERGENCIA Y EXTINCIÓN DE INCENDIOS', subtitle: 'Preparación y procedimientos para emergencias.' },
-  { area: 'Área de autocuidados', sub: 'Seguridad laboral y protocolos',    title: 'IMPLEMENTACIÓN DEL PLAN DE EMERGENCIAS',                        subtitle: 'Implementación de planes para salvar vidas.' },
-  { area: 'Área de autocuidados', sub: 'Ética profesional',                 title: 'LOS ESPACIOS DE REFLEXIÓN ÉTICA EN SERVICIOS SOCIALES Y SANITARIOS (ERESS)', subtitle: 'La ética como brújula en las decisiones de cuidado.' },
-  { area: 'Área de autocuidados', sub: 'Ética profesional',                 title: 'INTRODUCCIÓN A LA ÉTICA ASISTENCIAL',                           subtitle: 'La ética transformando actos en respeto y dignidad.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'TECNOESTRÉS: GESTIÓN DEL TIEMPO Y LADRONES DEL TIEMPO',         subtitle: 'Control del tecnoestrés en un mundo hiperconectado.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'GESTIÓN DEL TIEMPO',                                            subtitle: 'Control de la productividad y el bienestar personal.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'GESTIÓN EMOCIONAL',                                             subtitle: 'Conocimiento y gestión emocional para transformar el bienestar.' },
-  { area: 'Área de autocuidados', sub: 'Bienestar emocional y autocuidado', title: 'GESTIÓN DEL ESTRÉS',                                            subtitle: 'Transformación de la presión en energía y bienestar.' },
-];
+// ─── Catálogo (importado de assets/Formadores_Curso.xlsx vía src/dataReal.jsx) ──
+// FILEMAKER: Tabla Cursos. codigoInterno (Excel: codigo) es la key que aparece
+//   en la OT y en el presupuesto. num_imparticiones (default 1) lo fija el
+//   superadmin desde Admin_Curso_Edit; el formador NO puede modificarlo.
+const COURSES_FROM_EXCEL = (typeof window !== 'undefined' && window.MOCK_COURSES_REAL) || [];
 
-const MODALITIES = ['Online', 'Presencial', 'Híbrido'];
-const TIMES      = ['09:00 - 14:00', '10:00 - 15:00', '16:00 - 20:00', '17:00 - 20:00'];
-const LOCATIONS  = ['Plataforma Zoom', 'Madrid · C/ Gran Vía 45', 'Barcelona · Centro formativo', 'Valencia · C/ Colón 88', 'Google Meet', 'Microsoft Teams', 'Bilbao · Centro CESEA', 'Sevilla · Aula 3'];
-const HOURS      = [8, 10, 12, 15, 16, 20];
-const PRICES     = [49, 79, 99, 129, 149, 179, 199, 249];
-const LEVELS     = ['Básico', 'Intermedio', 'Avanzado'];
-
-const INSTRUCTORS = [
-  'Aurora Martínez', 'Jesús Santiago', 'María Elena',             // reales
-  'Ana García López', 'Luis Mendoza Vargas', 'Marta Ibáñez Reyes', 'Jorge Pascual Torres',
-];
-
-const OFFICIAL_TITLES = new Set([
-  'TÉCNICAS CULINARIAS',
-  'HUMANIZACIÓN EN ASISTENCIA SANITARIA',
-  'PLAN DE ATENCIÓN Y VIDA',
-  'NUTRICIÓN',
-]);
-
-// MOCK_COURSES — superconjunto de campos para todos los roles.
-// FILEMAKER: Tabla Cursos (única para todos los roles).
-// FILEMAKER: los cursos aceptados/completados del formador se demuestran en el
-//   calendario con fechas multidía en el mes actual (abril 2026). Se asignan
-//   de forma determinista a los primeros índices para mantener la demo estable.
-const DEMO_DATES_BY_STATUS = {
-  0:  { dates: '13, 16, 23 Abril 2026',   startDate: '2026-04-13', time: '09:00-14:00' }, // disponible — cliente propone
-  3:  { dates: '13-16 Abril 2026',        startDate: '2026-04-13', time: '09:00-14:00' }, // aceptado mañana multifecha
-  4:  { dates: '7 Abril 2026',            startDate: '2026-04-07', time: '16:00-20:00' }, // aceptado tarde
-  5:  { dates: '21, 23, 28 Abril 2026',   startDate: '2026-04-21', time: '10:00-13:30' }, // aceptado mañana
-  6:  { dates: '9 Abril 2026',            startDate: '2026-04-09', time: '15:00-19:00' }, // revisión tarde
-  7:  { dates: '14-17 Abril 2026',        startDate: '2026-04-14', time: '09:30-13:30' }, // revisión mañana
-  8:  { dates: '1-3 Abril 2026',          startDate: '2026-04-01', time: '09:00-14:00' }, // completed
-  9:  { dates: '27 Marzo 2026',           startDate: '2026-03-27', time: '15:00-20:00' }, // completed
+// Overlay de demo: mantiene viva la pantalla del formador (Ana García López)
+// con cursos en distintos estados. Sin overlay, todos los cursos están
+// 'available' sin fechas hasta que el superadmin los planifique.
+// FILEMAKER: este overlay no existe en producción — los estados/fechas reales
+//   los fija el superadmin desde Admin_Cursos al planificar imparticiones.
+const DEMO_OVERLAY = {
+  0: { dates: '13, 16, 23 Abril 2026', startDate: '2026-04-13', time: '09:00-14:00', status: 'available', numImparticiones: 3 },
+  1: { dates: '20 Abril 2026',         startDate: '2026-04-20', time: '10:00-14:00', status: 'available', numImparticiones: 1 },
+  2: { dates: '5 Mayo 2026',           startDate: '2026-05-05', time: '09:00-13:00', status: 'available', numImparticiones: 1 },
+  3: { dates: '13-16 Abril 2026',      startDate: '2026-04-13', time: '09:00-14:00', status: 'accepted',  numImparticiones: 4 },
+  4: { dates: '7 Abril 2026',          startDate: '2026-04-07', time: '16:00-20:00', status: 'accepted',  numImparticiones: 1 },
+  5: { dates: '21, 23, 28 Abril 2026', startDate: '2026-04-21', time: '10:00-13:30', status: 'accepted',  numImparticiones: 3 },
+  6: { dates: '9 Abril 2026',          startDate: '2026-04-09', time: '15:00-19:00', status: 'review',    numImparticiones: 1 },
+  7: { dates: '14-17 Abril 2026',      startDate: '2026-04-14', time: '09:30-13:30', status: 'review',    numImparticiones: 4 },
+  8: { dates: '1-3 Abril 2026',        startDate: '2026-04-01', time: '09:00-14:00', status: 'completed', numImparticiones: 3 },
+  9: { dates: '27 Marzo 2026',         startDate: '2026-03-27', time: '15:00-20:00', status: 'completed', numImparticiones: 1 },
 };
 
-const MOCK_COURSES = CATALOG.map((c, i) => {
-  const status = i < 3 ? 'available' : i < 6 ? 'accepted' : i < 8 ? 'review' : i < 10 ? 'completed' : 'available';
-  const override = DEMO_DATES_BY_STATUS[i] || {};
+const MOCK_COURSES = COURSES_FROM_EXCEL.map((c, i) => {
+  const overlay = DEMO_OVERLAY[i] || {};
   // createdAt: los 4 primeros cursos se consideran "nuevos" (últimas 24h) para
   // demostrar la acción "Descargar últimos subidos" del superadmin.
+  // FILEMAKER: campo Cursos::creado_en (Timestamp). Filtro rápido en exports.
   const daysAgo = i < 4 ? 0 : 3 + (i * 7) % 90;
   const createdAt = new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
-  return {
-    id:         i + 1,
-    title:      c.title,
-    subtitle:   c.subtitle,
-    area:       c.area,
-    category:   c.sub,
-    modality:   MODALITIES[i % MODALITIES.length],
-    dates:      override.dates    || '1 enero 2026',
-    startDate:  override.startDate || '2026-01-01',
-    endDate:    override.endDate   || null,
-    time:       override.time     || TIMES[i % TIMES.length],
-    location:   LOCATIONS[i % LOCATIONS.length],
-    tags:       [c.sub, c.area],
-    hours:      HOURS[i % HOURS.length],
-    price:      PRICES[i % PRICES.length],
-    level:      LEVELS[i % LEVELS.length],
-    rating:     +(3.8 + ((i * 7) % 12) / 10).toFixed(1),
-    students:   120 + ((i * 17) % 380),
-    instructor: INSTRUCTORS[i % INSTRUCTORS.length],
-    official:   OFFICIAL_TITLES.has(c.title),
-    createdAt,  // FILEMAKER: campo Cursos::creado_en (Timestamp). Filtro rápido en exports.
-    // Estado solo relevante para formador; los alumnos ven todos como "available".
-    status,
-  };
+  return { ...c, ...overlay, createdAt, price: 99 };
 });
+
 
 // ─── Horas impartidas (formador) ─────────────────────────────────────────────
 const MOCK_HOURS_LOG = [
@@ -363,22 +258,32 @@ const DEMO_CREDENTIALS = [
   { roleType: 'superadmin',                    email: 'admin@cesea.com',            password: 'admin1234', user: MOCK_SUPERADMIN, label: 'Superadministrador' },
 ];
 
-// ─── Formadores (vista superadmin) ───────────────────────────────────────────
-// FILEMAKER: Tabla Formadores. Campos tarifa_venta_directa, tarifa_venta_indirecta,
-//   tarifa_km (€/km) y trust_score son editables SOLO por [priv_Superadmin].
-//   El formador los lee en solo lectura desde su perfil.
-const MOCK_TRAINERS = [
-  { id: 'F-R01', name: 'Aurora Martínez',         email: 'aurora.martinez@csaformacion.com',  specialty: 'Dirección de marketing',            hoursYTD:  42, status: 'Activo',     joinDate: '2024-05-12', photo: 'assets/formadores/aurora.png',         dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: true,  rating: 4.8, trustScore: 92, tarifaVentaDirecta: 55, tarifaVentaIndirecta: 42, tarifaKm: 0.30, tipologias: ['Marketing y comunicación', 'Gestión directiva'], cursosAsignados: [] },
-  { id: 'F-R02', name: 'Jesús Santiago',          email: 'jesus.santiago@csaformacion.com',   specialty: 'Prótesis dental',                   hoursYTD:  96, status: 'Activo',     joinDate: '2023-11-02', photo: 'assets/formadores/jesus-santiago.png', dni: '***128J', iban: 'ES12 **** **** **** ****7788', official: true,  rating: 4.6, trustScore: 88, tarifaVentaDirecta: 60, tarifaVentaIndirecta: 48, tarifaKm: 0.32, tipologias: ['Técnica odontológica'], cursosAsignados: [] },
-  { id: 'F-R03', name: 'María Elena',             email: 'maria.elena@csaformacion.com',      specialty: 'Medicina odontológica',             hoursYTD: 144, status: 'Activo',     joinDate: '2023-04-15', photo: 'assets/formadores/maria-elena.png',    dni: '***602M', iban: 'ES98 **** **** **** ****1134', official: true,  rating: 4.9, trustScore: 96, tarifaVentaDirecta: 65, tarifaVentaIndirecta: 52, tarifaKm: 0.32, tipologias: ['Medicina y salud', 'Técnica odontológica'], cursosAsignados: [] },
-  { id: 'F-001', name: 'Ana García López',        email: 'ana.garcia@formador.com',           specialty: 'Acompañamiento, Competencias, ACP', hoursYTD:  90, status: 'Activo',     joinDate: '2025-01-15', photo: null,                                   dni: '***945B', iban: 'ES51 **** **** **** ****4321', official: false, rating: 4.7, trustScore: 85, tarifaVentaDirecta: 50, tarifaVentaIndirecta: 40, tarifaKm: 0.28, tipologias: ['ACP y Modelo de Atención', 'Acompañamiento emocional'], cursosAsignados: [4, 5, 6, 7] },
-  { id: 'F-002', name: 'Luis Mendoza Vargas',     email: 'luis.mendoza@formador.com',         specialty: 'Movilizaciones, Atención médica',   hoursYTD:  72, status: 'Activo',     joinDate: '2024-11-02', photo: null,                                   dni: '***412V', iban: 'ES44 **** **** **** ****5566', official: false, rating: 4.5, trustScore: 80, tarifaVentaDirecta: 48, tarifaVentaIndirecta: 38, tarifaKm: 0.30, tipologias: ['Movilizaciones seguras'], cursosAsignados: [] },
-  { id: 'F-003', name: 'Marta Ibáñez Reyes',      email: 'marta.ibanez@formador.com',         specialty: 'Liderazgo, Gestión de equipos',     hoursYTD: 128, status: 'Activo',     joinDate: '2024-06-20', photo: null,                                   dni: '***779R', iban: 'ES77 **** **** **** ****8899', official: false, rating: 4.8, trustScore: 90, tarifaVentaDirecta: 58, tarifaVentaIndirecta: 46, tarifaKm: 0.30, tipologias: ['Liderazgo y gestión', 'Competencias directivas'], cursosAsignados: [] },
-  { id: 'F-004', name: 'Jorge Pascual Torres',    email: 'jorge.pascual@formador.com',        specialty: 'ACP, Humanización',                 hoursYTD:  54, status: 'Activo',     joinDate: '2025-02-10', photo: null,                                   dni: '***224T', iban: 'ES61 **** **** **** ****1032', official: false, rating: 4.4, trustScore: 78, tarifaVentaDirecta: 45, tarifaVentaIndirecta: 36, tarifaKm: 0.28, tipologias: ['ACP y Modelo de Atención'], cursosAsignados: [] },
-  { id: 'F-005', name: 'Elena Soriano Quintana',  email: 'elena.soriano@formador.com',        specialty: 'Nutrición, Técnicas culinarias',    hoursYTD:  38, status: 'En pausa',   joinDate: '2024-09-05', photo: null,                                   dni: '***515Q', iban: 'ES22 **** **** **** ****2211', official: false, rating: 4.2, trustScore: 72, tarifaVentaDirecta: 42, tarifaVentaIndirecta: 34, tarifaKm: 0.28, tipologias: ['Nutrición y dietética'], cursosAsignados: [] },
-  { id: 'F-006', name: 'Rubén Castillo Navarro',  email: 'ruben.castillo@formador.com',       specialty: 'Autocuidados, Bienestar emocional', hoursYTD:  64, status: 'Activo',     joinDate: '2025-03-12', photo: null,                                   dni: '***881N', iban: 'ES88 **** **** **** ****4455', official: false, rating: 4.6, trustScore: 82, tarifaVentaDirecta: 48, tarifaVentaIndirecta: 38, tarifaKm: 0.30, tipologias: ['Autocuidados', 'Bienestar emocional'], cursosAsignados: [] },
-  { id: 'F-007', name: 'Sofía Vargas Herrera',    email: 'sofia.vargas@formador.com',         specialty: 'Voluntariado, Ética',               hoursYTD:  22, status: 'Pendiente',  joinDate: '2026-04-01', photo: null,                                   dni: '***073H', iban: 'ES14 **** **** **** ****9900', official: false, rating: 0.0, trustScore: 0,  tarifaVentaDirecta: 0,  tarifaVentaIndirecta: 0,  tarifaKm: 0.00, tipologias: [], cursosAsignados: [] },
-];
+// ─── Formadores (importados de assets/Datos_Formadores.xlsx vía src/dataReal.jsx) ──
+// FILEMAKER: Tabla Formadores. id_externo es el ID original del Excel
+//   (Datos_Formadores). Los registros llegan en estado "Pre-registro" hasta que
+//   el formador completa el alta y aporta DNI/IBAN/tipologías. Las tarifas y
+//   trust_score son editables SOLO por [priv_Superadmin]; el formador las lee
+//   en solo lectura desde su perfil.
+const MOCK_TRAINERS_FROM_EXCEL = (typeof window !== 'undefined' && window.MOCK_TRAINERS_REAL) || [];
+
+// FILEMAKER: La formadora demo Ana García López no existe en el Excel real;
+//   se inyecta como "Activo" para que la sesión de prueba siga funcionando con
+//   datos enriquecidos (DNI, IBAN, tarifas, tipologías, cursosAsignados).
+const MOCK_FORMADOR_TRAINER = {
+  id: 'F-001', idExterno: null,
+  name: 'Ana García López', email: 'ana.garcia@formador.com',
+  cif: '12345945B', nColegiado: null,
+  phone: '+34 612 345 678', poblacion: 'Madrid',
+  specialty: 'Acompañamiento, Competencias, ACP', hoursYTD: 90,
+  status: 'Activo', joinDate: '2025-01-15', photo: null,
+  dni: '***945B', iban: 'ES51 **** **** **** ****4321',
+  official: false, rating: 4.7, trustScore: 85,
+  tarifaVentaDirecta: 50, tarifaVentaIndirecta: 40, tarifaKm: 0.28,
+  tipologias: ['ACP y Modelo de Atención', 'Acompañamiento emocional'],
+  cursosAsignados: [3, 4, 5, 6, 7, 8],   // cursos con DEMO_OVERLAY (ver MOCK_COURSES)
+};
+
+const MOCK_TRAINERS = [...MOCK_TRAINERS_FROM_EXCEL, MOCK_FORMADOR_TRAINER];
 
 // ─── Tipologías de formación (value list) ────────────────────────────────────
 // FILEMAKER: Value List "Tipologias_Formacion" editable desde Admin_Config.
@@ -837,9 +742,31 @@ function AppProvider({ children }) {
       : s));
 
   // ── Acciones superadmin ─────────────────────────────────────────────────────
+  // FILEMAKER: Script "Crear_Curso" — equivale a New Record en Cursos. Los
+  //   campos codigo_interno y num_imparticiones son obligatorios; ambos viajan
+  //   al presupuesto/OT del cliente.
   const createCourse = (data) => {
     const id = (courses.reduce((m, c) => Math.max(m, c.id), 0) || 0) + 1;
-    setCourses(prev => [{ id, status: 'available', tags: [data.category, data.area], modality: 'Online', time: '10:00 - 15:00', location: 'Plataforma Zoom', dates: '1 enero 2026', startDate: '2026-01-01', hours: 8, price: 99, level: 'Básico', rating: 0, students: 0, instructor: 'Por asignar', official: false, ...data }, ...prev]);
+    setCourses(prev => [{
+      id,
+      status: 'available',
+      tags: [data.category, data.area].filter(Boolean),
+      modality: 'Presencial',
+      numImparticiones: 1,
+      time: '',
+      location: 'Por asignar',
+      dates: '',
+      startDate: null, endDate: null,
+      hours: 8, price: 99, level: 'Intermedio',
+      rating: 0, students: 0,
+      instructor: 'Por asignar',
+      official: false,
+      objetivos: '', contenidos: '',
+      ciudades: [], formadoresAsignados: [],
+      tipoContrato: null,
+      createdAt: new Date().toISOString().slice(0, 10),
+      ...data,
+    }, ...prev]);
   };
   const updateCourse = (id, patch) => setCourses(prev => prev.map(c => c.id === id ? { ...c, ...patch } : c));
   const archiveCourse = (id) => setCourses(prev => prev.map(c => c.id === id ? { ...c, status: 'archived' } : c));
