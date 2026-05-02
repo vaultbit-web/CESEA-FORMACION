@@ -945,6 +945,207 @@ function AppProvider({ children }) {
   const markOneNotifRead = (id) =>
     setNotifAlumno(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
 
+  // ─── Supabase override block ────────────────────────────────────────────────
+  // Si window.api existe (cargado por src/api.jsx), todas las acciones del
+  // AppContext se redirigen a la base de datos en lugar de usar los useState
+  // locales. El bloque mantiene los mocks intactos como fallback / modo demo.
+  // FILEMAKER: equivale a un toggle Server Mode vs Local Mode.
+  const USE_SUPABASE = !!window.api;
+  const supabaseAPI  = window.api || null;
+
+  // 1. Restaurar sesión y escuchar cambios de auth
+  React.useEffect(() => {
+    if (!USE_SUPABASE) return undefined;
+    let mounted = true;
+
+    const loadProfile = async (session) => {
+      if (!mounted) return;
+      if (!session?.user) { setUser(null); return; }
+      try {
+        const sb = window.supabaseClient;
+        const { data: profile } = await sb.from('usuarios').select('*').eq('id', session.user.id).single();
+        if (!profile) return;
+        let extra = {};
+        if (profile.role_type === 'formador') {
+          const { data: f } = await sb.from('formadores').select('*').eq('user_id', session.user.id).maybeSingle();
+          if (f) extra = { ...f, dniFull: f.dni, ibanFull: f.iban };
+        } else if (profile.role_type === 'alumno') {
+          const { data: a } = await sb.from('alumnos').select('*').eq('user_id', session.user.id).maybeSingle();
+          if (a) extra = a;
+        }
+        if (!mounted) return;
+        setUser({
+          id: profile.id,
+          roleType: profile.role_type,
+          email: profile.email,
+          name: profile.name,
+          initials: profile.initials || (profile.name||'').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase(),
+          phone: profile.phone,
+          photo: profile.photo_url,
+          ...extra,
+        });
+      } catch (e) { console.error('[supabase] load profile:', e); }
+    };
+
+    supabaseAPI.auth.getSession().then(loadProfile);
+    const { data: sub } = supabaseAPI.auth.onChange(loadProfile);
+    return () => { mounted = false; sub?.subscription?.unsubscribe?.(); };
+  }, []);
+
+  // 2. Cargar datos iniciales cuando hay sesión
+  React.useEffect(() => {
+    if (!USE_SUPABASE || !user) return undefined;
+    let mounted = true;
+    (async () => {
+      try {
+        const [cs, ts, sols, tps] = await Promise.all([
+          supabaseAPI.cursos.list(),
+          supabaseAPI.formadores.list(),
+          supabaseAPI.solicitudes.list().catch(() => []),
+          supabaseAPI.tipologias.list().catch(() => []),
+        ]);
+        if (!mounted) return;
+        if (cs)   setCourses(cs);
+        if (ts)   setTrainers(ts);
+        if (sols) setPendingRequests(sols);
+        if (tps && tps.length) setTipologias(tps);
+      } catch (e) { console.error('[supabase] initial load:', e); }
+    })();
+    return () => { mounted = false; };
+  }, [USE_SUPABASE, user?.id]);
+
+  // 3. Helper genérico: llama a la api y refresca la lista local
+  const sbCall = async (apiFn, refreshFn, successMsg) => {
+    try {
+      await apiFn();
+      if (refreshFn) await refreshFn();
+      if (successMsg) showToast(successMsg);
+    } catch (e) {
+      console.error('[supabase]', e);
+      showToast('Error: ' + (e.message || 'sin detalles'), 'error');
+    }
+  };
+  const refreshCursos        = async () => setCourses(await supabaseAPI.cursos.list());
+  const refreshTrainers      = async () => setTrainers(await supabaseAPI.formadores.list());
+  const refreshSolicitudes   = async () => setPendingRequests(await supabaseAPI.solicitudes.list());
+  const refreshTipologias    = async () => setTipologias(await supabaseAPI.tipologias.list());
+
+  // 4. Versiones Supabase de cada acción
+  const sbActions = !USE_SUPABASE ? {} : {
+    // Auth — con fallback a mocks si Supabase aún no tiene los usuarios cargados
+    login: async (email, password) => {
+      try {
+        const u = await supabaseAPI.auth.signIn(email, password);
+        setUser(u); setCurrentView('inicio'); return u.roleType;
+      } catch (e) {
+        // Fallback: si Supabase no tiene aún los usuarios (setup en curso),
+        // permitir el login con las credenciales demo locales.
+        const match = DEMO_CREDENTIALS.find(c =>
+          c.email.toLowerCase() === String(email || '').toLowerCase() && c.password === password
+        );
+        if (match) { setUser(match.user); setCurrentView('inicio'); return match.user.roleType; }
+        showToast('Credenciales inválidas', 'error');
+        return null;
+      }
+    },
+    loginAs: async (cred) => {
+      try { return await sbActions.login(cred.email, cred.password); }
+      catch (e) { setUser(cred.user); setCurrentView('inicio'); return cred.user.roleType; }
+    },
+    logout: async () => {
+      await supabaseAPI.auth.signOut();
+      setUser(null); setCurrentView('inicio');
+    },
+    register: async (payload) => {
+      try {
+        const u = await supabaseAPI.auth.register(payload);
+        setUser(u); setCurrentView('inicio'); return 'alumno';
+      } catch (e) { showToast('No se pudo registrar: ' + e.message, 'error'); return null; }
+    },
+
+    // Cursos (admin)
+    createCourse: (data)        => sbCall(() => supabaseAPI.cursos.create(data),   refreshCursos, 'Curso creado'),
+    updateCourse: (id, patch)   => sbCall(() => supabaseAPI.cursos.update(id, patch), refreshCursos, 'Curso actualizado'),
+    archiveCourse: (id)         => sbCall(() => supabaseAPI.cursos.archive(id),    refreshCursos, 'Curso archivado'),
+    bulkUpsertCourses: (rows)   => sbCall(() => supabaseAPI.cursos.bulkUpsert(rows), refreshCursos, 'Importación completada'),
+
+    // Formadores (admin)
+    updateTrainer: (id, patch)  => sbCall(() => supabaseAPI.formadores.update(id, patch), refreshTrainers),
+    setTrainerStatus: (id, st)  => sbCall(() => supabaseAPI.formadores.setStatus(id, st), refreshTrainers, 'Estado actualizado'),
+
+    // Solicitudes (formador genera, admin resuelve)
+    swipeRight: (id, proposal)  => sbCall(async () => {
+      await supabaseAPI.cursos.update(id, { status: 'review' });
+      const course = courses.find(c => c.id === id);
+      await supabaseAPI.solicitudes.create({
+        type: 'new', courseId: id,
+        courseTitle: course?.title,
+        detail: proposal?.dates ? `Propone fechas: ${proposal.dates}` : 'Solicita plaza',
+        proposedDates: proposal?.dates, proposedSchedule: proposal?.schedule,
+        note: proposal?.note,
+      });
+      await refreshCursos(); await refreshSolicitudes();
+    }, null, 'Plaza solicitada'),
+    swipeLeft: (id) => {
+      // Local hide only (no SQL — el formador simplemente no quiere este curso)
+      setCourses(prev => prev.filter(c => c.id !== id));
+    },
+    submitChange: (id, data)    => sbCall(() => supabaseAPI.solicitudes.create({
+      type: 'change', courseId: id, courseTitle: courses.find(c=>c.id===id)?.title, detail: data.notes, note: data.notes, proposedDates: data.dates,
+    }), refreshSolicitudes, 'Solicitud de cambio enviada'),
+    completeCourse: (id)        => sbCall(() => supabaseAPI.cursos.update(id, { status: 'completed' }), refreshCursos, 'Formación cerrada'),
+    createProposal: (payload)   => sbCall(() => supabaseAPI.solicitudes.create({ ...payload, type: 'proposal', courseTitle: payload.title }), refreshSolicitudes, 'Propuesta enviada al superadmin'),
+    createIncidencia: (payload) => sbCall(() => supabaseAPI.solicitudes.create({ ...payload, type: 'incidencia' }), refreshSolicitudes, 'Incidencia reportada al superadmin'),
+    approveRequest: (id)        => sbCall(() => supabaseAPI.solicitudes.approve(id), async () => { await refreshSolicitudes(); await refreshCursos(); await refreshTrainers(); }, 'Solicitud aprobada'),
+    rejectRequest: (id)         => sbCall(() => supabaseAPI.solicitudes.reject(id),  refreshSolicitudes, 'Solicitud rechazada'),
+    validateHours: (id)         => sbCall(() => supabaseAPI.solicitudes.approve(id), refreshSolicitudes, 'Horas validadas'),
+    rejectHours: (id)           => sbCall(() => supabaseAPI.solicitudes.reject(id),  refreshSolicitudes, 'Horas rechazadas'),
+
+    // Bitácora
+    addBitacoraEntry: (entry)         => sbCall(() => supabaseAPI.bitacoras.create(entry),     async () => setBitacoras(await supabaseAPI.bitacoras.list()), 'Entrada añadida'),
+    updateBitacoraEntry: (id, patch)  => sbCall(() => supabaseAPI.bitacoras.update(id, patch), async () => setBitacoras(await supabaseAPI.bitacoras.list()), 'Entrada actualizada'),
+
+    // Tareas
+    signTask: (id, dataUrl)        => sbCall(() => supabaseAPI.tareas.sign(id, dataUrl), async () => setTasks(await supabaseAPI.tareas.list()), 'Tarea firmada'),
+    uploadSignedPdf: (id, name)    => sbCall(() => supabaseAPI.tareas.setStatus(id, 'firmada'), async () => setTasks(await supabaseAPI.tareas.list()), 'PDF subido'),
+    addTaskDeliverable: (id, file) => sbCall(() => supabaseAPI.tareas.addDeliverable(id, file), async () => setTasks(await supabaseAPI.tareas.list()), 'Entregable añadido'),
+    setTaskStatus: (id, st)        => sbCall(() => supabaseAPI.tareas.setStatus(id, st), async () => setTasks(await supabaseAPI.tareas.list())),
+
+    // Asistencia
+    setStudentAttendance: (sid, aid, st, n) => sbCall(() => supabaseAPI.asistencia.setRecord(sid, aid, st, n), async () => setAttendance(await supabaseAPI.asistencia.list())),
+    addAttendanceRecord:  (sid, rec)        => sbCall(() => supabaseAPI.asistencia.setRecord(sid, rec.studentId, rec.status, rec.notes), async () => setAttendance(await supabaseAPI.asistencia.list())),
+
+    // Calendar
+    addCalendarEvent: (ev) => sbCall(() => supabaseAPI.calendar.create(ev), async () => setCalendarEvents(await supabaseAPI.calendar.list()), 'Evento añadido'),
+
+    // Documentos del formador
+    uploadFormadorDoc: (file, type) => sbCall(() => supabaseAPI.documentos.upload(file, type), null, 'Documento subido'),
+    removeFormadorDoc: (id)         => sbCall(() => supabaseAPI.documentos.remove(id),        null, 'Documento eliminado'),
+
+    // Tipologías
+    addTipologia: (name)    => sbCall(() => supabaseAPI.tipologias.add(name),    refreshTipologias, 'Tipología añadida'),
+    removeTipologia: (name) => sbCall(() => supabaseAPI.tipologias.remove(name), refreshTipologias, 'Tipología eliminada'),
+
+    // Empleo
+    createJobOffer: (data)   => sbCall(() => supabaseAPI.empleo.createOferta(data), null, 'Oferta creada'),
+    updateJobOffer: (id, p)  => sbCall(() => supabaseAPI.empleo.updateOferta(id, p), null, 'Oferta actualizada'),
+    archiveJobOffer: (id)    => sbCall(() => supabaseAPI.empleo.archiveOferta(id),  null, 'Oferta archivada'),
+    applyToJob: (jobId)      => sbCall(() => supabaseAPI.empleo.aplicar(jobId),     null, 'Solicitud enviada'),
+    withdrawApplication: (id)=> sbCall(() => supabaseAPI.empleo.retirarAplicacion(id), null, 'Solicitud retirada'),
+
+    // Alumno
+    enrollInCourse: ({ courseId, paymentData }) => sbCall(() => supabaseAPI.matriculas.create({ courseId, paymentData }), null, 'Matrícula confirmada'),
+    advanceProgress: (id, delta) => sbCall(() => supabaseAPI.matriculas.advance(id, delta)),
+    completeEnrollment: (id) => sbCall(() => supabaseAPI.matriculas.complete(id), null, 'Curso completado'),
+    updateProfile: (patch)   => sbCall(() => supabaseAPI.alumnos.updateMine(patch), null, 'Perfil actualizado'),
+    uploadCV: (fileName)     => sbCall(() => supabaseAPI.alumnos.updateMine({ cvFileName: fileName }), null, 'CV subido'),
+    validateDiscount: async (code) => await supabaseAPI.pagos.validateDiscount(code),
+
+    // Notificaciones
+    markAllRead:      () => sbCall(() => supabaseAPI.notif.markAllRead()),
+    markOneNotifRead: (id) => sbCall(() => supabaseAPI.notif.markOne(id)),
+  };
+
   return React.createElement(AppContext.Provider, {
     value: {
       // Shared
@@ -982,6 +1183,10 @@ function AppProvider({ children }) {
       markOneNotifRead,
       checkoutCourse, setCheckoutCourse, detailCourseId, setDetailCourseId,
       onboardingDone, completeOnboarding, cookiesAccepted, acceptCookies,
+      // Flag expuesta al UI por si algun componente quiere mostrar "modo demo"
+      isSupabaseMode: USE_SUPABASE,
+      // ── Supabase overrides: si la api esta cargada, sustituyen a los mocks ──
+      ...sbActions,
     },
   }, children);
 }
