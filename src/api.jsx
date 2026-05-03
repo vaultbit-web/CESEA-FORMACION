@@ -65,13 +65,67 @@
     async signOut() { await sb.auth.signOut(); },
     async getSession() { return (await sb.auth.getSession()).data.session; },
     onChange(cb) { return sb.auth.onAuthStateChange((_, s) => cb(s)); },
-    async register({ email, password, name, sector }) {
-      const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
+    // ─── Comprobar si un email pertenece a un formador pre-registrado ──────
+    // FILEMAKER: equivale a un Find sobre Formadores::email antes del Sign Up.
+    //   Si match, el formulario muestra "Bienvenido <nombre>" y solo pide
+    //   contraseña. El admin del sistema NO ve este lookup público (la consulta
+    //   usa anon key contra la columna email de formadores; los datos sensibles
+    //   están protegidos por RLS).
+    async lookupPreRegistro(email) {
+      if (!email) return null;
+      const { data: f } = await sb.from('formadores')
+        .select('id, name, status, user_id')
+        .ilike('email', email.trim())
+        .is('user_id', null)            // solo pre-registrados (sin user_id aún)
+        .maybeSingle();
+      return f;   // null si no existe o ya está vinculado
+    },
+
+    async register({ email, password, name, role, sector }) {
+      // Si el email coincide con un formador pre-registrado, lo vinculamos
+      // y el rol pasa a 'formador' aunque el usuario hubiera elegido 'alumno'.
+      const preFormador = await this.lookupPreRegistro(email);
+      const finalRole   = preFormador ? 'formador' : (role || 'alumno');
+      const finalName   = name || preFormador?.name || email.split('@')[0];
+
+      const { data, error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { name: finalName } },
+      });
       if (error) throw error;
-      const initials = (name || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
-      await sb.from('usuarios').insert({ id: data.user.id, role_type: 'alumno', email, name, initials });
-      await sb.from('alumnos').insert({ user_id: data.user.id, email, name, sector: sector || 'dental' });
-      return data.user;
+
+      const initials = finalName.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+      await sb.from('usuarios').insert({
+        id: data.user.id, role_type: finalRole,
+        email, name: finalName, initials,
+      });
+
+      if (finalRole === 'formador' && preFormador) {
+        // Vincular formador existente del Excel
+        await sb.from('formadores').update({
+          user_id: data.user.id,
+          status:  'Activo',
+          join_date: new Date().toISOString().slice(0, 10),
+        }).eq('id', preFormador.id);
+      } else if (finalRole === 'formador') {
+        // Formador nuevo (no estaba en el Excel pre-registro)
+        await sb.from('formadores').insert({
+          user_id: data.user.id,
+          email, name: finalName,
+          status: 'Activo',
+          join_date: new Date().toISOString().slice(0, 10),
+        });
+      } else {
+        // Alumno
+        await sb.from('alumnos').insert({
+          user_id: data.user.id,
+          email, name: finalName,
+          sector: sector || 'dental',
+        });
+      }
+
+      return { user: data.user, role: finalRole, linkedTo: preFormador?.name || null };
     },
   };
 
