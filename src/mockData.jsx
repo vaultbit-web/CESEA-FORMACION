@@ -158,48 +158,19 @@ const getTheme = (mode) => mode === 'dark' ? {
 //   superadmin desde Admin_Curso_Edit; el formador NO puede modificarlo.
 const COURSES_FROM_EXCEL = (typeof window !== 'undefined' && window.MOCK_COURSES_REAL) || [];
 
-// Overlay de demo: mantiene viva la pantalla del formador (Ana García López)
-// con cursos en distintos estados. Sin overlay, todos los cursos están
-// 'available' sin fechas hasta que el superadmin los planifique.
-// FILEMAKER: este overlay no existe en producción — los estados/fechas reales
-//   los fija el superadmin desde Admin_Cursos al planificar imparticiones.
-const DEMO_OVERLAY = {
-  0: { dates: '13, 16, 23 Abril 2026', startDate: '2026-04-13', time: '09:00-14:00', status: 'available', numImparticiones: 3 },
-  1: { dates: '20 Abril 2026',         startDate: '2026-04-20', time: '10:00-14:00', status: 'available', numImparticiones: 1 },
-  2: { dates: '5 Mayo 2026',           startDate: '2026-05-05', time: '09:00-13:00', status: 'available', numImparticiones: 1 },
-  3: { dates: '13-16 Abril 2026',      startDate: '2026-04-13', time: '09:00-14:00', status: 'accepted',  numImparticiones: 4 },
-  4: { dates: '7 Abril 2026',          startDate: '2026-04-07', time: '16:00-20:00', status: 'accepted',  numImparticiones: 1 },
-  5: { dates: '21, 23, 28 Abril 2026', startDate: '2026-04-21', time: '10:00-13:30', status: 'accepted',  numImparticiones: 3 },
-  6: { dates: '9 Abril 2026',          startDate: '2026-04-09', time: '15:00-19:00', status: 'review',    numImparticiones: 1 },
-  7: { dates: '14-17 Abril 2026',      startDate: '2026-04-14', time: '09:30-13:30', status: 'review',    numImparticiones: 4 },
-  8: { dates: '1-3 Abril 2026',        startDate: '2026-04-01', time: '09:00-14:00', status: 'completed', numImparticiones: 3 },
-  9: { dates: '27 Marzo 2026',         startDate: '2026-03-27', time: '15:00-20:00', status: 'completed', numImparticiones: 1 },
-};
-
+// Los cursos del Excel arrancan SIN fechas/horarios planificados — el superadmin
+// los planifica al asignar formador y crear una impartición concreta.
+// FILEMAKER: en producción Cursos::estado='available' hasta que se cree una
+//   Impartición vinculada con fechas reales.
 const MOCK_COURSES = COURSES_FROM_EXCEL.map((c, i) => {
-  const overlay = DEMO_OVERLAY[i] || {};
-  // createdAt: los 4 primeros cursos se consideran "nuevos" (últimas 24h) para
-  // demostrar la acción "Descargar últimos subidos" del superadmin.
-  // FILEMAKER: campo Cursos::creado_en (Timestamp). Filtro rápido en exports.
-  const daysAgo = i < 4 ? 0 : 3 + (i * 7) % 90;
-  const createdAt = new Date(Date.now() - daysAgo * 86400000).toISOString().slice(0, 10);
-  return { ...c, ...overlay, createdAt, price: 99 };
+  const createdAt = new Date(Date.now() - (3 + (i * 7) % 90) * 86400000).toISOString().slice(0, 10);
+  return { ...c, createdAt, price: 0 };
 });
 
 
 // ─── Horas impartidas (formador) ─────────────────────────────────────────────
-const MOCK_HOURS_LOG = [
-  { id: 'H-2026-001', course: 'MOVILIZACIÓN SEGURA CON GRÚAS PARA EL TRASLADO DE PERSONAS', area: 'Área técnica', date: '08/01/2026', hours: 8,  modality: 'Presencial', status: 'Validado' },
-  { id: 'H-2026-002', course: 'SENTIR PARA CONECTAR: LA SENSOBIOGRAFÍA COMO PUENTE RELACIONAL', area: 'Área técnica', date: '14/01/2026', hours: 10, modality: 'Online',     status: 'Validado' },
-  { id: 'H-2026-003', course: 'GESTIÓN DE CONFLICTOS',                                             area: 'Competencias',   date: '22/01/2026', hours: 12, modality: 'Híbrido',    status: 'Validado' },
-  { id: 'H-2026-004', course: 'IMPLEMENTACIÓN DE ACP',                                             area: 'ACP y Modelo de Atención', date: '05/02/2026', hours: 15, modality: 'Presencial', status: 'Validado' },
-  { id: 'H-2026-005', course: 'GESTIÓN DEL ESTRÉS',                                                area: 'Área de autocuidados',     date: '18/02/2026', hours: 8,  modality: 'Online',     status: 'Validado' },
-  { id: 'H-2026-006', course: 'HABILIDADES COMUNICATIVAS',                                         area: 'Competencias',   date: '03/03/2026', hours: 10, modality: 'Presencial', status: 'Pendiente' },
-  { id: 'H-2026-007', course: 'ATENCIÓN LGTBI+ Y NECESIDADES SEXUALES EN RESIDENCIAS DE PERSONAS MAYORES', area: 'Área técnica', date: '12/03/2026', hours: 8,  modality: 'Online',     status: 'Pendiente' },
-  { id: 'H-2026-008', course: 'RISOTERAPIA. EL PODER DE LA RISA EN EL BIENESTAR DIARIO',           area: 'Área de autocuidados',     date: '25/03/2026', hours: 6,  modality: 'Presencial', status: 'Pendiente' },
-  { id: 'H-2026-009', course: 'HUMANIZACIÓN EN ASISTENCIA SANITARIA',                              area: 'ACP y Modelo de Atención', date: '04/04/2026', hours: 12, modality: 'Híbrido',    status: 'Validado' },
-  { id: 'H-2026-010', course: 'COHESIÓN DE EQUIPOS Y LIDERAZGO COMPARTIDO',                        area: 'Competencias',   date: '15/04/2026', hours: 10, modality: 'Online',     status: 'En revisión' },
-];
+// Horas impartidas — vacío hasta que un formador real reporte horas.
+const MOCK_HOURS_LOG = [];
 
 // ─── Usuarios ────────────────────────────────────────────────────────────────
 // FILEMAKER: Tabla Usuarios con campos privilege_set ∈ {priv_Formador, priv_Alumno, priv_Superadmin}.
@@ -314,164 +285,31 @@ const MOCK_TIPOLOGIAS = [
 //     - incidencia: Pantalla "Incidencias" → crea registro con tipo_incidencia
 //       (enfermedad, cambio_fecha, problema_alumnos, otro) y descripción.
 // El superadmin agrupa en la UI por courseTitle (GetSummary en FM).
-const MOCK_PENDING_REQUESTS = [
-  { id: 'R-001', type: 'new',      trainer: 'Luis Mendoza Vargas',    trainerId: 'F-002', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 14/05, 21/05 · 09:00-14:00', date: '2026-04-18', proposedDates: '14, 21 Mayo 2026', rate: 48 },
-  { id: 'R-006', type: 'new',      trainer: 'Jorge Pascual Torres',   trainerId: 'F-004', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 19/05 · 16:00-20:00',        date: '2026-04-19', proposedDates: '19 Mayo 2026',     rate: 45 },
-  { id: 'R-007', type: 'new',      trainer: 'Marta Ibáñez Reyes',     trainerId: 'F-003', courseTitle: 'MOVILIZACIONES SEGURAS', detail: 'Propone fechas: 27/05 · 09:30-13:30',        date: '2026-04-20', proposedDates: '27 Mayo 2026',     rate: 58 },
-  { id: 'R-002', type: 'new',      trainer: 'Marta Ibáñez Reyes',     trainerId: 'F-003', courseTitle: 'GESTIÓN DE CONFLICTOS',  detail: 'Acepta impartir la oferta',                   date: '2026-04-19', proposedDates: '12 Mayo 2026',     rate: 58 },
-  { id: 'R-003', type: 'hours',    trainer: 'Jorge Pascual Torres',   trainerId: 'F-004', courseTitle: 'IMPLEMENTACIÓN DE ACP',  detail: 'Reporta 15h impartidas el 05/02/2026',        date: '2026-04-20' },
-  { id: 'R-004', type: 'register', trainer: 'Sofía Vargas Herrera',   trainerId: 'F-007', courseTitle: '—',                       detail: 'Solicitud de alta como formadora',            date: '2026-04-21' },
-  { id: 'R-008', type: 'proposal', trainer: 'Ana García López',       trainerId: 'F-001', courseTitle: 'ACOMPAÑAMIENTO EMOCIONAL EN FINAL DE VIDA', detail: 'Nueva propuesta formativa · Presencial · 10 h · tipología: Acompañamiento emocional', date: '2026-04-22', proposedDates: '15-17 Junio 2026', objectives: 'Dotar al personal sanitario de herramientas para acompañar en los últimos días.', contents: 'Módulo 1: la escucha activa. Módulo 2: comunicación de malas noticias. Módulo 3: autocuidado profesional.', tipologia: 'Acompañamiento emocional', hours: 10, modality: 'Presencial' },
-  { id: 'R-009', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'GESTIÓN DE CONFLICTOS',        detail: 'Cancelación por enfermedad — solicita reprogramar el 25/04', incidenciaType: 'Cancelación por enfermedad', description: 'Tengo una gripe fuerte y no podré impartir la sesión del 25/04. Solicito reprogramarla al 2 de mayo.',       status: 'en revisión', date: '2026-04-22' },
-  { id: 'R-010', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'IMPLEMENTACIÓN DE ACP',        detail: 'Aula sin retroproyector — problema de infraestructura', incidenciaType: 'Infraestructura / aula',    description: 'El aula 3 no tiene retroproyector operativo. Lo llevé yo personal para esta sesión; por favor resolver antes de la próxima.', status: 'resuelta',    date: '2026-04-11' },
-  { id: 'R-011', type: 'incidencia', trainer: 'Ana García López',     trainerId: 'F-001', courseTitle: 'HABILIDADES COMUNICATIVAS',    detail: 'Alumno con comportamiento disruptivo',                   incidenciaType: 'Problema con alumnos',       description: 'Un alumno interrumpió reiteradamente. Hablé con él en privado y se comprometió a respetar dinámicas. Dejo constancia.', status: 'abierta',     date: '2026-04-18' },
-];
+// Solicitudes pendientes — vacío hasta que un formador real envíe una.
+const MOCK_PENDING_REQUESTS = [];
 
 // ─── Bitácora, tareas, asistencia (formador) ─────────────────────────────────
 // FILEMAKER: Tabla Bitacora. FK: id_curso, id_sesion. El superadmin consulta
 //   las entradas filtradas por curso en el "Expediente del curso" (modo
 //   Expedientes de Admin_Horas).
-const MOCK_BITACORAS = [
-  // Curso 4 (accepted — activo)
-  { id: 'B-001', courseId: 4, sessionDate: '2026-04-13', timeFrom: '09:00', timeTo: '14:00', incidents: 'Una alumna salió 30 min antes por urgencia familiar. Todos los ejercicios se completaron.', notes: 'Grupo muy participativo. Se ampliará el módulo 3 con más casos prácticos la próxima sesión.', present: 12, total: 14 },
-  { id: 'B-002', courseId: 4, sessionDate: '2026-04-14', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias reseñables.', notes: 'Se completó la teoría del módulo 2. Algunos alumnos pidieron material extra.', present: 13, total: 14 },
-  { id: 'B-003', courseId: 4, sessionDate: '2026-04-15', timeFrom: '09:00', timeTo: '14:00', incidents: 'Retraso de 10 min en el inicio por problema de accesibilidad.', notes: 'Dinámica en grupos de 4. Resultados muy positivos.', present: 14, total: 14 },
-  // Curso 7 (review)
-  { id: 'B-004', courseId: 7, sessionDate: '2026-04-14', timeFrom: '09:30', timeTo: '13:30', incidents: 'Problema puntual con el micrófono del aula. Resuelto a los 15 min.', notes: 'Excelente debate sobre casos reales aportados por los asistentes.', present: 9, total: 10 },
-  // Curso 9 (completed) — expediente completo
-  { id: 'B-010', courseId: 9, sessionDate: '2026-04-01', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias.',                                                                                notes: 'Arranque del curso. Presentación de objetivos y evaluación inicial.',                                             present: 14, total: 15 },
-  { id: 'B-011', courseId: 9, sessionDate: '2026-04-02', timeFrom: '09:00', timeTo: '14:00', incidents: 'Un alumno tuvo que ausentarse la última hora por motivos laborales.',                             notes: 'Teoría completa del bloque 1. Se entrega material complementario.',                                              present: 14, total: 15 },
-  { id: 'B-012', courseId: 9, sessionDate: '2026-04-03', timeFrom: '09:00', timeTo: '14:00', incidents: 'Sin incidencias.',                                                                                notes: 'Cierre del curso. Evaluación final superada por 13/15 alumnos. Se generan diplomas.',                             present: 15, total: 15 },
-  // Curso 10 (completed)
-  { id: 'B-020', courseId: 10, sessionDate: '2026-03-27', timeFrom: '15:00', timeTo: '20:00', incidents: 'Retraso inicial de 20 min por conexión VPN. Solventado.',                                        notes: 'Sesión online. Alta interacción en chat. Se graba para los ausentes.',                                           present: 11, total: 12 },
-];
+// Bitácoras / tareas / asistencia / inscripciones / diplomas / empleo /
+// reseñas / pagos / notificaciones — vacíos hasta que la actividad real
+// los genere (vía Supabase).
+const MOCK_BITACORAS              = [];
+const MOCK_TASKS                  = [];
+const MOCK_ATTENDANCE             = [];
+const MOCK_ENROLLMENTS            = [];
+const MOCK_DIPLOMAS               = [];
+const MOCK_JOB_OFFERS             = [];
+const MOCK_APPLICATIONS           = [];
+const MOCK_REVIEWS                = [];
+const MOCK_PAYMENTS               = [];
+const MOCK_NOTIFICATIONS_FORMADOR = [];
+const MOCK_NOTIFICATIONS_ADMIN    = [];
+const MOCK_NOTIFICATIONS_ALUMNO   = [];
 
-const MOCK_TASKS = [
-  { id: 'T-001', type: 'consultoria', title: 'Auditoría modelo ACP residencia Los Olivos', client: 'Residencia Los Olivos', clientContact: 'direccion@residencialosolivos.es', location: 'Valencia', startDate: '2026-05-10', endDate: '2026-05-14', amount: 2800, status: 'contrato_pendiente', contractPdf: 'contratos/T-001-Auditoria-Los-Olivos.pdf', signatureImg: null, signedPdf: null, attachments: [{ name: 'Briefing_cliente.pdf', uploadedBy: 'superadmin', date: '2026-04-20', size: '1.2 MB' }, { name: 'Cuestionario_inicial.pdf', uploadedBy: 'superadmin', date: '2026-04-20', size: '340 KB' }], deliverables: [], description: 'Auditoría del modelo de Atención Centrada en la Persona. Revisión de procesos, entrevistas con equipo y redacción de informe final con recomendaciones.' },
-  { id: 'T-002', type: 'sesion',      title: 'Sesión de mentoring equipo dirección',       client: 'Centro Activa Bilbao',  clientContact: 'rrhh@centroactiva.com',            location: 'Bilbao (híbrido)', startDate: '2026-04-28', endDate: '2026-04-28', amount: 350,  status: 'firmada',             contractPdf: 'contratos/T-002-Mentoring-Activa.pdf',  signatureImg: null, signedPdf: 'contratos/T-002-FIRMADO.pdf', attachments: [{ name: 'Perfiles_participantes.pdf', uploadedBy: 'superadmin', date: '2026-04-15', size: '220 KB' }], deliverables: [], description: 'Sesión de 3 horas de coaching grupal con el equipo directivo.' },
-  { id: 'T-003', type: 'consultoria', title: 'Implementación protocolos movilizaciones seguras', client: 'Hospital Santa Clara', clientContact: 'formacion@santaclara.es',      location: 'Madrid', startDate: '2026-03-01', endDate: '2026-03-28', amount: 4200, status: 'completada',          contractPdf: 'contratos/T-003-Santa-Clara.pdf',       signatureImg: null, signedPdf: 'contratos/T-003-FIRMADO.pdf', attachments: [{ name: 'Informe_situacion_inicial.pdf', uploadedBy: 'superadmin', date: '2026-02-20', size: '1.8 MB' }], deliverables: [{ name: 'Informe_final_T-003.pdf', uploadedAt: '2026-03-30', size: '2.1 MB' }], description: 'Diseño e implementación de protocolos de movilizaciones seguras.' },
-  { id: 'T-004', type: 'sesion',      title: 'Supervisión de caso — acompañamiento final de vida', client: 'Residencia San Rafael', clientContact: 'coordinacion@sanrafael.com', location: 'Sevilla', startDate: '2026-05-05', endDate: '2026-05-05', amount: 280, status: 'asignada', contractPdf: null, signatureImg: null, signedPdf: null, attachments: [], deliverables: [], description: 'Supervisión profesional a coordinación del centro.' },
-];
-
-// FILEMAKER: Tabla Asistencia (cabecera) + Asistencia_Alumnos (líneas).
-//   Cada sesión está vinculada a id_curso + fecha_sesion.
-const MOCK_ATTENDANCE = [
-  { id: 'AT-001', courseId: 4, sessionDate: '2026-04-13', records: [
-    { studentId: 'A-1001', studentName: 'María López Serrano',     status: 'asiste',    origin: 'match',  notes: '' },
-    { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'parcial',   origin: 'manual', notes: 'Llegó 15 min tarde' },
-    { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1004', studentName: 'Diego Fernández',         status: 'no_asiste', origin: 'manual', notes: 'Aviso por email' },
-  ] },
-  { id: 'AT-002', courseId: 4, sessionDate: '2026-04-14', records: [
-    { studentId: 'A-1001', studentName: 'María López Serrano',     status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1004', studentName: 'Diego Fernández',         status: 'asiste',    origin: 'manual', notes: 'Recuperó la sesión anterior' },
-  ] },
-  { id: 'AT-003', courseId: 5, sessionDate: '2026-04-21', records: [
-    { studentId: 'A-1003', studentName: 'Laura Sánchez',           status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1005', studentName: 'Nuria Gómez Bravo',       status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1006', studentName: 'Pablo Herrera Gil',       status: 'parcial',   origin: 'manual', notes: 'Urgencia familiar, salió a las 12:30' },
-    { studentId: 'A-1007', studentName: 'Cristina Ayala Ruiz',     status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1008', studentName: 'Andrés Morales López',    status: 'no_asiste', origin: 'manual', notes: 'Baja médica justificada' },
-  ] },
-  { id: 'AT-004', courseId: 7, sessionDate: '2026-04-14', records: [
-    { studentId: 'A-1009', studentName: 'Isabel Torres Cano',      status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1010', studentName: 'Carlos Mateos Díaz',      status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1011', studentName: 'Rocío Jiménez Prieto',    status: 'asiste',    origin: 'manual', notes: '' },
-    { studentId: 'A-1002', studentName: 'Javier Ruiz Márquez',     status: 'asiste',    origin: 'match',  notes: '' },
-  ] },
-];
-
-// ─── Inscripciones alumno ────────────────────────────────────────────────────
-// FILEMAKER: Tabla Inscripciones_Alumno. FK id_alumno + id_curso. Las primeras 6
-//   corresponden al alumno logueado (María López); el resto se usan para poblar
-//   "Mis alumnos" del formador (cruza con students[] via módulo en la vista).
-const MOCK_ENROLLMENTS = [
-  { id: 'E-001', courseId: 1,  status: 'en_progreso', progress: 65, enrolledAt: '2026-01-10', lastAccess: '2026-04-18', nextSession: '2026-04-25 10:00' },
-  { id: 'E-002', courseId: 9,  status: 'en_progreso', progress: 30, enrolledAt: '2026-02-05', lastAccess: '2026-04-15', nextSession: '2026-04-27 16:00' },
-  { id: 'E-003', courseId: 14, status: 'completado',  progress: 100,enrolledAt: '2025-11-02', lastAccess: '2026-01-20', completedAt: '2026-01-20' },
-  { id: 'E-004', courseId: 22, status: 'completado',  progress: 100,enrolledAt: '2025-09-15', lastAccess: '2025-12-10', completedAt: '2025-12-10' },
-  { id: 'E-005', courseId: 33, status: 'completado',  progress: 100,enrolledAt: '2025-07-01', lastAccess: '2025-09-08', completedAt: '2025-09-08' },
-  { id: 'E-006', courseId: 48, status: 'inscrito',    progress: 0,  enrolledAt: '2026-04-10', lastAccess: null, nextSession: '2026-05-02 09:00' },
-  // Inscripciones adicionales para poblar "Mis alumnos" del formador (cursos 4, 5, 6, 7)
-  { id: 'E-101', courseId: 4,  status: 'en_progreso', progress: 80, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
-  { id: 'E-102', courseId: 4,  status: 'en_progreso', progress: 75, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
-  { id: 'E-103', courseId: 4,  status: 'en_progreso', progress: 85, enrolledAt: '2026-03-15', lastAccess: '2026-04-15', nextSession: '2026-04-15 09:00' },
-  { id: 'E-104', courseId: 5,  status: 'en_progreso', progress: 60, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
-  { id: 'E-105', courseId: 5,  status: 'en_progreso', progress: 55, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
-  { id: 'E-106', courseId: 5,  status: 'en_progreso', progress: 68, enrolledAt: '2026-04-01', lastAccess: '2026-04-21', nextSession: '2026-04-23 10:00' },
-  { id: 'E-107', courseId: 6,  status: 'inscrito',    progress: 10, enrolledAt: '2026-04-18', lastAccess: '2026-04-22', nextSession: '2026-04-28 10:00' },
-  { id: 'E-108', courseId: 7,  status: 'en_progreso', progress: 40, enrolledAt: '2026-04-05', lastAccess: '2026-04-20', nextSession: '2026-04-22 16:00' },
-  { id: 'E-109', courseId: 7,  status: 'en_progreso', progress: 45, enrolledAt: '2026-04-05', lastAccess: '2026-04-19', nextSession: '2026-04-22 16:00' },
-  { id: 'E-110', courseId: 9,  status: 'completado',  progress: 100,enrolledAt: '2026-03-01', lastAccess: '2026-04-03', completedAt: '2026-04-03' },
-  { id: 'E-111', courseId: 9,  status: 'completado',  progress: 100,enrolledAt: '2026-03-01', lastAccess: '2026-04-03', completedAt: '2026-04-03' },
-  { id: 'E-112', courseId: 10, status: 'completado',  progress: 100,enrolledAt: '2026-02-15', lastAccess: '2026-03-27', completedAt: '2026-03-27' },
-];
-
-const MOCK_DIPLOMAS = [
-  { id: 'D-001', enrollmentId: 'E-003', courseId: 14, title: 'ATENCIÓN LGTBI+ Y NECESIDADES SEXUALES EN RESIDENCIAS DE PERSONAS MAYORES', issueDate: '2026-01-20', hours: 16, code: 'CESEA-2026-00014', grade: 'Apto con distinción' },
-  { id: 'D-002', enrollmentId: 'E-004', courseId: 22, title: 'LA VOZ EN EL LIDERAZGO. REGULANDO LA VOZ Y LAS EMOCIONES PARA UNA GESTIÓN DE EQUIPOS EFECTIVA', issueDate: '2025-12-10', hours: 12, code: 'CESEA-2025-00082', grade: 'Apto' },
-  { id: 'D-003', enrollmentId: 'E-005', courseId: 33, title: 'COMUNICACIÓN ASERTIVA PARA PROMOVER UNA CULTURA DEL DIÁLOGO SALUDABLE', issueDate: '2025-09-08', hours: 10, code: 'CESEA-2025-00047', grade: 'Apto con distinción' },
-];
-
-// ─── Empleo + postulaciones ──────────────────────────────────────────────────
-const MOCK_JOB_OFFERS = [
-  { id: 'J-001', sector: 'dental',  title: 'Higienista dental',              company: 'Clínica Dental Sonrisa',  location: 'Madrid',    modality: 'Presencial', salary: '22.000 – 26.000 €/año', hours: 'Jornada completa', posted: '2026-04-18', desc: 'Clínica en expansión busca higienista con experiencia en ortodoncia.' },
-  { id: 'J-002', sector: 'dental',  title: 'Auxiliar de odontología',        company: 'Odontocenter Málaga',     location: 'Málaga',    modality: 'Presencial', salary: '18.000 – 21.000 €/año', hours: 'Jornada completa', posted: '2026-04-15', desc: 'Se requiere FP auxiliar de enfermería. Formación interna continua.' },
-  { id: 'J-003', sector: 'dental',  title: 'Recepcionista clínica',          company: 'Dental Premium Barcelona',location: 'Barcelona', modality: 'Presencial', salary: '1.450 €/mes',           hours: '30h/semana',       posted: '2026-04-11', desc: 'Perfil orientado al paciente, con experiencia y nociones de facturación.' },
-  { id: 'J-004', sector: 'sanidad', title: 'Enfermero/a en residencia',      company: 'Residencia Los Olivos',   location: 'Valencia',  modality: 'Presencial', salary: '28.000 – 32.000 €/año', hours: 'Turno mañana',     posted: '2026-04-17', desc: 'Residencia geriátrica busca enfermero/a con formación en ACP.' },
-  { id: 'J-005', sector: 'sanidad', title: 'Gerocultor/a',                    company: 'Centro San Rafael',       location: 'Sevilla',   modality: 'Presencial', salary: '1.280 €/mes',           hours: 'Turno rotativo',   posted: '2026-04-14', desc: 'Cuidado integral a personas mayores, movilizaciones seguras.' },
-  { id: 'J-006', sector: 'sanidad', title: 'Fisioterapeuta geriátrico',       company: 'Centro Activa',           location: 'Bilbao',    modality: 'Híbrido',   salary: '30.000 €/año',          hours: 'Jornada completa', posted: '2026-04-09', desc: 'Atención a pacientes con patologías neuromusculoesqueléticas.' },
-  { id: 'J-007', sector: 'dental',  title: 'Protésico/a dental',             company: 'Laboratorio DentaLab',    location: 'Zaragoza',  modality: 'Presencial', salary: 'Según valía',           hours: 'Jornada completa', posted: '2026-04-05', desc: 'Laboratorio consolidado busca protésico con experiencia en CAD/CAM.' },
-  { id: 'J-008', sector: 'sanidad', title: 'Auxiliar de enfermería noche',   company: 'Hospital Santa Clara',    location: 'Madrid',    modality: 'Presencial', salary: '1.500 €/mes + pluses',  hours: 'Turno noche',      posted: '2026-04-03', desc: 'Unidad de hospitalización, pluses de festividad y nocturnidad.' },
-];
-
-const MOCK_APPLICATIONS = [
-  { id: 'AP-001', jobId: 'J-001', status: 'entrevista', date: '2026-04-19', lastUpdate: '2026-04-21', notes: 'Entrevista presencial el 28/04 a las 11:00' },
-  { id: 'AP-002', jobId: 'J-003', status: 'visto',      date: '2026-04-16', lastUpdate: '2026-04-17', notes: 'CV revisado por RRHH' },
-];
-
-// ─── Reseñas + pagos + descuentos ────────────────────────────────────────────
-const MOCK_REVIEWS = [
-  { id: 'R-001', courseId: 14, rating: 5, comment: 'Imprescindible. Cambia la forma de mirar el cuidado.',       date: '2026-01-22' },
-  { id: 'R-002', courseId: 22, rating: 4, comment: 'Muy útil para reuniones de equipo. Ejercicios prácticos.',   date: '2025-12-15' },
-  { id: 'R-003', courseId: 33, rating: 5, comment: 'La profesora explica de maravilla. Recomendado al 100%.',    date: '2025-09-10' },
-];
-
-const MOCK_PAYMENTS = [
-  { id: 'P-001', enrollmentId: 'E-001', amount: 149, method: 'tarjeta',      date: '2026-01-10', status: 'confirmado', invoiceNo: 'CESEA-F-2026-0112' },
-  { id: 'P-002', enrollmentId: 'E-002', amount: 99,  method: 'bizum',        date: '2026-02-05', status: 'confirmado', invoiceNo: 'CESEA-F-2026-0418' },
-  { id: 'P-003', enrollmentId: 'E-003', amount: 79,  method: 'transferencia',date: '2025-11-02', status: 'confirmado', invoiceNo: 'CESEA-F-2025-1842' },
-  { id: 'P-004', enrollmentId: 'E-004', amount: 179, method: 'tarjeta',      date: '2025-09-15', status: 'confirmado', invoiceNo: 'CESEA-F-2025-1320' },
-  { id: 'P-005', enrollmentId: 'E-005', amount: 49,  method: 'tarjeta',      date: '2025-07-01', status: 'confirmado', invoiceNo: 'CESEA-F-2025-0890' },
-  { id: 'P-006', enrollmentId: 'E-006', amount: 129, method: 'bizum',        date: '2026-04-10', status: 'confirmado', invoiceNo: 'CESEA-F-2026-2105' },
-];
-
-const DISCOUNT_CODES = {
-  'BIENVENIDA10': { percent: 10, label: '10% de bienvenida' },
-  'CESEA20':      { percent: 20, label: '20% de alumno CESEA' },
-  'VERANO25':     { percent: 25, label: '25% campaña de verano' },
-};
-
-// ─── Notificaciones por rol ──────────────────────────────────────────────────
-const MOCK_NOTIFICATIONS_FORMADOR = [
-  { id: 1, text: 'Nueva oferta disponible: Podología — Proteger la salud desde la base', read: false },
-  { id: 2, text: 'Tus horas de enero han sido validadas por administración',              read: false },
-  { id: 3, text: 'Recuerda completar el cierre de formación pendiente',                    read: true  },
-];
-const MOCK_NOTIFICATIONS_ADMIN = [
-  { id: 1, text: '4 solicitudes pendientes de revisión',                                  read: false },
-  { id: 2, text: 'Sofía Vargas Herrera ha solicitado alta como formadora',                read: false },
-  { id: 3, text: 'Se han reportado 15h nuevas de Jorge Pascual',                          read: true  },
-];
-const MOCK_NOTIFICATIONS_ALUMNO = [
-  { id: 1, icon: '◆',  text: 'Tu diploma de "ATENCIÓN LGTBI+" ya está disponible para descarga',           read: false, date: '2026-04-20' },
-  { id: 2, icon: '▲',  text: 'Recuerda: próxima sesión de Movilización Segura el 25/04 a las 10:00',      read: false, date: '2026-04-19' },
-  { id: 3, icon: '★',  text: 'Nueva oferta de empleo en tu sector: Higienista dental en Madrid',          read: false, date: '2026-04-18' },
-  { id: 4, icon: '◉',  text: 'Pago de 129 € confirmado · inscripción a Skin Care como práctica',           read: true,  date: '2026-04-10' },
-  { id: 5, icon: '✓',  text: 'Tu CV ha sido actualizado correctamente',                                    read: true,  date: '2026-02-15' },
-];
+// Códigos de descuento — los gestiona el superadmin desde la tabla descuentos.
+const DISCOUNT_CODES = {};
 
 // ─── Badges, testimonios, stats, FAQ (alumno) ────────────────────────────────
 const BADGES = [
@@ -505,42 +343,15 @@ const MOCK_FAQ = [
 ];
 
 // ─── AppContext + AppProvider unificado ──────────────────────────────────────
-// ─── Alumnos completos (vista superadmin + formador) ────────────────────────
-// FILEMAKER: Tabla Alumnos con portal completo para [priv_Superadmin].
-//   Los formadores solo ven alumnos inscritos en SUS cursos (filtrado por
-//   Inscripciones_Alumno::id_curso ⨯ Cursos::id_formador).
+// Alumnos: solo los 2 demo (María y Javier). Los demás se crean al registrarse.
+// FILEMAKER: tabla Alumnos. Al inicio solo existen los registros demo.
 const MOCK_STUDENTS_ALL = [
-  // Los 2 alumnos demo (reutilizan MOCK_STUDENT y MOCK_STUDENT_B)
-  { id: 'A-1001', name: 'María López Serrano',  email: 'maria.lopez@alumno.com',   sector: 'dental',  status: 'activo',    joinDate: '2025-03-12', coursesCount: 6, lastActivity: '2026-04-18', phone: '+34 611 222 333', location: 'Madrid' },
-  { id: 'A-1002', name: 'Javier Ruiz Márquez',  email: 'javier.ruiz@alumno.com',   sector: 'sanidad', status: 'activo',    joinDate: '2026-01-04', coursesCount: 2, lastActivity: '2026-04-15', phone: '+34 622 333 444', location: 'Valencia' },
-  // Alumnos adicionales para que la tabla admin sea representativa
-  { id: 'A-1003', name: 'Laura Sánchez Prieto', email: 'laura.sanchez@alumno.com', sector: 'sanidad', status: 'activo',    joinDate: '2025-09-22', coursesCount: 4, lastActivity: '2026-04-20', phone: '+34 633 444 555', location: 'Barcelona' },
-  { id: 'A-1004', name: 'Diego Fernández Polo', email: 'diego.fernandez@alumno.com', sector: 'sanidad', status: 'activo',   joinDate: '2025-06-10', coursesCount: 3, lastActivity: '2026-04-01', phone: '+34 644 555 666', location: 'Bilbao' },
-  { id: 'A-1005', name: 'Nuria Gómez Martín',   email: 'nuria.gomez@alumno.com',   sector: 'dental',  status: 'activo',    joinDate: '2024-11-18', coursesCount: 8, lastActivity: '2026-04-19', phone: '+34 655 666 777', location: 'Sevilla' },
-  { id: 'A-1006', name: 'Carlos Mateos Ibáñez', email: 'carlos.mateos@alumno.com', sector: 'sanidad', status: 'activo',    joinDate: '2024-08-02', coursesCount: 12, lastActivity: '2026-04-18', phone: '+34 666 777 888', location: 'Zaragoza' },
-  { id: 'A-1007', name: 'Isabel Torres Rivas',  email: 'isabel.torres@alumno.com', sector: 'dental',  status: 'inactivo',  joinDate: '2024-05-15', coursesCount: 1, lastActivity: '2025-10-03', phone: '+34 677 888 999', location: 'Málaga' },
-  { id: 'A-1008', name: 'Andrés Morales Luján', email: 'andres.morales@alumno.com',sector: 'sanidad', status: 'activo',    joinDate: '2025-12-01', coursesCount: 2, lastActivity: '2026-04-10', phone: '+34 688 999 000', location: 'Granada' },
-  { id: 'A-1009', name: 'Cristina Ayala Navas', email: 'cristina.ayala@alumno.com',sector: 'dental',  status: 'activo',    joinDate: '2026-02-14', coursesCount: 1, lastActivity: '2026-04-21', phone: '+34 699 000 111', location: 'Alicante' },
-  { id: 'A-1010', name: 'Pablo Herrera Soto',   email: 'pablo.herrera@alumno.com', sector: 'sanidad', status: 'pendiente', joinDate: '2026-04-18', coursesCount: 0, lastActivity: null,        phone: '+34 611 000 222', location: 'Santander' },
+  { id: 'A-1001', name: 'María López Serrano',  email: 'maria.lopez@alumno.com',   sector: 'dental',  status: 'activo', joinDate: '2025-03-12', coursesCount: 0, lastActivity: null, phone: '+34 611 222 333', location: 'Madrid' },
+  { id: 'A-1002', name: 'Javier Ruiz Márquez',  email: 'javier.ruiz@alumno.com',   sector: 'sanidad', status: 'activo', joinDate: '2026-01-04', coursesCount: 0, lastActivity: null, phone: '+34 622 333 444', location: 'Valencia' },
 ];
 
-// ─── Reseñas enriquecidas (vista formador: valoraciones recibidas) ──────────
-// FILEMAKER: Vista calc join Valoraciones ⨯ Inscripciones_Alumno ⨯ Cursos.
-//   id_formador derivado del curso. Permite al formador ver todas las reseñas
-//   de sus cursos sin importar qué alumno las dejó.
-// courseId coincide con MOCK_COURSES; instructor se deriva de course.instructor.
-const MOCK_REVIEWS_BY_INSTRUCTOR = [
-  { id: 'RV-001', courseId: 1,  instructor: 'Aurora Martínez',      studentName: 'María López',    rating: 5, comment: 'Temario muy claro y ejercicios prácticos aplicables desde el primer día.', date: '2026-04-10' },
-  { id: 'RV-002', courseId: 4,  instructor: 'Ana García López',     studentName: 'Laura Sánchez',  rating: 5, comment: 'Ana transmite con pasión. Me ayudó a replantear protocolos en mi residencia.', date: '2026-04-08' },
-  { id: 'RV-003', courseId: 4,  instructor: 'Ana García López',     studentName: 'Diego Fernández',rating: 4, comment: 'Contenido sólido. Se agradecerían más casos del ámbito hospitalario.', date: '2026-04-02' },
-  { id: 'RV-004', courseId: 7,  instructor: 'Ana García López',     studentName: 'Nuria Gómez',    rating: 5, comment: 'El mejor curso de ACP que he hecho. Recomendadísimo.', date: '2026-03-28' },
-  { id: 'RV-005', courseId: 14, instructor: 'Luis Mendoza Vargas',  studentName: 'Carlos Mateos',  rating: 5, comment: 'Imprescindible. Cambia la forma de mirar el cuidado.', date: '2026-01-22' },
-  { id: 'RV-006', courseId: 22, instructor: 'Marta Ibáñez Reyes',   studentName: 'Isabel Torres',  rating: 4, comment: 'Ejercicios muy útiles para reuniones de equipo.', date: '2025-12-15' },
-  { id: 'RV-007', courseId: 33, instructor: 'Jorge Pascual Torres', studentName: 'Andrés Morales', rating: 5, comment: 'La profesora explica de maravilla. Recomendado al 100%.', date: '2025-09-10' },
-  { id: 'RV-008', courseId: 7,  instructor: 'Ana García López',     studentName: 'Cristina Ayala', rating: 5, comment: 'Muy profesional. Dinámica amena y útil.', date: '2026-03-15' },
-  { id: 'RV-009', courseId: 4,  instructor: 'Ana García López',     studentName: 'Pablo Herrera',  rating: 3, comment: 'Bueno, aunque el ritmo fue algo rápido para los perfiles menos técnicos.', date: '2026-02-28' },
-  { id: 'RV-010', courseId: 12, instructor: 'Ana García López',     studentName: 'María López',    rating: 5, comment: 'Me abrió los ojos. Skin care como herramienta profesional, no como frivolidad.', date: '2026-04-15' },
-];
+// Reseñas recibidas por formador — vacío hasta que un alumno deje una.
+const MOCK_REVIEWS_BY_INSTRUCTOR = [];
 
 const AppContext = React.createContext();
 
@@ -1058,9 +869,21 @@ function AppProvider({ children }) {
     },
     register: async (payload) => {
       try {
-        const u = await supabaseAPI.auth.register(payload);
-        setUser(u); setCurrentView('inicio'); return 'alumno';
-      } catch (e) { showToast('No se pudo registrar: ' + e.message, 'error'); return null; }
+        const r = await supabaseAPI.auth.register(payload);
+        // Una vez creado en auth, hacer signIn para que la sesión quede
+        // activa y el listener cargue el perfil enriquecido.
+        await supabaseAPI.auth.signIn(payload.email, payload.password);
+        if (r.linkedTo) {
+          showToast('¡Bienvenido/a, ' + r.linkedTo + '! Vinculado a tu pre-registro.');
+        } else {
+          showToast('Cuenta creada como ' + r.role);
+        }
+        setCurrentView('inicio');
+        return r.role;
+      } catch (e) {
+        showToast('No se pudo registrar: ' + (e.message || 'sin detalles'), 'error');
+        return null;
+      }
     },
 
     // Cursos (admin)

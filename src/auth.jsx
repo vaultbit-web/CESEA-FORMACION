@@ -24,6 +24,8 @@ function AuthScreens() {
   const [pass2,     setPass2]     = React.useState('');
   const [name,      setName]      = React.useState('');
   const [sector,    setSector]    = React.useState('dental');
+  const [accountType, setAccountType] = React.useState('alumno');  // 'alumno' | 'formador'
+  const [preRegistroMatch, setPreRegistroMatch] = React.useState(null); // { id, name } si email coincide
   const [acceptsT,  setAcceptsT]  = React.useState(false);
   const [loading,   setLoading]   = React.useState(false);
   const [recovered, setRecovered] = React.useState(false);
@@ -31,6 +33,31 @@ function AuthScreens() {
   const [shake,     setShake]     = React.useState(false);
   const [err,       setErr]       = React.useState('');
   const [legalDoc,  setLegalDoc]  = React.useState(null);
+
+  // Lookup automático de pre-registro al escribir el email (modo registro)
+  // Si el email coincide con un formador del Excel, autocompletamos el nombre
+  // y forzamos accountType=formador.
+  React.useEffect(() => {
+    if (mode !== 'register' || !email || !email.includes('@')) {
+      if (preRegistroMatch) setPreRegistroMatch(null);
+      return;
+    }
+    const t = setTimeout(async () => {
+      try {
+        const found = window.api?.auth?.lookupPreRegistro
+          ? await window.api.auth.lookupPreRegistro(email)
+          : null;
+        if (found) {
+          setPreRegistroMatch(found);
+          setAccountType('formador');
+          if (!name) setName(found.name);
+        } else {
+          setPreRegistroMatch(null);
+        }
+      } catch { /* ignore lookup errors */ }
+    }, 400); // debounce 400ms
+    return () => clearTimeout(t);
+  }, [email, mode]);
 
   // Atajo: pulsar una tarjeta → auto-login con esas credenciales demo
   const onCardClick = (cred) => {
@@ -51,10 +78,15 @@ function AuthScreens() {
       if (!acceptsT)       { setErr('Debes aceptar los términos'); return; }
     }
     setLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       let role = null;
-      if (mode === 'register') role = register({ email, name, sector });
-      else                     role = login(email, pass);
+      if (mode === 'register') {
+        // role en register puede ser 'alumno' o 'formador' (si pre-registro o
+        // el usuario eligio el toggle).
+        role = await register({ email, password: pass, name, sector, role: accountType });
+      } else {
+        role = await login(email, pass);
+      }
       if (!role && mode === 'login') setErr('Credenciales incorrectas. Prueba con las tarjetas demo.');
       setLoading(false);
     }, 600);
@@ -68,9 +100,14 @@ function AuthScreens() {
   };
 
   const modeLabels = {
-    login:    ['Accede a tu panel',        'Usa las tarjetas demo o tus credenciales.'],
-    register: ['Crea tu cuenta de alumno', 'Únete a CESEA Formación y empieza a formarte.'],
-    recover:  ['Recuperar acceso',         'Te enviaremos un enlace de restablecimiento.'],
+    login:    ['Accede a tu panel', 'Usa las tarjetas demo o tus credenciales.'],
+    register: [
+      preRegistroMatch ? '¡Bienvenido/a, ' + preRegistroMatch.name.split(' ')[0] + '!' : 'Crea tu cuenta',
+      preRegistroMatch
+        ? 'Tu email coincide con un formador pre-registrado. Solo crea una contraseña para activar tu cuenta.'
+        : 'Únete a CESEA Formación. Si eres formador, usa el email con el que CESEA te dio de alta.',
+    ],
+    recover:  ['Recuperar acceso', 'Te enviaremos un enlace de restablecimiento.'],
   };
   const [title, subtitle] = modeLabels[mode];
 
@@ -246,6 +283,59 @@ function AuthScreens() {
             React.createElement('label', { style: { display: 'block', fontSize: 11, fontWeight: 700, color: COLORS.text, marginBottom: 5 } }, 'Repetir contraseña'),
             React.createElement('input', { type: 'password', value: pass2, onChange: e => setPass2(e.target.value), placeholder: '••••••••', style: field }),
           ),
+
+          // Aviso de pre-registro detectado (formador del Excel)
+          // FILEMAKER: este aviso aparece cuando un Find sobre Formadores::email
+          //   devuelve match. El usuario solo necesita poner contraseña.
+          isRegister && preRegistroMatch && React.createElement('div', {
+            style: { marginBottom: 12, padding: '10px 12px', borderRadius: 10, background: COLORS.gradientSoft, border: `1px solid ${COLORS.orange}40`, fontFamily: 'Lato', fontSize: 12, color: COLORS.dark },
+          },
+            React.createElement('b', { style: { color: COLORS.orange } }, '✓ Formador identificado: '),
+            preRegistroMatch.name,
+            React.createElement('div', { style: { fontSize: 11, color: COLORS.textLight, marginTop: 4 } },
+              'Al crear la contraseña, accederás a tus cursos asignados.',
+            ),
+          ),
+
+          // Selector de tipo de cuenta (solo si NO hay pre-registro detectado)
+          // FILEMAKER: equivale a Usuarios::tipo (Alumno|Formador) elegido en alta.
+          isRegister && !preRegistroMatch && React.createElement('div', { style: { marginBottom: 12 } },
+            React.createElement('label', { style: { display: 'block', fontSize: 11, fontWeight: 700, color: COLORS.text, marginBottom: 6 } }, 'Tipo de cuenta'),
+            React.createElement('div', { style: { display: 'flex', gap: 8 } },
+              ...[
+                { id: 'alumno',   label: 'Soy alumno/a',   icon: '◌' },
+                { id: 'formador', label: 'Soy formador/a', icon: '☯' },
+              ].map(opt => React.createElement('button', {
+                key: opt.id, type: 'button',
+                onClick: () => setAccountType(opt.id),
+                style: {
+                  flex: 1, padding: '10px 14px', borderRadius: 10,
+                  border: `1.5px solid ${accountType === opt.id ? COLORS.orange : '#e4e7ef'}`,
+                  background: accountType === opt.id ? `${COLORS.orange}0d` : '#fff',
+                  color: accountType === opt.id ? COLORS.orange : COLORS.text,
+                  fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  fontFamily: 'Lato', transition: 'all 0.15s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                },
+              }, React.createElement('span', { style: { fontSize: 16 } }, opt.icon), opt.label)),
+            ),
+            accountType === 'formador' && React.createElement('div', {
+              style: { marginTop: 8, fontSize: 11, color: COLORS.textLight, fontFamily: 'Lato', lineHeight: 1.5 },
+            }, 'Si CESEA te dio de alta previamente, escribe el email con el que te dieron de alta y aparecerá tu perfil pre-registrado.'),
+          ),
+
+          // Sector solo para alumno
+          isRegister && (accountType === 'alumno') && !preRegistroMatch && React.createElement('div', { style: { marginBottom: 12 } },
+            React.createElement('label', { style: { display: 'block', fontSize: 11, fontWeight: 700, color: COLORS.text, marginBottom: 5 } }, 'Sector profesional'),
+            React.createElement('select', {
+              value: sector, onChange: e => setSector(e.target.value),
+              style: { ...field, cursor: 'pointer' },
+            },
+              React.createElement('option', { value: 'dental' }, 'Sector dental'),
+              React.createElement('option', { value: 'sanidad' }, 'Sector sanidad / sociosanitario'),
+            ),
+          ),
+
           // FILEMAKER: el campo Alumnos::sector se asigna internamente
           //   (por email corporativo o política del cliente). No se expone en el formulario.
           isRegister && React.createElement('label', {
